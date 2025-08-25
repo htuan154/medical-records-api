@@ -9,45 +9,30 @@ return [
             ],
 
             'routes' => [
-                /*
-                 * Route for accessing api documentation interface
-                 */
                 'api' => 'api/documentation',
-            ],
-            'paths' => [
-                /*
-                 * Edit to include full URL in ui for assets
-                 */
-                'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
-
-                /*
-                * Edit to set path where swagger ui assets should be stored
-                */
-                'swagger_ui_assets_path' => env('L5_SWAGGER_UI_ASSETS_PATH', 'vendor/swagger-api/swagger-ui/dist/'),
-
-                /*
-                 * File name of the generated json documentation file
-                 */
-                'docs_json' => 'api-docs.json',
-
-                /*
-                 * File name of the generated YAML documentation file
-                 */
-                'docs_yaml' => 'api-docs.yaml',
-
-                /*
-                 * Set this to `json` or `yaml` to determine which documentation file to use in UI
-                 */
-                'format_to_use_for_docs' => env('L5_FORMAT_TO_USE_FOR_DOCS', 'json'),
-
-                /*
-                 * Absolute paths to directory containing the swagger annotations are stored.
-                 */
-                'annotations' => [
-                    base_path('app'),
+                'docs' => 'api/docs',              // <-- THÊM DÒNG NÀY
+                'oauth2_callback' => 'api/oauth2-callback',
+                'middleware' => [
+                'api' => [],
+                'docs' => [],                              // để trống, tránh 403
+                'asset' => [],
+                'oauth2_callback' => [],
                 ],
             ],
+            'paths' => [
+                'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
+        'swagger_ui_assets_path' => env('L5_SWAGGER_UI_ASSETS_PATH', 'vendor/swagger-api/swagger-ui/dist/'),
+        'docs_json' => 'api-docs.json',
+        'docs_yaml' => 'api-docs.yaml',
+        'format_to_use_for_docs' => env('L5_FORMAT_TO_USE_FOR_DOCS', 'json'),
+
+        // Quét đúng chỗ bạn đang đặt annotations
+        'annotations' => [
+          base_path('app/Docs'),
+          base_path('app/Http/Controllers/API/V1'),
         ],
+      ],
+    ],
     ],
     'defaults' => [
         'routes' => [
@@ -93,7 +78,7 @@ return [
              */
             'base' => env('L5_SWAGGER_BASE_PATH', null),
             'annotations' =>[
-                base_path('app/Docs/openapi.php'),
+                base_path('app/Docs'),
                 base_path('app/Http/Controllers/API/V1')
             ],
 

@@ -2,13 +2,13 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Medical Records API",
-        "description": "API quan ly ho so y te",
+        "description": "Clinic API (CouchDB + JWT)",
         "version": "1.0.0"
     },
     "servers": [
         {
-            "url": "http://my-default-host.com",
-            "description": "API Server"
+            "url": "http://127.0.0.1:9000",
+            "description": "Local dev"
         }
     ],
     "paths": {
@@ -4113,6 +4113,15 @@
                         "description": "Lỗi server"
                     }
                 }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },
