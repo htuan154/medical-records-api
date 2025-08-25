@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
+/**
+ * @OA\Tag(
+ *     name="Doctors",
+ *     description="API endpoints for managing doctors"
+ * )
+ */
 class DoctorController extends Controller
 {
     public function __construct(private DoctorService $svc) {}
@@ -20,7 +26,19 @@ class DoctorController extends Controller
         ], $code);
     }
 
-    /** GET /api/v1/doctors?limit=&skip=&q=&specialty= */
+    /**
+     * @OA\Get(
+     *     path="/api/v1/doctors",
+     *     tags={"Doctors"},
+     *     summary="Danh sách bác sĩ",
+     *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
+     *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
+     *     @OA\Parameter(name="q", in="query", @OA\Schema(type="string", example="Nguyễn")),
+     *     @OA\Parameter(name="specialty", in="query", @OA\Schema(type="string", example="cardiology")),
+     *     @OA\Response(response=200, description="Danh sách bác sĩ"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function index(Request $req)
     {
         try {
@@ -39,14 +57,47 @@ class DoctorController extends Controller
         }
     }
 
-    /** GET /api/v1/doctors/{id} */
+    /**
+     * @OA\Get(
+     *     path="/api/v1/doctors/{id}",
+     *     tags={"Doctors"},
+     *     summary="Chi tiết bác sĩ",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Thông tin bác sĩ"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function show(string $id)
     {
         $res = $this->svc->find($id);
         return response()->json($res['data'], $res['status']);
     }
 
-    /** POST /api/v1/doctors */
+    /**
+     * @OA\Post(
+     *     path="/api/v1/doctors",
+     *     tags={"Doctors"},
+     *     summary="Tạo bác sĩ mới",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="personal_info.full_name", type="string", example="Dr. Nguyễn Văn A"),
+     *             @OA\Property(property="personal_info.birth_date", type="string", format="date", example="1980-01-15"),
+     *             @OA\Property(property="personal_info.gender", type="string", enum={"male","female","other"}, example="male"),
+     *             @OA\Property(property="personal_info.phone", type="string", example="0901234567"),
+     *             @OA\Property(property="personal_info.email", type="string", example="doctor@example.com"),
+     *             @OA\Property(property="professional_info.specialty", type="string", example="cardiology"),
+     *             @OA\Property(property="professional_info.license_number", type="string", example="DOC123456"),
+     *             @OA\Property(property="status", type="string", enum={"active","inactive"}, example="active")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Tạo thành công"),
+     *     @OA\Response(response=400, description="Dữ liệu không hợp lệ"),
+     *     @OA\Response(response=422, description="Lỗi validation"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function store(Request $req)
     {
         try {
@@ -76,20 +127,52 @@ class DoctorController extends Controller
             return response()->json($created, !empty($created['ok']) ? 201 : 400);
         } catch (ValidationException $ve) {
             return response()->json(['error' => 'validation_error', 'details' => $ve->errors()], 422);
-    }
-        catch (Throwable $e) {
+        } catch (Throwable $e) {
             return $this->error($e);
         }
     }
 
-    /** PUT /api/v1/doctors/{id} */
+    /**
+     * @OA\Put(
+     *     path="/api/v1/doctors/{id}",
+     *     tags={"Doctors"},
+     *     summary="Cập nhật bác sĩ",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="_rev", type="string", example="1-abc123"),
+     *             @OA\Property(property="personal_info.full_name", type="string"),
+     *             @OA\Property(property="status", type="string", enum={"active","inactive"})
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Cập nhật thành công"),
+     *     @OA\Response(response=400, description="Dữ liệu không hợp lệ"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=409, description="Conflict"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function update(Request $req, string $id)
     {
         $res = $this->svc->update($id, $req->all());
         return response()->json($res['data'], $res['status']);
     }
 
-    /** DELETE /api/v1/doctors/{id}?rev=xxx */
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/doctors/{id}",
+     *     tags={"Doctors"},
+     *     summary="Xóa bác sĩ",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string", example="1-abc123")),
+     *     @OA\Response(response=200, description="Xóa thành công"),
+     *     @OA\Response(response=400, description="Thiếu rev parameter"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=409, description="Conflict"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function destroy(Request $req, string $id)
     {
         $rev = $req->query('rev') ?? $req->input('rev');

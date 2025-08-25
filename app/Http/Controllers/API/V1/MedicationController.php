@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
+/**
+ * @OA\Tag(
+ *     name="Medications",
+ *     description="API endpoints for managing medications"
+ * )
+ */
 class MedicationController extends Controller
 {
     public function __construct(private MedicationService $svc) {}
@@ -21,9 +27,22 @@ class MedicationController extends Controller
     }
 
     /**
-     * GET /api/v1/medications
-     * Params: limit, skip, q (name), barcode, class, start, end (expiry),
-     *         status, low_stock (ngưỡng, ví dụ 20)
+     * @OA\Get(
+     *     path="/api/v1/medications",
+     *     tags={"Medications"},
+     *     summary="Danh sách thuốc",
+     *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
+     *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
+     *     @OA\Parameter(name="q", in="query", @OA\Schema(type="string", description="Tìm kiếm theo tên thuốc")),
+     *     @OA\Parameter(name="barcode", in="query", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="class", in="query", @OA\Schema(type="string", description="Phân loại thuốc")),
+     *     @OA\Parameter(name="start", in="query", @OA\Schema(type="string", format="date")),
+     *     @OA\Parameter(name="end", in="query", @OA\Schema(type="string", format="date", description="Ngày hết hạn")),
+     *     @OA\Parameter(name="status", in="query", @OA\Schema(type="string", enum={"active","inactive"})),
+     *     @OA\Parameter(name="low_stock", in="query", @OA\Schema(type="integer", description="Ngưỡng tồn kho thấp")),
+     *     @OA\Response(response=200, description="Danh sách thuốc"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
      */
     public function index(Request $req)
     {
@@ -48,14 +67,55 @@ class MedicationController extends Controller
         }
     }
 
-    /** GET /api/v1/medications/{id} */
+    /**
+     * @OA\Get(
+     *     path="/api/v1/medications/{id}",
+     *     tags={"Medications"},
+     *     summary="Chi tiết thuốc",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Thông tin thuốc"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function show(string $id)
     {
         $res = $this->svc->find($id);
         return response()->json($res['data'], $res['status']);
     }
 
-    /** POST /api/v1/medications */
+    /**
+     * @OA\Post(
+     *     path="/api/v1/medications",
+     *     tags={"Medications"},
+     *     summary="Tạo thuốc mới",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="medication_info.name", type="string", example="Paracetamol"),
+     *             @OA\Property(property="medication_info.generic_name", type="string", example="Acetaminophen"),
+     *             @OA\Property(property="medication_info.strength", type="string", example="500mg"),
+     *             @OA\Property(property="medication_info.dosage_form", type="string", example="tablet"),
+     *             @OA\Property(property="medication_info.manufacturer", type="string", example="ABC Pharma"),
+     *             @OA\Property(property="medication_info.barcode", type="string", example="1234567890123"),
+     *             @OA\Property(property="clinical_info.therapeutic_class", type="string", example="Analgesic"),
+     *             @OA\Property(property="clinical_info.indications", type="array", @OA\Items(type="string")),
+     *             @OA\Property(property="clinical_info.contraindications", type="array", @OA\Items(type="string")),
+     *             @OA\Property(property="clinical_info.side_effects", type="array", @OA\Items(type="string")),
+     *             @OA\Property(property="clinical_info.drug_interactions", type="array", @OA\Items(type="string")),
+     *             @OA\Property(property="inventory.current_stock", type="integer", example=100),
+     *             @OA\Property(property="inventory.unit_cost", type="number", example=5.50),
+     *             @OA\Property(property="inventory.expiry_date", type="string", format="date", example="2025-12-31"),
+     *             @OA\Property(property="inventory.supplier", type="string", example="Supplier ABC"),
+     *             @OA\Property(property="status", type="string", enum={"active","inactive"}, example="active")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Tạo thành công"),
+     *     @OA\Response(response=400, description="Dữ liệu không hợp lệ"),
+     *     @OA\Response(response=422, description="Lỗi validation"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function store(Request $req)
     {
         try {
@@ -89,14 +149,48 @@ class MedicationController extends Controller
         }
     }
 
-    /** PUT /api/v1/medications/{id} (cần _rev) */
+    /**
+     * @OA\Put(
+     *     path="/api/v1/medications/{id}",
+     *     tags={"Medications"},
+     *     summary="Cập nhật thuốc",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="_rev", type="string", example="1-abc123"),
+     *             @OA\Property(property="medication_info.name", type="string", example="Paracetamol"),
+     *             @OA\Property(property="inventory.current_stock", type="integer", example=150),
+     *             @OA\Property(property="status", type="string", enum={"active","inactive"})
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Cập nhật thành công"),
+     *     @OA\Response(response=400, description="Dữ liệu không hợp lệ"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=409, description="Conflict"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function update(Request $req, string $id)
     {
         $res = $this->svc->update($id, $req->all());
         return response()->json($res['data'], $res['status']);
     }
 
-    /** DELETE /api/v1/medications/{id}?rev=xxx */
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/medications/{id}",
+     *     tags={"Medications"},
+     *     summary="Xóa thuốc",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Xóa thành công"),
+     *     @OA\Response(response=400, description="Thiếu rev parameter"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=409, description="Conflict"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function destroy(Request $req, string $id)
     {
         $rev = $req->query('rev') ?? $req->input('rev');
@@ -104,7 +198,26 @@ class MedicationController extends Controller
         return response()->json($res['data'], $res['status']);
     }
 
-    /** POST /api/v1/medications/{id}/stock-increase */
+    /**
+     * @OA\Post(
+     *     path="/api/v1/medications/{id}/stock-increase",
+     *     tags={"Medications"},
+     *     summary="Tăng tồn kho thuốc",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="rev", type="string", example="1-abc123"),
+     *             @OA\Property(property="delta", type="integer", example=50, description="Số lượng tăng")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Tăng tồn kho thành công"),
+     *     @OA\Response(response=400, description="Dữ liệu không hợp lệ"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=409, description="Conflict"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function stockIncrease(Request $req, string $id)
     {
         $rev   = $req->input('rev');
@@ -113,7 +226,26 @@ class MedicationController extends Controller
         return response()->json($res['data'], $res['status']);
     }
 
-    /** POST /api/v1/medications/{id}/stock-decrease */
+    /**
+     * @OA\Post(
+     *     path="/api/v1/medications/{id}/stock-decrease",
+     *     tags={"Medications"},
+     *     summary="Giảm tồn kho thuốc",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="rev", type="string", example="1-abc123"),
+     *             @OA\Property(property="delta", type="integer", example=20, description="Số lượng giảm")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Giảm tồn kho thành công"),
+     *     @OA\Response(response=400, description="Dữ liệu không hợp lệ"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=409, description="Conflict"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function stockDecrease(Request $req, string $id)
     {
         $rev   = $req->input('rev');

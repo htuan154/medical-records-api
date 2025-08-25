@@ -3,11 +3,17 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
-use App\Services\CouchDB\PatientService;   // <-- đúng namespace
+use App\Services\CouchDB\PatientService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
+/**
+ * @OA\Tag(
+ *     name="Patients",
+ *     description="API endpoints for managing patients"
+ * )
+ */
 class PatientController extends Controller
 {
     public function __construct(private PatientService $svc) {}
@@ -20,7 +26,18 @@ class PatientController extends Controller
         ], $code);
     }
 
-    /** GET /api/v1/patients?limit=&skip=&q= */
+    /**
+     * @OA\Get(
+     *     path="/api/v1/patients",
+     *     tags={"Patients"},
+     *     summary="Danh sách bệnh nhân",
+     *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
+     *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
+     *     @OA\Parameter(name="q", in="query", @OA\Schema(type="string", description="Tìm kiếm theo tên bệnh nhân")),
+     *     @OA\Response(response=200, description="Danh sách bệnh nhân"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function index(Request $req)
     {
         try {
@@ -36,7 +53,17 @@ class PatientController extends Controller
         }
     }
 
-    /** GET /api/v1/patients/{id} */
+    /**
+     * @OA\Get(
+     *     path="/api/v1/patients/{id}",
+     *     tags={"Patients"},
+     *     summary="Chi tiết bệnh nhân",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Thông tin bệnh nhân"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function show(string $id)
     {
         try {
@@ -47,7 +74,30 @@ class PatientController extends Controller
         }
     }
 
-    /** POST /api/v1/patients */
+    /**
+     * @OA\Post(
+     *     path="/api/v1/patients",
+     *     tags={"Patients"},
+     *     summary="Tạo bệnh nhân mới",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="personal_info.full_name", type="string", example="Nguyễn Văn A"),
+     *             @OA\Property(property="personal_info.gender", type="string", example="Nam"),
+     *             @OA\Property(property="personal_info.phone", type="string", example="0123456789"),
+     *             @OA\Property(property="personal_info.birth_date", type="string", format="date", example="1990-01-01"),
+     *             @OA\Property(property="personal_info.id_number", type="string", example="123456789"),
+     *             @OA\Property(property="medical_info", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="address", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="status", type="string", enum={"active","inactive"}, example="active")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Tạo thành công"),
+     *     @OA\Response(response=400, description="Dữ liệu không hợp lệ"),
+     *     @OA\Response(response=422, description="Lỗi validation"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function store(Request $req)
     {
         try {
@@ -73,7 +123,28 @@ class PatientController extends Controller
         }
     }
 
-    /** PUT /api/v1/patients/{id} */
+    /**
+     * @OA\Put(
+     *     path="/api/v1/patients/{id}",
+     *     tags={"Patients"},
+     *     summary="Cập nhật bệnh nhân",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="_rev", type="string", example="1-abc123"),
+     *             @OA\Property(property="personal_info.full_name", type="string", example="Nguyễn Văn B"),
+     *             @OA\Property(property="personal_info.phone", type="string", example="0987654321"),
+     *             @OA\Property(property="status", type="string", enum={"active","inactive"})
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Cập nhật thành công"),
+     *     @OA\Response(response=400, description="Dữ liệu không hợp lệ"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=409, description="Conflict"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function update(Request $req, string $id)
     {
         try {
@@ -84,7 +155,20 @@ class PatientController extends Controller
         }
     }
 
-    /** DELETE /api/v1/patients/{id}?rev=xxx */
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/patients/{id}",
+     *     tags={"Patients"},
+     *     summary="Xóa bệnh nhân",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Xóa thành công"),
+     *     @OA\Response(response=400, description="Thiếu rev parameter"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=409, description="Conflict"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function destroy(Request $req, string $id)
     {
         try {

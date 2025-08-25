@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
+/**
+ * @OA\Tag(
+ *     name="Treatments",
+ *     description="API endpoints for managing treatments"
+ * )
+ */
 class TreatmentController extends Controller
 {
     public function __construct(private TreatmentService $svc) {}
@@ -21,9 +27,23 @@ class TreatmentController extends Controller
     }
 
     /**
-     * GET /api/v1/treatments
-     * Params: limit, skip, patient_id, doctor_id, medical_record_id,
-     *         status, treatment_type, medication_id, start, end (start_date)
+     * @OA\Get(
+     *     path="/api/v1/treatments",
+     *     tags={"Treatments"},
+     *     summary="Danh sách điều trị",
+     *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
+     *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
+     *     @OA\Parameter(name="patient_id", in="query", @OA\Schema(type="string", description="ID bệnh nhân")),
+     *     @OA\Parameter(name="doctor_id", in="query", @OA\Schema(type="string", description="ID bác sĩ")),
+     *     @OA\Parameter(name="medical_record_id", in="query", @OA\Schema(type="string", description="ID hồ sơ bệnh án")),
+     *     @OA\Parameter(name="status", in="query", @OA\Schema(type="string", enum={"active","completed","paused","cancelled"})),
+     *     @OA\Parameter(name="treatment_type", in="query", @OA\Schema(type="string", description="Loại điều trị")),
+     *     @OA\Parameter(name="medication_id", in="query", @OA\Schema(type="string", description="ID thuốc")),
+     *     @OA\Parameter(name="start", in="query", @OA\Schema(type="string", format="date", description="Ngày bắt đầu")),
+     *     @OA\Parameter(name="end", in="query", @OA\Schema(type="string", format="date", description="Ngày kết thúc")),
+     *     @OA\Response(response=200, description="Danh sách điều trị"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
      */
     public function index(Request $req)
     {
@@ -49,14 +69,67 @@ class TreatmentController extends Controller
         }
     }
 
-    /** GET /api/v1/treatments/{id} */
+    /**
+     * @OA\Get(
+     *     path="/api/v1/treatments/{id}",
+     *     tags={"Treatments"},
+     *     summary="Chi tiết điều trị",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Thông tin điều trị"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function show(string $id)
     {
         $res = $this->svc->find($id);
         return response()->json($res['data'], $res['status']);
     }
 
-    /** POST /api/v1/treatments */
+    /**
+     * @OA\Post(
+     *     path="/api/v1/treatments",
+     *     tags={"Treatments"},
+     *     summary="Tạo điều trị mới",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="patient_id", type="string", example="patient_123"),
+     *             @OA\Property(property="doctor_id", type="string", example="doctor_456"),
+     *             @OA\Property(property="medical_record_id", type="string", example="record_789"),
+     *             @OA\Property(
+     *                 property="treatment_info",
+     *                 type="object",
+     *                 @OA\Property(property="treatment_name", type="string", example="Điều trị cao huyết áp"),
+     *                 @OA\Property(property="start_date", type="string", format="date", example="2025-01-01"),
+     *                 @OA\Property(property="end_date", type="string", format="date", example="2025-01-30"),
+     *                 @OA\Property(property="duration_days", type="integer", example=30),
+     *                 @OA\Property(property="treatment_type", type="string", example="medication")
+     *             ),
+     *             @OA\Property(
+     *                 property="medications",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="medication_id", type="string", example="med_123"),
+     *                     @OA\Property(property="name", type="string", example="Amlodipine"),
+     *                     @OA\Property(property="dosage", type="string", example="5mg"),
+     *                     @OA\Property(property="frequency", type="string", example="1 lần/ngày"),
+     *                     @OA\Property(property="route", type="string", example="uống"),
+     *                     @OA\Property(property="instructions", type="string", example="Uống sau ăn"),
+     *                     @OA\Property(property="quantity_prescribed", type="number", example=30)
+     *                 )
+     *             ),
+     *             @OA\Property(property="monitoring", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="status", type="string", enum={"active","completed","paused","cancelled"}, example="active")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Tạo thành công"),
+     *     @OA\Response(response=400, description="Dữ liệu không hợp lệ"),
+     *     @OA\Response(response=422, description="Lỗi validation"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function store(Request $req)
     {
         try {
@@ -92,14 +165,47 @@ class TreatmentController extends Controller
         }
     }
 
-    /** PUT /api/v1/treatments/{id} (cần _rev) */
+    /**
+     * @OA\Put(
+     *     path="/api/v1/treatments/{id}",
+     *     tags={"Treatments"},
+     *     summary="Cập nhật điều trị",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="_rev", type="string", example="1-abc123"),
+     *             @OA\Property(property="treatment_info.treatment_name", type="string", example="Điều trị tiểu đường"),
+     *             @OA\Property(property="status", type="string", enum={"active","completed","paused","cancelled"})
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Cập nhật thành công"),
+     *     @OA\Response(response=400, description="Dữ liệu không hợp lệ"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=409, description="Conflict"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function update(Request $req, string $id)
     {
         $res = $this->svc->update($id, $req->all());
         return response()->json($res['data'], $res['status']);
     }
 
-    /** DELETE /api/v1/treatments/{id}?rev=xxx */
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/treatments/{id}",
+     *     tags={"Treatments"},
+     *     summary="Xóa điều trị",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Xóa thành công"),
+     *     @OA\Response(response=400, description="Thiếu rev parameter"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=409, description="Conflict"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function destroy(Request $req, string $id)
     {
         $rev = $req->query('rev') ?? $req->input('rev');

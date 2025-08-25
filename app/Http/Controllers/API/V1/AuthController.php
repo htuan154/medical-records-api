@@ -10,6 +10,12 @@ use App\Services\Auth\JwtService;
 use Illuminate\Http\Request;
 use Throwable;
 
+/**
+ * @OA\Tag(
+ *     name="Auth",
+ *     description="Authentication endpoints"
+ * )
+ */
 class AuthController extends Controller
 {
     public function __construct(
@@ -18,6 +24,41 @@ class AuthController extends Controller
         private JwtService $jwt
     ) {}
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/login",
+     *     tags={"Auth"},
+     *     summary="Đăng nhập",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="username", type="string", example="admin"),
+     *             @OA\Property(property="password", type="string", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Đăng nhập thành công",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="ok", type="boolean", example=true),
+     *             @OA\Property(property="access_token", type="string"),
+     *             @OA\Property(property="refresh_token", type="string"),
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="string"),
+     *                 @OA\Property(property="username", type="string"),
+     *                 @OA\Property(property="role_names", type="array", @OA\Items(type="string")),
+     *                 @OA\Property(property="permissions", type="array", @OA\Items(type="string")),
+     *                 @OA\Property(property="status", type="string")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Thông tin đăng nhập không đúng"),
+     *     @OA\Response(response=403, description="Tài khoản bị khóa"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
     public function login(LoginRequest $req)
     {
         try {
@@ -64,6 +105,32 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/v1/refresh",
+     *     tags={"Auth"},
+     *     summary="Refresh token",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="refresh_token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGc...")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Refresh thành công",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="ok", type="boolean", example=true),
+     *             @OA\Property(property="access_token", type="string"),
+     *             @OA\Property(property="refresh_token", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Token không hợp lệ"),
+     *     @OA\Response(response=401, description="Token hết hạn"),
+     *     @OA\Response(response=403, description="Tài khoản bị khóa"),
+     *     @OA\Response(response=404, description="User không tồn tại")
+     * )
+     */
     public function refresh(Request $req)
     {
         $refresh = (string) $req->input('refresh_token', '');
@@ -95,6 +162,23 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/me",
+     *     tags={"Auth"},
+     *     summary="Thông tin user hiện tại",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Thông tin user",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="ok", type="boolean", example=true),
+     *             @OA\Property(property="token", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function me(Request $req)
     {
         return response()->json([
