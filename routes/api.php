@@ -106,3 +106,4 @@ Route::prefix('v1')->group(function () {
         Route::delete('/staffs/{id}', [StaffController::class, 'destroy']);
     });
 });
+Route::get('/ping', fn() => response()->json(['ok' => true]));

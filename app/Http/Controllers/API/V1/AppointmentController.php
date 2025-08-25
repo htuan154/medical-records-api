@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
-use App\Services\CouchDB\AppointmentService;
+use App\Services\CouchDB\appointmentService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
-class AppointmentController extends Controller
+class appointmentController extends Controller
 {
-    public function __construct(private AppointmentService $svc) {}
+    public function __construct(private appointmentService $svc) {}
 
     private function error(Throwable $e, int $code = 500)
     {
