@@ -75,14 +75,27 @@ jobs:
           php -r "file_put_contents('.env', preg_replace('/^APP_KEY=.*/m','APP_KEY='.('base64:'.base64_encode(random_bytes(32))), file_get_contents('.env')));"
           php artisan config:clear
 
-      - name: Run Pint (report only, non-blocking)
+      - name: Run Pint (non-blocking, quiet)
         continue-on-error: true
         run: |
           if [ -f vendor/bin/pint ]; then
-            vendor/bin/pint --test || echo "::warning::Pint found style issues (non-blocking)."
-          else
-            echo "No Pint installed, skipping."
+            vendor/bin/pint --test -q || echo "::warning::Pint found style issues (non-blocking)."
           fi
+
+      - name: Wait for CouchDB
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:5984/_up >/dev/null; then
+              echo "CouchDB is up"; break
+            fi
+            sleep 1
+          done
+
+      - name: Init CouchDB system databases
+        run: |
+          for db in _users _replicator _global_changes; do
+            curl -u admin:admin123 -X PUT "http://localhost:5984/$db" || true
+          done
 
       - name: PHPUnit
         run: |
