@@ -17,6 +17,7 @@ jobs:
         env:
           COUCHDB_USER: ${{ secrets.COUCHDB_USER }}
           COUCHDB_PASSWORD: ${{ secrets.COUCHDB_PASSWORD }}
+          COUCHDB_SINGLE_NODE: "true"   # ← auto tạo system DBs, đỡ phải curl PUT
         options: >-
           --health-cmd "curl -fsS http://localhost:5984/_up || exit 1"
           --health-interval 2s
@@ -54,7 +55,7 @@ jobs:
             php artisan key:generate --force --ansi
           fi
 
-          # Các biến cho môi trường test (KHÔNG có biến email)
+          # Biến môi trường test (không có mail)
           cat >> .env <<'ENV'
           APP_ENV=testing
           APP_DEBUG=true
@@ -68,30 +69,22 @@ jobs:
           SESSION_DOMAIN=localhost
           ENV
 
-          # Bổ sung secrets/vars nếu có (an toàn khi trống)
+          # Bổ sung secrets/vars nếu có
           [[ -n "${{ secrets.COUCHDB_USER }}" ]]     && printf "COUCHDB_USERNAME=%s\n" "${{ secrets.COUCHDB_USER }}"     >> .env
           [[ -n "${{ secrets.COUCHDB_PASSWORD }}" ]] && printf "COUCHDB_PASSWORD=%s\n" "${{ secrets.COUCHDB_PASSWORD }}" >> .env
           [[ -n "${{ secrets.JWT_SECRET }}" ]]       && printf "JWT_SECRET=%s\n"       "${{ secrets.JWT_SECRET }}"       >> .env
 
-          # PHPUnit ưu tiên .env.testing
           cp .env .env.testing || true
           php artisan config:clear
 
-      - name: Wait for CouchDB & create system DBs
-        env:
-          COUCHDB_USERNAME: ${{ secrets.COUCHDB_USER }}
-          COUCHDB_PASSWORD: ${{ secrets.COUCHDB_PASSWORD }}
+      - name: Wait for CouchDB
         run: |
           for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:5984/_up > /dev/null; then
+            if curl -fsS http://127.0.0.1:5984/_up >/dev/null; then
               echo "CouchDB is up"; break
             fi
             sleep 1
           done
-          # Tạo các system DBs để/giảm cảnh báo khởi động
-          curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_users?n=1" || true
-          curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_replicator?n=1" || true
-          curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_global_changes?n=1" || true
 
       - name: Run PHPUnit
         run: |
