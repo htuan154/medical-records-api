@@ -180,3 +180,13 @@ jobs:
           code=$(curl -sS -o /dev/null -w "%{http_code}" -u "${COUCHDB_USER}:${COUCHDB_PASSWORD}" "${COUCHDB_URL}/_all_dbs")
           echo "_all_dbs HTTP=${code}"
           [[ "$code" == "200" ]] || { echo "::error::Auth failed (HTTP $code)"; exit 1; }
+
+
+      - name: Sanity check CouchDB (auth + list DBs)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS "${COUCHDB_URL}/_up" >/dev/null
+          code=$(curl -sS -o /dev/null -w "%{http_code}" -u "${COUCHDB_USER}:${COUCHDB_PASSWORD}" "${COUCHDB_URL}/_all_dbs")
+          echo "_all_dbs HTTP=$code"
+          [[ "$code" == "200" ]]
