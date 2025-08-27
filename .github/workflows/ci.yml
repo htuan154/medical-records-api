@@ -63,30 +63,43 @@ jobs:
             sleep 1
           done
 
-      - name: Bootstrap CouchDB single-node & system DBs
+      - name: Bootstrap CouchDB (idempotent & friendly logs)
         shell: bash
         run: |
           set -euo pipefail
-          base="${COUCHDB_URL}"
+          base="${COUCHDB_URL:-http://127.0.0.1:5984}"
           auth="-u ${COUCHDB_USER}:${COUCHDB_PASSWORD}"
 
-          # Idempotent: enable single node
+          echo ">> enable_single_node"
           curl -fsS $auth -X POST "$base/_cluster_setup" \
             -H "Content-Type: application/json" \
             -d "{\"action\":\"enable_single_node\",\"username\":\"$COUCHDB_USER\",\"password\":\"$COUCHDB_PASSWORD\",\"port\":5984,\"bind_address\":\"0.0.0.0\"}" || true
 
-          # Finish cluster (also idempotent)
-          curl -fsS $auth -X POST "$base/_cluster_setup" \
-            -H "Content-Type: application/json" \
-            -d '{"action":"finish_cluster"}' || true
+          echo ">> finish_cluster (201=done, 400=already finished)"
+          code=$(curl -sS $auth -o /dev/null -w "%{http_code}" -X POST "$base/_cluster_setup" \
+            -H "Content-Type: application/json" -d '{"action":"finish_cluster"}')
+          if [[ "$code" == "201" || "$code" == "400" ]]; then
+            echo "finish_cluster -> $code (OK)"
+          else
+            echo "finish_cluster -> $code (unexpected)"; exit 1
+          fi
 
-          # Ensure system DBs exist (PUT trả 201/202 nếu tạo mới, 412 nếu đã có)
-          for db in _users _replicator _global_changes; do
+          ensure_db () {
+            local db="$1"
+            local code
             code=$(curl -sS $auth -o /dev/null -w "%{http_code}" -X PUT "$base/$db?n=1")
-            echo "PUT $db -> $code"
+            case "$code" in
+              201|202) echo "Created $db" ;;
+              412)     echo "$db already exists" ;;
+              *)       echo "Unexpected HTTP $code creating $db"; exit 1 ;;
+            esac
+          }
+
+          for db in _users _replicator _global_changes; do
+            ensure_db "$db"
           done
 
-          echo "All DBs: $(curl -sS $auth "$base/_all_dbs")"
+          echo ">> all dbs:"; curl -sS $auth "$base/_all_dbs"; echo
 
       - name: (Optional) Seed application DB
         if: env.APP_DB_NAME != ''
