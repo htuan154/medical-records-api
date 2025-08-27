@@ -1,24 +1,33 @@
-name: CI - Laravel Tests
+name: CI
 
 on:
   push:
-    branches: ["**"]
+    branches: [ "**" ]
   pull_request:
 
 jobs:
   tests:
     runs-on: ubuntu-latest
 
+    # Truyền secrets xuống mọi step (QUAN TRỌNG)
+    env:
+      COUCHDB_USER: ${{ secrets.COUCHDB_USER }}
+      COUCHDB_PASSWORD: ${{ secrets.COUCHDB_PASSWORD }}
+      APP_KEY: ${{ secrets.APP_KEY }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      COUCHDB_URL: http://127.0.0.1:5984
+      # Đổi tên DB ứng dụng nếu bạn muốn seed tự động
+      APP_DB_NAME: medical-records
+
     services:
       couchdb:
-        image: couchdb:3
+        image: couchdb:3.5
         ports:
           - 5984:5984
         env:
-          # Nếu bạn muốn bật auth trong CI, giữ 2 dòng này và đảm bảo secrets là GIÁ TRỊ THẬT
           COUCHDB_USER: ${{ secrets.COUCHDB_USER }}
           COUCHDB_PASSWORD: ${{ secrets.COUCHDB_PASSWORD }}
-          COUCHDB_SINGLE_NODE: "true"   # single-node để tự init cluster nội bộ
+          COUCHDB_SINGLE_NODE: "true"
         options: >-
           --health-cmd "curl -fsS http://localhost:5984/_up || exit 1"
           --health-interval 2s
@@ -29,101 +38,62 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, intl, json, pdo, bcmath
-          coverage: none
+      # (Tuỳ chọn) Cài PHP/Laravel hoặc Node tuỳ dự án của bạn
+      # - name: Setup PHP
+      #   uses: shivammathur/setup-php@v2
+      #   with:
+      #     php-version: "8.2"
+      # - run: composer install --no-interaction --prefer-dist
 
-      - name: Install Composer deps
-        run: composer install --no-interaction --prefer-dist
+      # - name: Setup Node
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: "20"
+      # - run: npm ci
 
-      - name: Prepare .env for tests
+      - name: Wait for CouchDB healthy
         shell: bash
         run: |
           set -euo pipefail
-          cp .env.example .env 2>/dev/null || true
-
-          # APP_KEY: dùng secrets nếu có, nếu không thì generate
-          if [[ -n "${{ secrets.APP_KEY }}" ]]; then
-            if grep -q '^APP_KEY=' .env; then
-              sed -i "s|^APP_KEY=.*|APP_KEY=${{ secrets.APP_KEY }}|" .env
-            else
-              echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-            fi
-          else
-            php artisan key:generate --force --ansi
-          fi
-
-          # Biến môi trường cho test (không cấu hình email)
-          cat >> .env <<'ENV'
-          APP_ENV=testing
-          APP_DEBUG=true
-          APP_URL=http://localhost:9000
-          COUCHDB_HOST=127.0.0.1
-          COUCHDB_PORT=5984
-          QUEUE_CONNECTION=sync
-          SESSION_DRIVER=file
-          SESSION_LIFETIME=120
-          SANCTUM_STATEFUL_DOMAINS=localhost,localhost:4200,localhost:9000
-          SESSION_DOMAIN=localhost
-          ENV
-
-          # Nếu bạn dùng auth cho CouchDB thì đẩy vào .env (chỉ khi secrets có giá trị)
-          [[ -n "${{ secrets.COUCHDB_USER }}" ]]     && printf "COUCHDB_USERNAME=%s\n" "${{ secrets.COUCHDB_USER }}"     >> .env
-          [[ -n "${{ secrets.COUCHDB_PASSWORD }}" ]] && printf "COUCHDB_PASSWORD=%s\n" "${{ secrets.COUCHDB_PASSWORD }}" >> .env
-          [[ -n "${{ secrets.JWT_SECRET }}" ]]       && printf "JWT_SECRET=%s\n"       "${{ secrets.JWT_SECRET }}"       >> .env
-
-          cp .env .env.testing || true
-          php artisan config:clear
-
-      - name: Wait for CouchDB
-        shell: bash
-        run: |
-          set -euo pipefail
-          base="http://127.0.0.1:5984"
           for i in {1..60}; do
-            if curl -fsS "$base/_up" >/dev/null; then
+            if curl -fsS "${COUCHDB_URL}/_up" >/dev/null; then
               echo "CouchDB is up"
-              exit 0
+              break
             fi
             sleep 1
           done
-          echo "CouchDB did not become healthy in time" >&2
-          exit 1
 
-      - name: Run PHPUnit
-        run: |
-          if [ -f vendor/bin/phpunit ] && git ls-files "tests/**/*.php" | grep -q .; then
-            vendor/bin/phpunit --colors=always
-          else
-            echo "No test files, skipping."
-          fi
-
-      - name: Create CouchDB system databases (once)
+      - name: Bootstrap CouchDB single-node & system DBs
         shell: bash
         run: |
           set -euo pipefail
-          base="http://127.0.0.1:5984"
+          base="${COUCHDB_URL}"
+          auth="-u ${COUCHDB_USER}:${COUCHDB_PASSWORD}"
 
-          # Dùng auth nếu có cung cấp; nếu không thì để admin-party (nếu bạn tắt auth trong CI)
-          AUTH=()
-          if [[ -n "${COUCHDB_USER:-}" && -n "${COUCHDB_PASSWORD:-}" ]]; then
-            AUTH=(-u "${COUCHDB_USER}:${COUCHDB_PASSWORD}")
-          fi
+          # Idempotent: enable single node
+          curl -fsS $auth -X POST "$base/_cluster_setup" \
+            -H "Content-Type: application/json" \
+            -d "{\"action\":\"enable_single_node\",\"username\":\"$COUCHDB_USER\",\"password\":\"$COUCHDB_PASSWORD\",\"port\":5984,\"bind_address\":\"0.0.0.0\"}" || true
 
-          create_db() {
-            local db="$1"
-            # 201/202: created, 412: already exists — đều là OK.
-            code=$(curl -sS -o /dev/null -w "%{http_code}" "${AUTH[@]}" -X PUT "$base/$db?n=1" || true)
-            case "$code" in
-              201|202|412) echo "OK: $db ($code)";;
-              401|403)     echo "WARN: $db ($code) — sai creds hoặc user đang bị lock, bỏ qua."; ;;
-              *)           echo "WARN: $db trả mã $code, vẫn tiếp tục."; ;;
-            esac
-          }
+          # Finish cluster (also idempotent)
+          curl -fsS $auth -X POST "$base/_cluster_setup" \
+            -H "Content-Type: application/json" \
+            -d '{"action":"finish_cluster"}' || true
 
+          # Ensure system DBs exist (PUT trả 201/202 nếu tạo mới, 412 nếu đã có)
           for db in _users _replicator _global_changes; do
-            create_db "$db"
+            code=$(curl -sS $auth -o /dev/null -w "%{http_code}" -X PUT "$base/$db?n=1")
+            echo "PUT $db -> $code"
           done
+
+          echo "All DBs: $(curl -sS $auth "$base/_all_dbs")"
+
+      - name: (Optional) Seed application DB
+        if: env.APP_DB_NAME != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${COUCHDB_URL}"
+          auth="-u ${COUCHDB_USER}:${COUCHDB_PASSWORD}"
+          code=$(curl -sS $auth -o /dev/null -w "%{http_code}" -X PUT "$base/${APP_DB_NAME}")
+          echo "PUT ${APP_DB_NAME} -> $code"
