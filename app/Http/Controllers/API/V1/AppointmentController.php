@@ -7,14 +7,14 @@ use App\Services\CouchDB\appointmentService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
-
+    
 /**
  * @OA\Tag(
  *     name="Appointments",
  *     description="API endpoints for managing appointments"
  * )
  */
-class appointmentController extends Controller
+class AppointmentController extends Controller
 {
     public function __construct(private appointmentService $svc) {}
 
