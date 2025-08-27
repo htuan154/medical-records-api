@@ -1,4 +1,4 @@
-name: CI - CouchDB + Node
+name: CI - CouchDB (no Node by default)
 
 on:
   push:
@@ -10,10 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      # --- Feature flags ---
+      ENABLE_NODE: 'false' # đổi thành 'true' nếu muốn bật Node steps
+
+      # --- Secrets & config ---
       COUCHDB_USER: ${{ secrets.COUCHDB_USER }}
       COUCHDB_PASSWORD: ${{ secrets.COUCHDB_PASSWORD }}
       APP_KEY: ${{ secrets.APP_KEY }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      # --- CouchDB ---
       COUCHDB_URL: http://127.0.0.1:5984
       APP_DB_NAME: medical-records
 
@@ -124,27 +130,27 @@ jobs:
             esac
           fi
 
-      # ---------- NodeJS steps (auto-fallback if no lockfile) ----------
+      # ----------------- NodeJS (disabled by default) -----------------
       - name: Setup Node
-        if: ${{ hashFiles('**/package.json') != '' }}
+        if: ${{ env.ENABLE_NODE == 'true' && hashFiles('package.json') != '' }}
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
 
       - name: Install deps (npm ci if lockfile)
-        if: ${{ hashFiles('**/package.json') != '' && hashFiles('**/package-lock.json') != '' }}
+        if: ${{ env.ENABLE_NODE == 'true' && hashFiles('package.json') != '' && hashFiles('package-lock.json') != '' }}
         run: npm ci
 
       - name: Install deps (npm install fallback)
-        if: ${{ hashFiles('**/package.json') != '' && hashFiles('**/package-lock.json') == '' }}
+        if: ${{ env.ENABLE_NODE == 'true' && hashFiles('package.json') != '' && hashFiles('package-lock.json') == '' }}
         run: npm install
 
       - name: Run tests (npm)
-        if: ${{ hashFiles('**/package.json') != '' }}
+        if: ${{ env.ENABLE_NODE == 'true' && hashFiles('package.json') != '' }}
         run: npm test --if-present
 
-      # ---------- (Optional) Laravel ----------
+      # ----------------- (Optional) Laravel -----------------
       # - name: Setup PHP
       #   uses: shivammathur/setup-php@v2
       #   with:
