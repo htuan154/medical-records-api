@@ -161,3 +161,22 @@ jobs:
           else
             echo "No couchdb container found"
           fi
+      - name: Verify required secrets exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          for v in COUCHDB_USER COUCHDB_PASSWORD; do
+            if [[ -z "${!v:-}" ]]; then
+              echo "::error::$v is empty or undefined"
+              exit 1
+            fi
+          done
+
+      - name: Show CouchDB auth + health (debug)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS "${COUCHDB_URL}/_up" >/dev/null
+          code=$(curl -sS -o /dev/null -w "%{http_code}" -u "${COUCHDB_USER}:${COUCHDB_PASSWORD}" "${COUCHDB_URL}/_all_dbs")
+          echo "_all_dbs HTTP=${code}"
+          [[ "$code" == "200" ]] || { echo "::error::Auth failed (HTTP $code)"; exit 1; }
