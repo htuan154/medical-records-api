@@ -15,9 +15,10 @@ jobs:
         ports:
           - 5984:5984
         env:
+          # Nếu bạn muốn bật auth trong CI, giữ 2 dòng này và đảm bảo secrets là GIÁ TRỊ THẬT
           COUCHDB_USER: ${{ secrets.COUCHDB_USER }}
           COUCHDB_PASSWORD: ${{ secrets.COUCHDB_PASSWORD }}
-          COUCHDB_SINGLE_NODE: "true"   # giúp tự init, nhưng ta vẫn init thủ công cho chắc
+          COUCHDB_SINGLE_NODE: "true"   # single-node để tự init cluster nội bộ
         options: >-
           --health-cmd "curl -fsS http://localhost:5984/_up || exit 1"
           --health-interval 2s
@@ -44,7 +45,7 @@ jobs:
           set -euo pipefail
           cp .env.example .env 2>/dev/null || true
 
-          # APP_KEY: ưu tiên secrets, nếu thiếu thì generate
+          # APP_KEY: dùng secrets nếu có, nếu không thì generate
           if [[ -n "${{ secrets.APP_KEY }}" ]]; then
             if grep -q '^APP_KEY=' .env; then
               sed -i "s|^APP_KEY=.*|APP_KEY=${{ secrets.APP_KEY }}|" .env
@@ -55,7 +56,7 @@ jobs:
             php artisan key:generate --force --ansi
           fi
 
-          # Biến môi trường test (không có email)
+          # Biến môi trường cho test (không cấu hình email)
           cat >> .env <<'ENV'
           APP_ENV=testing
           APP_DEBUG=true
@@ -69,7 +70,7 @@ jobs:
           SESSION_DOMAIN=localhost
           ENV
 
-          # Bổ sung secrets nếu có
+          # Nếu bạn dùng auth cho CouchDB thì đẩy vào .env (chỉ khi secrets có giá trị)
           [[ -n "${{ secrets.COUCHDB_USER }}" ]]     && printf "COUCHDB_USERNAME=%s\n" "${{ secrets.COUCHDB_USER }}"     >> .env
           [[ -n "${{ secrets.COUCHDB_PASSWORD }}" ]] && printf "COUCHDB_PASSWORD=%s\n" "${{ secrets.COUCHDB_PASSWORD }}" >> .env
           [[ -n "${{ secrets.JWT_SECRET }}" ]]       && printf "JWT_SECRET=%s\n"       "${{ secrets.JWT_SECRET }}"       >> .env
@@ -77,35 +78,20 @@ jobs:
           cp .env .env.testing || true
           php artisan config:clear
 
-      - name: Wait & init CouchDB system DBs  # <-- CHỈ 1 run: cho cả 2 việc
-        env:
-          CDB_USER: ${{ secrets.COUCHDB_USER }}
-          CDB_PASS: ${{ secrets.COUCHDB_PASSWORD }}
+      - name: Wait for CouchDB
         shell: bash
         run: |
           set -euo pipefail
           base="http://127.0.0.1:5984"
-
-          # Đợi service lên
           for i in {1..60}; do
             if curl -fsS "$base/_up" >/dev/null; then
-              echo "CouchDB is up"; break
+              echo "CouchDB is up"
+              exit 0
             fi
             sleep 1
           done
-
-          # Đợi đăng nhập admin OK (tránh 401)
-          for i in {1..60}; do
-            if curl -fsS -u "$CDB_USER:$CDB_PASS" "$base/_all_dbs" >/dev/null; then
-              echo "Auth OK"; break
-            fi
-            sleep 1
-          done
-
-          # Tạo 3 system DBs (idempotent)
-          for db in _users _replicator _global_changes; do
-            curl -fsS -u "$CDB_USER:$CDB_PASS" -X PUT "$base/$db?n=1" || true
-          done
+          echo "CouchDB did not become healthy in time" >&2
+          exit 1
 
       - name: Run PHPUnit
         run: |
