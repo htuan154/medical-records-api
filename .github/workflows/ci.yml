@@ -46,18 +46,33 @@ jobs:
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      # Thay step "Prepare .env (CI)" trong .github/workflows/ci.yml bằng:
       - name: Prepare .env (CI)
         run: |
-          cp .env.example .env || true
-          echo "APP_ENV=testing" >> .env
-          echo "APP_DEBUG=true" >> .env
-          echo "APP_URL=http://localhost:9000" >> .env
-          echo "COUCHDB_HOST=localhost" >> .env
-          echo "COUCHDB_PORT=5984" >> .env
-          echo 'COUCHDB_USERNAME="admin"' >> .env
-          echo 'COUCHDB_PASSWORD="admin123"' >> .env
-          echo "QUEUE_CONNECTION=sync" >> .env
-          php -r "file_put_contents('.env', str_replace('APP_KEY=', 'APP_KEY='.(\$k='base64:'.base64_encode(random_bytes(32))).\"\n\", file_get_contents('.env')));"
+          rm -f .env
+          cat > .env <<'EOF'
+          APP_NAME="Medical Records API"
+          APP_ENV=testing
+          APP_DEBUG=true
+          APP_URL=http://localhost:9000
+          APP_KEY=
+          LOG_CHANNEL=stack
+
+          # CouchDB service trong CI dùng localhost
+          COUCHDB_HOST=localhost
+          COUCHDB_PORT=5984
+          COUCHDB_USERNAME="admin"
+          COUCHDB_PASSWORD="admin123"
+
+          # Để CI chạy không cần DB quan hệ
+          QUEUE_CONNECTION=sync
+          CACHE_DRIVER=array
+          SESSION_DRIVER=array
+          BROADCAST_DRIVER=log
+          MAIL_MAILER=log
+          EOF
+
+          php -r "file_put_contents('.env', preg_replace('/^APP_KEY=.*/m','APP_KEY='.('base64:'.base64_encode(random_bytes(32))), file_get_contents('.env')));"
           php artisan config:clear
 
       - name: Run Pint (optional)
