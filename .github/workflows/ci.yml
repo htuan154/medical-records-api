@@ -2,7 +2,7 @@ name: CI - Laravel Tests
 
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
   pull_request:
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
         env:
           COUCHDB_USER: ${{ secrets.COUCHDB_USER }}
           COUCHDB_PASSWORD: ${{ secrets.COUCHDB_PASSWORD }}
-          COUCHDB_SINGLE_NODE: "true"   # ← auto tạo system DBs, đỡ phải curl PUT
+          COUCHDB_SINGLE_NODE: "true"   # giúp tự init, nhưng ta vẫn init thủ công cho chắc
         options: >-
           --health-cmd "curl -fsS http://localhost:5984/_up || exit 1"
           --health-interval 2s
@@ -55,7 +55,7 @@ jobs:
             php artisan key:generate --force --ansi
           fi
 
-          # Biến môi trường test (không có mail)
+          # Biến môi trường test (không có email)
           cat >> .env <<'ENV'
           APP_ENV=testing
           APP_DEBUG=true
@@ -69,7 +69,7 @@ jobs:
           SESSION_DOMAIN=localhost
           ENV
 
-          # Bổ sung secrets/vars nếu có
+          # Bổ sung secrets nếu có
           [[ -n "${{ secrets.COUCHDB_USER }}" ]]     && printf "COUCHDB_USERNAME=%s\n" "${{ secrets.COUCHDB_USER }}"     >> .env
           [[ -n "${{ secrets.COUCHDB_PASSWORD }}" ]] && printf "COUCHDB_PASSWORD=%s\n" "${{ secrets.COUCHDB_PASSWORD }}" >> .env
           [[ -n "${{ secrets.JWT_SECRET }}" ]]       && printf "JWT_SECRET=%s\n"       "${{ secrets.JWT_SECRET }}"       >> .env
@@ -77,23 +77,7 @@ jobs:
           cp .env .env.testing || true
           php artisan config:clear
 
-      - name: Wait for CouchDB
-        run: |
-          for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:5984/_up >/dev/null; then
-              echo "CouchDB is up"; break
-            fi
-            sleep 1
-          done
-
-      - name: Run PHPUnit
-        run: |
-          if [ -f vendor/bin/phpunit ] && git ls-files "tests/**/*.php" | grep -q .; then
-            vendor/bin/phpunit --colors=always
-          else
-            echo "No test files, skipping."
-          fi
-            - name: Init CouchDB system DBs
+      - name: Wait & init CouchDB system DBs  # <-- CHỈ 1 run: cho cả 2 việc
         env:
           CDB_USER: ${{ secrets.COUCHDB_USER }}
           CDB_PASS: ${{ secrets.COUCHDB_PASSWORD }}
@@ -102,7 +86,15 @@ jobs:
           set -euo pipefail
           base="http://127.0.0.1:5984"
 
-          # Đợi tới khi đăng nhập admin được (tránh 401)
+          # Đợi service lên
+          for i in {1..60}; do
+            if curl -fsS "$base/_up" >/dev/null; then
+              echo "CouchDB is up"; break
+            fi
+            sleep 1
+          done
+
+          # Đợi đăng nhập admin OK (tránh 401)
           for i in {1..60}; do
             if curl -fsS -u "$CDB_USER:$CDB_PASS" "$base/_all_dbs" >/dev/null; then
               echo "Auth OK"; break
@@ -114,3 +106,11 @@ jobs:
           for db in _users _replicator _global_changes; do
             curl -fsS -u "$CDB_USER:$CDB_PASS" -X PUT "$base/$db?n=1" || true
           done
+
+      - name: Run PHPUnit
+        run: |
+          if [ -f vendor/bin/phpunit ] && git ls-files "tests/**/*.php" | grep -q .; then
+            vendor/bin/phpunit --colors=always
+          else
+            echo "No test files, skipping."
+          fi
