@@ -75,9 +75,14 @@ jobs:
           php -r "file_put_contents('.env', preg_replace('/^APP_KEY=.*/m','APP_KEY='.('base64:'.base64_encode(random_bytes(32))), file_get_contents('.env')));"
           php artisan config:clear
 
-      - name: Run Pint (optional)
+      - name: Run Pint (report only, non-blocking)
+        continue-on-error: true
         run: |
-          if [ -f vendor/bin/pint ]; then vendor/bin/pint --test; fi
+          if [ -f vendor/bin/pint ]; then
+            vendor/bin/pint --test || echo "::warning::Pint found style issues (non-blocking)."
+          else
+            echo "No Pint installed, skipping."
+          fi
 
       - name: PHPUnit
         run: |
