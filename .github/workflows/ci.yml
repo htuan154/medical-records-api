@@ -1,7 +1,9 @@
-name: CI
+name: CI - Laravel Tests
+
 on:
-  push: { branches: [ main, develop ] }
-  pull_request: { branches: [ main, develop ] }
+  push:
+    branches: [ "**" ]
+  pull_request:
 
 jobs:
   tests:
@@ -10,111 +12,101 @@ jobs:
     services:
       couchdb:
         image: couchdb:3
-        ports: [ "5984:5984" ]
+        ports:
+          - 5984:5984
         env:
-          COUCHDB_USER: admin
-          COUCHDB_PASSWORD: admin123
+          COUCHDB_USER: ${{ secrets.COUCHDB_USER }}
+          COUCHDB_PASSWORD: ${{ secrets.COUCHDB_PASSWORD }}
         options: >-
-          --health-cmd="curl -fsS http://localhost:5984/_up || exit 1"
-          --health-interval=5s
-          --health-timeout=3s
-          --health-retries=40
+          --health-cmd "curl -fsS http://localhost:5984/_up || exit 1"
+          --health-interval 2s
+          --health-timeout 2s
+          --health-retries 60
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: shivammathur/setup-php@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, intl, zip, gd, bcmath, curl
-          tools: composer:v2
+          extensions: mbstring, intl, json, pdo, bcmath
           coverage: none
 
-      - uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: composer-
+      - name: Install Composer deps
+        run: composer install --no-interaction --prefer-dist
 
-      # 1) Tạo .env cho CI (KHÔNG copy .env.example)
-      - name: Prepare .env (CI)
+      - name: Prepare .env for tests
         run: |
-          set -e
-          rm -f .env
-          {
-            echo 'APP_NAME="Medical Records API"'
-            echo 'APP_ENV=testing'
-            echo 'APP_DEBUG=true'
-            echo 'APP_URL=http://localhost:9000'
-            echo 'LOG_CHANNEL=stack'
+          cp .env.example .env 2>/dev/null || true
 
-            # CouchDB in GitHub Actions service
-            echo 'COUCHDB_HOST=couchdb'
-            echo 'COUCHDB_PORT=5984'
-            echo "COUCHDB_USERNAME=${CI_COUCH_USER}"
-            echo "COUCHDB_PASSWORD=${CI_COUCH_PASS}"
-
-            echo 'QUEUE_CONNECTION=sync'
-            echo 'CACHE_DRIVER=array'
-            echo 'SESSION_DRIVER=array'
-            echo 'BROADCAST_DRIVER=log'
-            echo 'MAIL_MAILER=log'
-          } > .env
-
-          php artisan key:generate --force
-
-      - name: Debug .env being used
-        run: |
-          echo "---- .env (first lines) ----"
-          head -n 20 .env || true
-
-      # 2) Chờ CouchDB & init single-node
-      - name: Wait & init CouchDB
-        run: |
-          for i in {1..60}; do
-            if curl -fsS http://localhost:5984/_up >/dev/null; then
-              echo "CouchDB is up"; break
-            fi; sleep 1
-          done
-          curl -fsS -u admin:admin123 -X PUT http://localhost:5984/_node/_local/_config/cluster/n -d '"1"'
-          for db in _users _replicator _global_changes; do
-            curl -fsS -u admin:admin123 -X PUT "http://localhost:5984/$db?n=1" || true
-          done
-
-      # 3) Cài composer nhưng KHÔNG chạy scripts (tránh artisan chạy sớm)
-      - name: Install Dependencies (no scripts)
-        run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
-
-      # 4) Bây giờ artisan mới an toàn
-      - name: Discover packages & clear caches
-        run: |
-          php artisan package:discover --ansi || true
-          php artisan config:clear || true
-          php artisan cache:clear || true
-
-      # 5) Pint non-blocking
-      - name: Run Pint (non-blocking, quiet)
-        continue-on-error: true
-        run: |
-          if [ -f vendor/bin/pint ]; then
-            vendor/bin/pint --test -q || echo "::warning::Pint found style issues (non-blocking)."
+          # APP_KEY: ưu tiên lấy từ secret, nếu không có thì generate
+          if [ -n "${{ secrets.APP_KEY }}" ]; then
+            sed -i "s|^APP_KEY=.*|APP_KEY=${{ secrets.APP_KEY }}|" .env || echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
+          else
+            php artisan key:generate --force --ansi
           fi
 
-      # 6) PHPUnit: chỉ chạy khi thật sự có file test *.php
-      - name: PHPUnit (smart-skip)
+          # Các biến môi trường cho testing
+          {
+            echo "APP_ENV=testing"
+            echo "APP_DEBUG=true"
+            echo "APP_URL=http://localhost:9000"
+
+            # CouchDB trên GitHub Actions truy cập qua localhost
+            echo "COUCHDB_HOST=127.0.0.1"
+            echo "COUCHDB_PORT=${{ vars.COUCHDB_PORT || '5984' }}"
+            echo "COUCHDB_USERNAME=${{ secrets.COUCHDB_USER }}"
+            echo "COUCHDB_PASSWORD=${{ secrets.COUCHDB_PASSWORD }}"
+            echo "COUCHDB_DATABASE_PREFIX="
+
+            # JWT
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}"
+            echo "JWT_ALGO=${{ vars.JWT_ALGO || 'HS256' }}"
+            echo "JWT_TTL=${{ vars.JWT_TTL || '1440' }}"
+
+            # Session/Queue
+            echo "QUEUE_CONNECTION=${{ vars.QUEUE_CONNECTION || 'sync' }}"
+            echo "SESSION_DRIVER=${{ vars.SESSION_DRIVER || 'file' }}"
+            echo "SESSION_LIFETIME=${{ vars.SESSION_LIFETIME || '120' }}"
+
+            # Sanctum
+            echo "SANCTUM_STATEFUL_DOMAINS=${{ vars.SANCTUM_STATEFUL_DOMAINS || 'localhost,localhost:4200,localhost:9000' }}"
+            echo "SESSION_DOMAIN=${{ vars.SESSION_DOMAIN || 'localhost' }}"
+
+            # Mail (nếu cần)
+            echo "MAIL_MAILER=${{ vars.MAIL_MAILER || 'smtp' }}"
+            echo "MAIL_HOST=${{ vars.MAIL_HOST || 'smtp.gmail.com' }}"
+            echo "MAIL_PORT=${{ vars.MAIL_PORT || '587' }}"
+            echo "MAIL_ENCRYPTION=${{ vars.MAIL_ENCRYPTION || 'tls' }}"
+            [ -n "${{ secrets.MAIL_USERNAME }}" ] && echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}"
+            [ -n "${{ secrets.MAIL_PASSWORD }}" ] && echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}"
+            [ -n "${{ vars.MAIL_FROM_ADDRESS }}" ] && echo "MAIL_FROM_ADDRESS=${{ vars.MAIL_FROM_ADDRESS }}"
+            echo "MAIL_FROM_NAME=Medical Records API"
+          } >> .env
+
+          # PHPUnit ưu tiên .env.testing
+          cp .env .env.testing || true
+          php artisan config:clear
+
+      - name: Wait for CouchDB & create system DBs
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:5984/_up > /dev/null; then
+              echo "CouchDB is up"; break
+            fi
+            sleep 1
+          done
+          # Tạo _users để tránh warning khi mới khởi động
+          curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_users?n=1" || true
+          curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_replicator?n=1" || true
+          curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_global_changes?n=1" || true
+
+      - name: Run PHPUnit
         run: |
           if [ -f vendor/bin/phpunit ] && git ls-files "tests/**/*.php" | grep -q .; then
             vendor/bin/phpunit --colors=always
           else
             echo "No test files, skipping."
-          fi
-
-      # 7) Swagger non-blocking
-      - name: Generate Swagger (non-blocking)
-        continue-on-error: true
-        run: |
-          if [ -f artisan ] && php -r "exit((int)!class_exists('L5Swagger\\L5SwaggerServiceProvider'));" ; then
-            php artisan l5-swagger:generate || echo "Swagger failed (non-blocking)"
-          else
-            echo "L5-Swagger not installed or artisan missing, skipping."
           fi
