@@ -10,11 +10,11 @@ return [
 
             'routes' => [
                 'api' => 'api/documentation',
-                'docs' => 'api/docs',              // <-- THÊM DÒNG NÀY
+                'docs' => 'api/docs',
                 'oauth2_callback' => 'api/oauth2-callback',
                 'middleware' => [
                 'api' => [],
-                'docs' => [],                              // để trống, tránh 403
+                'docs' => [],
                 'asset' => [],
                 'oauth2_callback' => [],
                 ],
