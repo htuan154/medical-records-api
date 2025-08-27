@@ -1,15 +1,11 @@
 name: CI
-
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+  push: { branches: [ main, develop ] }
+  pull_request: { branches: [ main, develop ] }
 
 jobs:
   tests:
     runs-on: ubuntu-latest
-
     services:
       couchdb:
         image: couchdb:3
@@ -24,19 +20,16 @@ jobs:
           --health-retries=40
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, intl, zip, gd, bcmath, curl
           tools: composer:v2
           coverage: none
 
-      - name: Cache Composer
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: vendor
           key: composer-${{ hashFiles('**/composer.lock') }}
@@ -45,29 +38,21 @@ jobs:
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      # Chờ CouchDB thật sự up
       - name: Wait for CouchDB
         run: |
           for i in {1..60}; do
             if curl -fsS http://localhost:5984/_up >/dev/null; then
               echo "CouchDB is up"; break
-            fi
-            sleep 1
+            fi; sleep 1
           done
 
-      # Cấu hình single-node: đặt cluster/n = 1 (mặc định là 3)
-      - name: Configure CouchDB single-node
+      - name: Configure CouchDB single-node + init system DBs
         run: |
           curl -fsS -u admin:admin123 -X PUT http://localhost:5984/_node/_local/_config/cluster/n -d '"1"'
-
-      # Tạo system DB với n=1 để khỏi warning
-      - name: Init CouchDB system databases
-        run: |
           for db in _users _replicator _global_changes; do
             curl -fsS -u admin:admin123 -X PUT "http://localhost:5984/$db?n=1" || true
           done
 
-      # .env riêng cho CI (đừng copy .env.example để tránh ${...})
       - name: Prepare .env (CI)
         run: |
           rm -f .env
@@ -78,12 +63,10 @@ jobs:
           APP_URL=http://localhost:9000
           APP_KEY=
           LOG_CHANNEL=stack
-
           COUCHDB_HOST=localhost
           COUCHDB_PORT=5984
           COUCHDB_USERNAME="admin"
           COUCHDB_PASSWORD="admin123"
-
           QUEUE_CONNECTION=sync
           CACHE_DRIVER=array
           SESSION_DRIVER=array
@@ -93,7 +76,6 @@ jobs:
           php -r "file_put_contents('.env', preg_replace('/^APP_KEY=.*/m','APP_KEY='.('base64:'.base64_encode(random_bytes(32))), file_get_contents('.env')));"
           php artisan config:clear
 
-      # Pint: chỉ cảnh báo, không chặn CI
       - name: Run Pint (non-blocking, quiet)
         continue-on-error: true
         run: |
@@ -101,8 +83,7 @@ jobs:
             vendor/bin/pint --test -q || echo "::warning::Pint found style issues (non-blocking)."
           fi
 
-      # PHPUnit: skip nếu không có tests
-      - name: PHPUnit
+      - name: PHPUnit (skip if none)
         run: |
           if [ -d tests ] && [ -f vendor/bin/phpunit ]; then
             vendor/bin/phpunit --colors=always
@@ -110,8 +91,11 @@ jobs:
             echo "No tests folder, skipping."
           fi
 
-      # Swagger: non-blocking để không chặn build/deploy
-      - name: Generate Swagger (non-blocking)
+      - name: Generate Swagger (non-blocking, only if installed)
         continue-on-error: true
         run: |
-          if [ -f artisan ]; then php artisan l5-swagger:generate || echo "Swagger failed (non-blocking)"; fi
+          if [ -f artisan ] && php -r "exit((int)!class_exists('L5Swagger\\L5SwaggerServiceProvider'));" ; then
+            php artisan l5-swagger:generate || echo "Swagger failed (non-blocking)"
+          else
+            echo "L5-Swagger not installed or artisan missing, skipping."
+          fi
