@@ -100,3 +100,29 @@ jobs:
           else
             echo "No test files, skipping."
           fi
+            - name: Create CouchDB system databases (once)
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="http://127.0.0.1:5984"
+
+          # Dùng auth nếu có cung cấp; nếu không thì để admin-party (nếu bạn tắt auth trong CI)
+          AUTH=()
+          if [[ -n "${COUCHDB_USER:-}" && -n "${COUCHDB_PASSWORD:-}" ]]; then
+            AUTH=(-u "${COUCHDB_USER}:${COUCHDB_PASSWORD}")
+          fi
+
+          create_db() {
+            local db="$1"
+            # 201/202: created, 412: already exists — đều là OK.
+            code=$(curl -sS -o /dev/null -w "%{http_code}" "${AUTH[@]}" -X PUT "$base/$db?n=1" || true)
+            case "$code" in
+              201|202|412) echo "OK: $db ($code)";;
+              401|403)     echo "WARN: $db ($code) — sai creds hoặc user đang bị lock, bỏ qua."; ;;
+              *)           echo "WARN: $db trả mã $code, vẫn tiếp tục."; ;;
+            esac
+          }
+
+          for db in _users _replicator _global_changes; do
+            create_db "$db"
+          done
