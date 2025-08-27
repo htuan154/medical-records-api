@@ -105,5 +105,11 @@ Route::prefix('v1')->group(function () {
         Route::put('/staffs/{id}',  [StaffController::class, 'update']);
         Route::delete('/staffs/{id}', [StaffController::class, 'destroy']);
     });
+    Route::get('/docs', fn () => redirect('/api/documentation'));
 });
 Route::get('/ping', fn() => response()->json(['ok' => true]));
+Route::fallback(function () {
+    return response()->json([
+        'message' => 'Route not found.'
+    ], 404);
+});
