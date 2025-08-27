@@ -38,60 +38,60 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
       - name: Prepare .env for tests
-    run: |
-      cp .env.example .env 2>/dev/null || true
+        run: |
+          cp .env.example .env 2>/dev/null || true
 
-      if [ -n "${{ secrets.APP_KEY }}" ]; then
-        sed -i "s|^APP_KEY=.*|APP_KEY=${{ secrets.APP_KEY }}|" .env || echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-      else
-        php artisan key:generate --force --ansi
-      fi
+          if [ -n "${{ secrets.APP_KEY }}" ]; then
+            sed -i "s|^APP_KEY=.*|APP_KEY=${{ secrets.APP_KEY }}|" .env || echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
+          else
+            php artisan key:generate --force --ansi
+          fi
 
-      {
-        echo "APP_ENV=testing"
-        echo "APP_DEBUG=true"
-        echo "APP_URL=http://localhost:9000"
-        echo "COUCHDB_HOST=127.0.0.1"
-        echo "COUCHDB_PORT=${{ vars.COUCHDB_PORT || '5984' }}"
-        echo "COUCHDB_USERNAME=${{ secrets.COUCHDB_USER }}"
-        echo "COUCHDB_PASSWORD=${{ secrets.COUCHDB_PASSWORD }}"
-        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}"
-        echo "JWT_ALGO=${{ vars.JWT_ALGO || 'HS256' }}"
-        echo "JWT_TTL=${{ vars.JWT_TTL || '1440' }}"
-        echo "QUEUE_CONNECTION=${{ vars.QUEUE_CONNECTION || 'sync' }}"
-        echo "SESSION_DRIVER=${{ vars.SESSION_DRIVER || 'file' }}"
-        echo "SESSION_LIFETIME=${{ vars.SESSION_LIFETIME || '120' }}"
-        echo "SANCTUM_STATEFUL_DOMAINS=${{ vars.SANCTUM_STATEFUL_DOMAINS || 'localhost,localhost:4200,localhost:9000' }}"
-        echo "SESSION_DOMAIN=${{ vars.SESSION_DOMAIN || 'localhost' }}"
-        # GIỮ LẠI nếu thực sự muốn override; NHỚ bọc quote:
-        echo 'MAIL_FROM_NAME="Medical Records API"'
-      } >> .env
+          {
+            echo "APP_ENV=testing"
+            echo "APP_DEBUG=true"
+            echo "APP_URL=http://localhost:9000"
+            echo "COUCHDB_HOST=127.0.0.1"
+            echo "COUCHDB_PORT=${{ vars.COUCHDB_PORT || '5984' }}"
+            echo "COUCHDB_USERNAME=${{ secrets.COUCHDB_USER }}"
+            echo "COUCHDB_PASSWORD=${{ secrets.COUCHDB_PASSWORD }}"
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}"
+            echo "JWT_ALGO=${{ vars.JWT_ALGO || 'HS256' }}"
+            echo "JWT_TTL=${{ vars.JWT_TTL || '1440' }}"
+            echo "QUEUE_CONNECTION=${{ vars.QUEUE_CONNECTION || 'sync' }}"
+            echo "SESSION_DRIVER=${{ vars.SESSION_DRIVER || 'file' }}"
+            echo "SESSION_LIFETIME=${{ vars.SESSION_LIFETIME || '120' }}"
+            echo "SANCTUM_STATEFUL_DOMAINS=${{ vars.SANCTUM_STATEFUL_DOMAINS || 'localhost,localhost:4200,localhost:9000' }}"
+            echo "SESSION_DOMAIN=${{ vars.SESSION_DOMAIN || 'localhost' }}"
+            # GIỮ LẠI nếu thực sự muốn override; NHỚ bọc quote:
+            echo 'MAIL_FROM_NAME="Medical Records API"'
+          } >> .env
 
-      # (tuỳ chọn) nếu có secrets mail:
-      [ -n "${{ secrets.MAIL_USERNAME }}" ] && echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
-      [ -n "${{ secrets.MAIL_PASSWORD }}" ] && echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
-      [ -n "${{ vars.MAIL_FROM_ADDRESS }}" ] && echo "MAIL_FROM_ADDRESS=${{ vars.MAIL_FROM_ADDRESS }}" >> .env
+          # (tuỳ chọn) nếu có secrets mail:
+          [ -n "${{ secrets.MAIL_USERNAME }}" ] && echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+          [ -n "${{ secrets.MAIL_PASSWORD }}" ] && echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
+          [ -n "${{ vars.MAIL_FROM_ADDRESS }}" ] && echo "MAIL_FROM_ADDRESS=${{ vars.MAIL_FROM_ADDRESS }}" >> .env
 
-      cp .env .env.testing || true
-      php artisan config:clear
+          cp .env .env.testing || true
+          php artisan config:clear
 
-        - name: Wait for CouchDB & create system DBs
-          run: |
-            for i in {1..60}; do
-              if curl -fsS http://127.0.0.1:5984/_up > /dev/null; then
-                echo "CouchDB is up"; break
-              fi
-              sleep 1
-            done
-            # Tạo _users để tránh warning khi mới khởi động
-            curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_users?n=1" || true
-            curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_replicator?n=1" || true
-            curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_global_changes?n=1" || true
+            - name: Wait for CouchDB & create system DBs
+              run: |
+                for i in {1..60}; do
+                  if curl -fsS http://127.0.0.1:5984/_up > /dev/null; then
+                    echo "CouchDB is up"; break
+                  fi
+                  sleep 1
+                done
+                # Tạo _users để tránh warning khi mới khởi động
+                curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_users?n=1" || true
+                curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_replicator?n=1" || true
+                curl -fsS -u "${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}" -X PUT "http://127.0.0.1:5984/_global_changes?n=1" || true
 
-        - name: Run PHPUnit
-          run: |
-            if [ -f vendor/bin/phpunit ] && git ls-files "tests/**/*.php" | grep -q .; then
-              vendor/bin/phpunit --colors=always
-            else
-              echo "No test files, skipping."
-            fi
+            - name: Run PHPUnit
+              run: |
+                if [ -f vendor/bin/phpunit ] && git ls-files "tests/**/*.php" | grep -q .; then
+                  vendor/bin/phpunit --colors=always
+                else
+                  echo "No test files, skipping."
+                fi
