@@ -49,10 +49,12 @@ jobs:
           for i in {1..60}; do
             if curl -fsS "${COUCHDB_URL}/_up" >/dev/null; then
               echo "CouchDB is up"
-              break
+              exit 0
             fi
             sleep 1
           done
+          echo "::error::CouchDB didn't become healthy within 60s"
+          exit 1
 
       - name: Bootstrap CouchDB (idempotent & friendly logs)
         shell: bash
@@ -149,6 +151,9 @@ jobs:
       - name: Run tests (npm)
         if: ${{ env.ENABLE_NODE == 'true' && hashFiles('package.json') != '' }}
         run: npm test --if-present
+      - name: Print service container logs (only on failure)
+        if: ${{ failure() }}
+        run: docker logs --details "$(docker ps -aq --filter name=couchdb)"
 
       # ----------------- (Optional) Laravel -----------------
       # - name: Setup PHP
