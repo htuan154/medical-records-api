@@ -1,4 +1,4 @@
-name: CI - CouchDB + Tests
+name: CI - CouchDB + Node
 
 on:
   push:
@@ -56,10 +56,23 @@ jobs:
           auth="-u ${COUCHDB_USER}:${COUCHDB_PASSWORD}"
 
           echo ">> enable_single_node"
-          curl -fsS $auth -X POST "$base/_cluster_setup"             -H "Content-Type: application/json"             -d "{"action":"enable_single_node","username":"$COUCHDB_USER","password":"$COUCHDB_PASSWORD","port":5984,"bind_address":"0.0.0.0"}" || true
+          cat >/tmp/enable_single_node.json <<JSON
+          {
+            "action": "enable_single_node",
+            "username": "${COUCHDB_USER}",
+            "password": "${COUCHDB_PASSWORD}",
+            "port": 5984,
+            "bind_address": "0.0.0.0"
+          }
+          JSON
+          curl -fsS $auth -X POST "$base/_cluster_setup" \
+            -H "Content-Type: application/json" \
+            --data-binary @/tmp/enable_single_node.json || true
 
           echo ">> finish_cluster (201=done, 400=already finished)"
-          code=$(curl -sS $auth -o /dev/null -w "%{http_code}" -X POST "$base/_cluster_setup"             -H "Content-Type: application/json" -d '{"action":"finish_cluster"}')
+          code=$(curl -sS $auth -o /dev/null -w "%{http_code}" -X POST "$base/_cluster_setup" \
+            -H "Content-Type: application/json" \
+            --data-binary '{"action":"finish_cluster"}')
           if [[ "$code" == "201" || "$code" == "400" ]]; then
             echo "finish_cluster -> $code (OK)"
           else
@@ -111,17 +124,30 @@ jobs:
             esac
           fi
 
-      # ----- Your build/tests here -----
-      - name: Setup PHP (Laravel)
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.2"
-      - run: composer install --no-interaction --prefer-dist
-      - run: php artisan test --env=testing
-
+      # ---------- NodeJS steps (auto-fallback if no lockfile) ----------
       - name: Setup Node
+        if: ${{ hashFiles('**/package.json') != '' }}
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npm ci
-      - run: npm test
+          cache: "npm"
+
+      - name: Install deps (npm ci if lockfile)
+        if: ${{ hashFiles('**/package.json') != '' && hashFiles('**/package-lock.json') != '' }}
+        run: npm ci
+
+      - name: Install deps (npm install fallback)
+        if: ${{ hashFiles('**/package.json') != '' && hashFiles('**/package-lock.json') == '' }}
+        run: npm install
+
+      - name: Run tests (npm)
+        if: ${{ hashFiles('**/package.json') != '' }}
+        run: npm test --if-present
+
+      # ---------- (Optional) Laravel ----------
+      # - name: Setup PHP
+      #   uses: shivammathur/setup-php@v2
+      #   with:
+      #     php-version: "8.2"
+      # - run: composer install --no-interaction --prefer-dist
+      # - run: php artisan test --env=testing
