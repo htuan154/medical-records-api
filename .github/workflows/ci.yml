@@ -13,16 +13,15 @@ jobs:
     services:
       couchdb:
         image: couchdb:3
-        ports:
-          - 5984:5984
+        ports: [ "5984:5984" ]
         env:
           COUCHDB_USER: admin
           COUCHDB_PASSWORD: admin123
         options: >-
-          --health-cmd="curl -f http://localhost:5984/_up || exit 1"
+          --health-cmd="curl -fsS http://localhost:5984/_up || exit 1"
           --health-interval=5s
           --health-timeout=3s
-          --health-retries=20
+          --health-retries=40
 
     steps:
       - name: Checkout
@@ -33,8 +32,8 @@ jobs:
         with:
           php-version: '8.2'
           extensions: mbstring, intl, zip, gd, bcmath, curl
-          coverage: none
           tools: composer:v2
+          coverage: none
 
       - name: Cache Composer
         uses: actions/cache@v4
@@ -46,7 +45,29 @@ jobs:
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      # Thay step "Prepare .env (CI)" trong .github/workflows/ci.yml bằng:
+      # Chờ CouchDB thật sự up
+      - name: Wait for CouchDB
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:5984/_up >/dev/null; then
+              echo "CouchDB is up"; break
+            fi
+            sleep 1
+          done
+
+      # Cấu hình single-node: đặt cluster/n = 1 (mặc định là 3)
+      - name: Configure CouchDB single-node
+        run: |
+          curl -fsS -u admin:admin123 -X PUT http://localhost:5984/_node/_local/_config/cluster/n -d '"1"'
+
+      # Tạo system DB với n=1 để khỏi warning
+      - name: Init CouchDB system databases
+        run: |
+          for db in _users _replicator _global_changes; do
+            curl -fsS -u admin:admin123 -X PUT "http://localhost:5984/$db?n=1" || true
+          done
+
+      # .env riêng cho CI (đừng copy .env.example để tránh ${...})
       - name: Prepare .env (CI)
         run: |
           rm -f .env
@@ -58,23 +79,21 @@ jobs:
           APP_KEY=
           LOG_CHANNEL=stack
 
-          # CouchDB service trong CI dùng localhost
           COUCHDB_HOST=localhost
           COUCHDB_PORT=5984
           COUCHDB_USERNAME="admin"
           COUCHDB_PASSWORD="admin123"
 
-          # Để CI chạy không cần DB quan hệ
           QUEUE_CONNECTION=sync
           CACHE_DRIVER=array
           SESSION_DRIVER=array
           BROADCAST_DRIVER=log
           MAIL_MAILER=log
           EOF
-
           php -r "file_put_contents('.env', preg_replace('/^APP_KEY=.*/m','APP_KEY='.('base64:'.base64_encode(random_bytes(32))), file_get_contents('.env')));"
           php artisan config:clear
 
+      # Pint: chỉ cảnh báo, không chặn CI
       - name: Run Pint (non-blocking, quiet)
         continue-on-error: true
         run: |
@@ -82,26 +101,17 @@ jobs:
             vendor/bin/pint --test -q || echo "::warning::Pint found style issues (non-blocking)."
           fi
 
-      - name: Wait for CouchDB
-        run: |
-          for i in {1..60}; do
-            if curl -fsS http://localhost:5984/_up >/dev/null; then
-              echo "CouchDB is up"; break
-            fi
-            sleep 1
-          done
-
-      - name: Init CouchDB system databases
-        run: |
-          for db in _users _replicator _global_changes; do
-            curl -u admin:admin123 -X PUT "http://localhost:5984/$db" || true
-          done
-
+      # PHPUnit: skip nếu không có tests
       - name: PHPUnit
         run: |
-          if [ -f vendor/bin/phpunit ]; then vendor/bin/phpunit --colors=always; else echo "No phpunit found, skipping"; fi
+          if [ -d tests ] && [ -f vendor/bin/phpunit ]; then
+            vendor/bin/phpunit --colors=always
+          else
+            echo "No tests folder, skipping."
+          fi
 
+      # Swagger: non-blocking để không chặn build/deploy
       - name: Generate Swagger (non-blocking)
         continue-on-error: true
         run: |
-          if [ -f artisan ]; then php artisan l5-swagger:generate; fi
+          if [ -f artisan ]; then php artisan l5-swagger:generate || echo "Swagger failed (non-blocking)"; fi
