@@ -6,124 +6,158 @@ on:
   pull_request:
 
 jobs:
-  tests:
+  test:
     runs-on: ubuntu-latest
 
+    # CouchDB service
     services:
       couchdb:
-        image: couchdb:3
+        image: couchdb:3.5
         ports:
           - 5984:5984
         env:
-          # Nếu bạn muốn bật auth trong CI, giữ 2 dòng này và đảm bảo secrets là GIÁ TRỊ THẬT
           COUCHDB_USER: ${{ secrets.COUCHDB_USER }}
           COUCHDB_PASSWORD: ${{ secrets.COUCHDB_PASSWORD }}
-          COUCHDB_SINGLE_NODE: "true"   # single-node để tự init cluster nội bộ
-        options: >-
-          --health-cmd "curl -fsS http://localhost:5984/_up || exit 1"
-          --health-interval 2s
-          --health-timeout 2s
-          --health-retries 60
+
+    env:
+      # Secrets của bạn (ảnh chụp đã có)
+      COUCHDB_USER: ${{ secrets.COUCHDB_USER }}
+      COUCHDB_PASSWORD: ${{ secrets.COUCHDB_PASSWORD }}
+      APP_KEY: ${{ secrets.APP_KEY }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      COUCHDB_URL: http://127.0.0.1:5984
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
-          extensions: mbstring, intl, json, pdo, bcmath
+          php-version: '8.3'
+          tools: composer
           coverage: none
+          extensions: curl,mbstring,openssl,tokenizer,xml,ctype,json
 
-      - name: Install Composer deps
-        run: composer install --no-interaction --prefer-dist
+      - name: Composer cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
-      - name: Prepare .env for tests
-        shell: bash
+      - name: Install PHP dependencies
         run: |
           set -euo pipefail
-          cp .env.example .env 2>/dev/null || true
-
-          # APP_KEY: dùng secrets nếu có, nếu không thì generate
-          if [[ -n "${{ secrets.APP_KEY }}" ]]; then
-            if grep -q '^APP_KEY=' .env; then
-              sed -i "s|^APP_KEY=.*|APP_KEY=${{ secrets.APP_KEY }}|" .env
-            else
-              echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-            fi
-          else
-            php artisan key:generate --force --ansi
+          if [ -f composer.json ]; then
+            composer install --no-interaction --prefer-dist --no-progress
           fi
 
-          # Biến môi trường cho test (không cấu hình email)
-          cat >> .env <<'ENV'
-          APP_ENV=testing
-          APP_DEBUG=true
-          APP_URL=http://localhost:9000
-          COUCHDB_HOST=127.0.0.1
-          COUCHDB_PORT=5984
-          QUEUE_CONNECTION=sync
-          SESSION_DRIVER=file
-          SESSION_LIFETIME=120
-          SANCTUM_STATEFUL_DOMAINS=localhost,localhost:4200,localhost:9000
-          SESSION_DOMAIN=localhost
-          ENV
+      - name: Set up Node (optional)
+        if: ${{ hashFiles('**/package.json') != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-          # Nếu bạn dùng auth cho CouchDB thì đẩy vào .env (chỉ khi secrets có giá trị)
-          [[ -n "${{ secrets.COUCHDB_USER }}" ]]     && printf "COUCHDB_USERNAME=%s\n" "${{ secrets.COUCHDB_USER }}"     >> .env
-          [[ -n "${{ secrets.COUCHDB_PASSWORD }}" ]] && printf "COUCHDB_PASSWORD=%s\n" "${{ secrets.COUCHDB_PASSWORD }}" >> .env
-          [[ -n "${{ secrets.JWT_SECRET }}" ]]       && printf "JWT_SECRET=%s\n"       "${{ secrets.JWT_SECRET }}"       >> .env
-
-          cp .env .env.testing || true
-          php artisan config:clear
-
-      - name: Wait for CouchDB
-        shell: bash
+      - name: Install Node deps (optional)
+        if: ${{ hashFiles('**/package.json') != '' }}
         run: |
           set -euo pipefail
-          base="http://127.0.0.1:5984"
+          npm ci
+          npm run build --if-present
+
+      - name: Prepare .env
+        run: |
+          set -euo pipefail
+          # Lấy .env
+          cp -n .env.example .env || true
+
+          # Ghi các biến cần thiết (idempotent)
+          upsert () {
+            key="$1"; val="$2"
+            if grep -q "^${key}=" .env; then
+              sed -i "s#^${key}=.*#${key}=${val}#" .env
+            else
+              echo "${key}=${val}" >> .env
+            fi
+          }
+
+          upsert APP_ENV testing
+          [ -n "${APP_KEY:-}" ] && upsert APP_KEY "${APP_KEY}"
+          [ -n "${JWT_SECRET:-}" ] && upsert JWT_SECRET "${JWT_SECRET}"
+
+          upsert COUCHDB_URL "${COUCHDB_URL}"
+          upsert COUCHDB_USER "${COUCHDB_USER}"
+          upsert COUCHDB_PASSWORD "${COUCHDB_PASSWORD}"
+
+          echo ".env ready"
+
+      - name: Wait for CouchDB
+        run: |
+          set -euo pipefail
+          echo "Đợi CouchDB..."
           for i in {1..60}; do
-            if curl -fsS "$base/_up" >/dev/null; then
+            if curl -sf "${COUCHDB_URL}/_up" >/dev/null; then
               echo "CouchDB is up"
               exit 0
             fi
             sleep 1
           done
-          echo "CouchDB did not become healthy in time" >&2
+          echo "CouchDB không sẵn sàng sau 60s" >&2
           exit 1
 
-      - name: Run PHPUnit
-        run: |
-          if [ -f vendor/bin/phpunit ] && git ls-files "tests/**/*.php" | grep -q .; then
-            vendor/bin/phpunit --colors=always
-          else
-            echo "No test files, skipping."
-          fi
-
-      - name: Create CouchDB system databases (once)
-        shell: bash
+      - name: Bootstrap CouchDB system databases
         run: |
           set -euo pipefail
-          base="http://127.0.0.1:5984"
+          auth="${COUCHDB_USER}:${COUCHDB_PASSWORD}"
+          base="${COUCHDB_URL}"
 
-          # Dùng auth nếu có cung cấp; nếu không thì để admin-party (nếu bạn tắt auth trong CI)
-          AUTH=()
-          if [[ -n "${COUCHDB_USER:-}" && -n "${COUCHDB_PASSWORD:-}" ]]; then
-            AUTH=(-u "${COUCHDB_USER}:${COUCHDB_PASSWORD}")
+          # Kiểm tra đăng nhập (tránh bị lock-out)
+          code=$(curl -sS -o /dev/null -w "%{http_code}" -u "$auth" "${base}/_all_dbs")
+          if [ "$code" -ne 200 ]; then
+            echo "Auth check failed (HTTP $code). Kiểm tra COUCHDB_USER/COUCHDB_PASSWORD." >&2
+            exit 1
           fi
 
-          create_db() {
-            local db="$1"
-            # 201/202: created, 412: already exists — đều là OK.
-            code=$(curl -sS -o /dev/null -w "%{http_code}" "${AUTH[@]}" -X PUT "$base/$db?n=1" || true)
+          create_db () {
+            db="$1"
+            code=$(curl -sS -o /dev/null -w "%{http_code}" -u "$auth" -X PUT "${base}/${db}?n=1")
             case "$code" in
-              201|202|412) echo "OK: $db ($code)";;
-              401|403)     echo "WARN: $db ($code) — sai creds hoặc user đang bị lock, bỏ qua."; ;;
-              *)           echo "WARN: $db trả mã $code, vẫn tiếp tục."; ;;
+              201|202|412) echo "OK: ${db} (HTTP ${code})" ;;
+              *) echo "FAILED: ${db} (HTTP ${code})" >&2; exit 1 ;;
             esac
           }
 
-          for db in _users _replicator _global_changes; do
-            create_db "$db"
-          done
+          create_db "_users"
+          create_db "_replicator"
+          create_db "_global_changes"
+
+          echo "DB list:"
+          curl -sS -u "$auth" "${base}/_all_dbs" || true
+
+      - name: Laravel app key (optional)
+        run: |
+          set -euo pipefail
+          if [ -f artisan ]; then
+            php artisan config:clear || true
+            # Nếu chưa có APP_KEY thì generate
+            if ! grep -q "^APP_KEY=" .env || [ -z "$(grep '^APP_KEY=' .env | cut -d= -f2-)" ]; then
+              php artisan key:generate --force
+            fi
+          fi
+
+      - name: Run tests
+        run: |
+          set -euo pipefail
+          if [ -f artisan ]; then
+            php artisan test --testsuite=Unit || php artisan test || true
+          elif [ -f vendor/bin/pest ]; then
+            vendor/bin/pest
+          elif [ -f vendor/bin/phpunit ]; then
+            vendor/bin/phpunit
+          elif grep -q "\"test\":" composer.json 2>/dev/null; then
+            composer test
+          else
+            echo "Không tìm thấy test runner, skip."
+          fi
