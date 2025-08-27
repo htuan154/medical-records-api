@@ -1,22 +1,20 @@
-name: CI
+name: CI - CouchDB + Tests
 
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
   pull_request:
 
 jobs:
   tests:
     runs-on: ubuntu-latest
 
-    # Truyền secrets xuống mọi step (QUAN TRỌNG)
     env:
       COUCHDB_USER: ${{ secrets.COUCHDB_USER }}
       COUCHDB_PASSWORD: ${{ secrets.COUCHDB_PASSWORD }}
       APP_KEY: ${{ secrets.APP_KEY }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       COUCHDB_URL: http://127.0.0.1:5984
-      # Đổi tên DB ứng dụng nếu bạn muốn seed tự động
       APP_DB_NAME: medical-records
 
     services:
@@ -38,19 +36,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # (Tuỳ chọn) Cài PHP/Laravel hoặc Node tuỳ dự án của bạn
-      # - name: Setup PHP
-      #   uses: shivammathur/setup-php@v2
-      #   with:
-      #     php-version: "8.2"
-      # - run: composer install --no-interaction --prefer-dist
-
-      # - name: Setup Node
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: "20"
-      # - run: npm ci
-
       - name: Wait for CouchDB healthy
         shell: bash
         run: |
@@ -67,21 +52,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base="${COUCHDB_URL:-http://127.0.0.1:5984}"
+          base="${COUCHDB_URL}"
           auth="-u ${COUCHDB_USER}:${COUCHDB_PASSWORD}"
 
           echo ">> enable_single_node"
-          curl -fsS $auth -X POST "$base/_cluster_setup" \
-            -H "Content-Type: application/json" \
-            -d "{\"action\":\"enable_single_node\",\"username\":\"$COUCHDB_USER\",\"password\":\"$COUCHDB_PASSWORD\",\"port\":5984,\"bind_address\":\"0.0.0.0\"}" || true
+          curl -fsS $auth -X POST "$base/_cluster_setup"             -H "Content-Type: application/json"             -d "{"action":"enable_single_node","username":"$COUCHDB_USER","password":"$COUCHDB_PASSWORD","port":5984,"bind_address":"0.0.0.0"}" || true
 
           echo ">> finish_cluster (201=done, 400=already finished)"
-          code=$(curl -sS $auth -o /dev/null -w "%{http_code}" -X POST "$base/_cluster_setup" \
-            -H "Content-Type: application/json" -d '{"action":"finish_cluster"}')
+          code=$(curl -sS $auth -o /dev/null -w "%{http_code}" -X POST "$base/_cluster_setup"             -H "Content-Type: application/json" -d '{"action":"finish_cluster"}')
           if [[ "$code" == "201" || "$code" == "400" ]]; then
             echo "finish_cluster -> $code (OK)"
           else
-            echo "finish_cluster -> $code (unexpected)"; exit 1
+            echo "::error::finish_cluster returned HTTP $code"; exit 1
           fi
 
           ensure_db () {
@@ -91,22 +73,55 @@ jobs:
             case "$code" in
               201|202) echo "Created $db" ;;
               412)     echo "$db already exists" ;;
-              *)       echo "Unexpected HTTP $code creating $db"; exit 1 ;;
+              *)       echo "::error::Unexpected HTTP $code creating $db"; exit 1 ;;
             esac
           }
+          for db in _users _replicator _global_changes; do ensure_db "$db"; done
 
-          for db in _users _replicator _global_changes; do
-            ensure_db "$db"
-          done
+          echo ">> all dbs:"
+          curl -sS $auth "$base/_all_dbs"; echo
 
-          echo ">> all dbs:"; curl -sS $auth "$base/_all_dbs"; echo
-
-      - name: (Optional) Seed application DB
-        if: env.APP_DB_NAME != ''
+      - name: Assert system DBs exist
         shell: bash
         run: |
           set -euo pipefail
           base="${COUCHDB_URL}"
           auth="-u ${COUCHDB_USER}:${COUCHDB_PASSWORD}"
-          code=$(curl -sS $auth -o /dev/null -w "%{http_code}" -X PUT "$base/${APP_DB_NAME}")
-          echo "PUT ${APP_DB_NAME} -> $code"
+          for db in _users _replicator _global_changes; do
+            code=$(curl -sS $auth -o /dev/null -w "%{http_code}" "$base/$db")
+            if [[ "$code" == "200" ]]; then
+              echo "$db OK"
+            else
+              echo "::error::System DB $db not ready (HTTP $code)"; exit 1
+            fi
+          done
+
+      - name: (Optional) Create application DB
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${APP_DB_NAME}" ]]; then
+            base="${COUCHDB_URL}"
+            auth="-u ${COUCHDB_USER}:${COUCHDB_PASSWORD}"
+            code=$(curl -sS $auth -o /dev/null -w "%{http_code}" -X PUT "$base/${APP_DB_NAME}")
+            case "$code" in
+              201|202) echo "Created ${APP_DB_NAME}" ;;
+              412)     echo "${APP_DB_NAME} already exists" ;;
+              *)       echo "::error::Unexpected HTTP $code creating ${APP_DB_NAME}"; exit 1 ;;
+            esac
+          fi
+
+      # ----- Your build/tests here -----
+      - name: Setup PHP (Laravel)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+      - run: composer install --no-interaction --prefer-dist
+      - run: php artisan test --env=testing
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci
+      - run: npm test
