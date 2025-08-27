@@ -1,4 +1,3 @@
-# .github/workflows/ci.yml
 name: CI
 on:
   push: { branches: [ main, develop ] }
@@ -37,7 +36,7 @@ jobs:
           key: composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: composer-
 
-      # 1) Chuẩn bị .env cho CI (không copy .env.example để tránh ${VAR})
+      # 1) Tạo .env cho CI (KHÔNG copy .env.example)
       - name: Prepare .env (CI)
         run: |
           rm -f .env
@@ -62,7 +61,12 @@ jobs:
           EOF
           php -r "file_put_contents('.env', preg_replace('/^APP_KEY=.*/m','APP_KEY='.('base64:'.base64_encode(random_bytes(32))), file_get_contents('.env')));"
 
-      # 2) Chờ CouchDB + set single node + tạo DB hệ thống
+      - name: Debug .env being used
+        run: |
+          echo "---- .env (first lines) ----"
+          head -n 20 .env || true
+
+      # 2) Chờ CouchDB & init single-node
       - name: Wait & init CouchDB
         run: |
           for i in {1..60}; do
@@ -75,7 +79,7 @@ jobs:
             curl -fsS -u admin:admin123 -X PUT "http://localhost:5984/$db?n=1" || true
           done
 
-      # 3) Cài composer NHƯNG KHÔNG CHẠY scripts (tránh artisan sớm)
+      # 3) Cài composer nhưng KHÔNG chạy scripts (tránh artisan chạy sớm)
       - name: Install Dependencies (no scripts)
         run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
 
@@ -94,7 +98,7 @@ jobs:
             vendor/bin/pint --test -q || echo "::warning::Pint found style issues (non-blocking)."
           fi
 
-      # 6) PHPUnit: chỉ chạy nếu thực sự có test
+      # 6) PHPUnit: chỉ chạy khi thật sự có file test *.php
       - name: PHPUnit (smart-skip)
         run: |
           if [ -f vendor/bin/phpunit ] && git ls-files "tests/**/*.php" | grep -q .; then
