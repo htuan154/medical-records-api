@@ -93,3 +93,24 @@ jobs:
           else
             echo "No test files, skipping."
           fi
+            - name: Init CouchDB system DBs
+        env:
+          CDB_USER: ${{ secrets.COUCHDB_USER }}
+          CDB_PASS: ${{ secrets.COUCHDB_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="http://127.0.0.1:5984"
+
+          # Đợi tới khi đăng nhập admin được (tránh 401)
+          for i in {1..60}; do
+            if curl -fsS -u "$CDB_USER:$CDB_PASS" "$base/_all_dbs" >/dev/null; then
+              echo "Auth OK"; break
+            fi
+            sleep 1
+          done
+
+          # Tạo 3 system DBs (idempotent)
+          for db in _users _replicator _global_changes; do
+            curl -fsS -u "$CDB_USER:$CDB_PASS" -X PUT "$base/$db?n=1" || true
+          done
