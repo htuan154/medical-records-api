@@ -100,7 +100,8 @@ jobs:
           else
             echo "No test files, skipping."
           fi
-            - name: Create CouchDB system databases (once)
+
+      - name: Create CouchDB system databases (once)
         shell: bash
         run: |
           set -euo pipefail
