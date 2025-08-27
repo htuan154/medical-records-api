@@ -39,27 +39,29 @@ jobs:
       # 1) Tạo .env cho CI (KHÔNG copy .env.example)
       - name: Prepare .env (CI)
         run: |
+          set -e
           rm -f .env
-          cat > .env <<'EOF'
-          APP_NAME="Medical Records API"
-          APP_ENV=testing
-          APP_DEBUG=true
-          APP_URL=http://localhost:9000
-          APP_KEY=
-          LOG_CHANNEL=stack
+          {
+            echo 'APP_NAME="Medical Records API"'
+            echo 'APP_ENV=testing'
+            echo 'APP_DEBUG=true'
+            echo 'APP_URL=http://localhost:9000'
+            echo 'LOG_CHANNEL=stack'
 
-          COUCHDB_HOST=localhost
-          COUCHDB_PORT=5984
-          COUCHDB_USERNAME="admin"
-          COUCHDB_PASSWORD="admin123"
+            # CouchDB in GitHub Actions service
+            echo 'COUCHDB_HOST=couchdb'
+            echo 'COUCHDB_PORT=5984'
+            echo "COUCHDB_USERNAME=${CI_COUCH_USER}"
+            echo "COUCHDB_PASSWORD=${CI_COUCH_PASS}"
 
-          QUEUE_CONNECTION=sync
-          CACHE_DRIVER=array
-          SESSION_DRIVER=array
-          BROADCAST_DRIVER=log
-          MAIL_MAILER=log
-          EOF
-          php -r "file_put_contents('.env', preg_replace('/^APP_KEY=.*/
+            echo 'QUEUE_CONNECTION=sync'
+            echo 'CACHE_DRIVER=array'
+            echo 'SESSION_DRIVER=array'
+            echo 'BROADCAST_DRIVER=log'
+            echo 'MAIL_MAILER=log'
+          } > .env
+
+          php artisan key:generate --force
 
       - name: Debug .env being used
         run: |
