@@ -31,6 +31,7 @@ class InvoiceController extends Controller
      *     path="/api/v1/invoices",
      *     tags={"Invoices"},
      *     summary="Danh sách hóa đơn",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
      *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
      *     @OA\Parameter(name="patient_id", in="query", @OA\Schema(type="string")),
@@ -68,6 +69,7 @@ class InvoiceController extends Controller
      *     path="/api/v1/invoices/{id}",
      *     tags={"Invoices"},
      *     summary="Chi tiết hóa đơn",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Thông tin hóa đơn"),
      *     @OA\Response(response=404, description="Không tìm thấy"),
@@ -85,6 +87,7 @@ class InvoiceController extends Controller
      *     path="/api/v1/invoices",
      *     tags={"Invoices"},
      *     summary="Tạo hóa đơn mới",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -152,6 +155,7 @@ class InvoiceController extends Controller
      *     path="/api/v1/invoices/{id}",
      *     tags={"Invoices"},
      *     summary="Cập nhật hóa đơn",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\RequestBody(
      *         required=true,
@@ -179,6 +183,7 @@ class InvoiceController extends Controller
      *     path="/api/v1/invoices/{id}",
      *     tags={"Invoices"},
      *     summary="Xóa hóa đơn",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Xóa thành công"),

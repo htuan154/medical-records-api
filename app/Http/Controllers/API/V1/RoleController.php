@@ -30,6 +30,7 @@ class RoleController extends Controller
      *     path="/api/v1/roles",
      *     tags={"Roles"},
      *     summary="Danh sách vai trò",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
      *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
      *     @OA\Parameter(name="name", in="query", @OA\Schema(type="string", description="Tìm kiếm theo tên vai trò")),
@@ -63,6 +64,7 @@ class RoleController extends Controller
      *     path="/api/v1/roles/{id}",
      *     tags={"Roles"},
      *     summary="Chi tiết vai trò",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Thông tin vai trò"),
      *     @OA\Response(response=404, description="Không tìm thấy"),
@@ -80,6 +82,7 @@ class RoleController extends Controller
      *     path="/api/v1/roles",
      *     tags={"Roles"},
      *     summary="Tạo vai trò mới",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -124,6 +127,7 @@ class RoleController extends Controller
      *     path="/api/v1/roles/{id}",
      *     tags={"Roles"},
      *     summary="Cập nhật vai trò",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\RequestBody(
      *         required=true,
@@ -153,6 +157,7 @@ class RoleController extends Controller
      *     path="/api/v1/roles/{id}",
      *     tags={"Roles"},
      *     summary="Xóa vai trò",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Xóa thành công"),

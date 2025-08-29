@@ -31,6 +31,7 @@ class StaffController extends Controller
      *     path="/api/v1/staffs",
      *     tags={"Staff"},
      *     summary="Danh sách nhân viên",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
      *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
      *     @OA\Parameter(name="staff_type", in="query", @OA\Schema(type="string", description="Loại nhân viên")),
@@ -66,6 +67,7 @@ class StaffController extends Controller
      *     path="/api/v1/staffs/{id}",
      *     tags={"Staff"},
      *     summary="Chi tiết nhân viên",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Thông tin nhân viên"),
      *     @OA\Response(response=404, description="Không tìm thấy"),
@@ -83,6 +85,7 @@ class StaffController extends Controller
      *     path="/api/v1/staffs",
      *     tags={"Staff"},
      *     summary="Tạo nhân viên mới",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -141,6 +144,7 @@ class StaffController extends Controller
      *     path="/api/v1/staffs/{id}",
      *     tags={"Staff"},
      *     summary="Cập nhật nhân viên",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\RequestBody(
      *         required=true,
@@ -170,6 +174,7 @@ class StaffController extends Controller
      *     path="/api/v1/staffs/{id}",
      *     tags={"Staff"},
      *     summary="Xóa nhân viên",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Xóa thành công"),

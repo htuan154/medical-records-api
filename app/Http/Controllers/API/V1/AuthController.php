@@ -89,17 +89,16 @@ class AuthController extends Controller
 
             $tokens = $this->jwt->issueTokens($user, $perms);
 
-            return response()->json([
-                'ok' => true,
-                'user' => [
-                    'id' => $user['_id'],
-                    'username' => $user['username'] ?? null,
-                    'role_names' => $user['role_names'] ?? [],
-                    'permissions' => $perms,
-                    'status' => $user['status'] ?? null,
-                ],
-                ...$tokens,
-            ], 200);
+            return response()->json(array_merge([
+    'ok' => true,
+    'user' => [
+        'id' => $user['_id'],
+        'username' => $user['username'] ?? null,
+        'role_names' => $user['role_names'] ?? [],
+        'permissions' => $perms,
+        'status' => $user['status'] ?? null,
+    ],
+], $tokens), 200);
         } catch (Throwable $e) {
             return response()->json(['error'=>'server_error','message'=>$e->getMessage()], 500);
         }
@@ -156,7 +155,7 @@ class AuthController extends Controller
             }
             $tokens = $this->jwt->issueTokens($user, array_values(array_unique($perms)));
 
-            return response()->json(['ok'=>true, ...$tokens], 200);
+            return response()->json(array_merge(['ok'=>true], $tokens), 200);
         } catch (Throwable $e) {
             return response()->json(['error'=>'unauthorized','message'=>$e->getMessage()], 401);
         }

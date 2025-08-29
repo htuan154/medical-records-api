@@ -31,6 +31,7 @@ class UserController extends Controller
      *     path="/api/v1/users",
      *     tags={"Users"},
      *     summary="Danh sách người dùng",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
      *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
      *     @OA\Parameter(name="username", in="query", @OA\Schema(type="string", description="Tìm kiếm theo tên đăng nhập")),
@@ -63,6 +64,7 @@ class UserController extends Controller
      *     path="/api/v1/users/{id}",
      *     tags={"Users"},
      *     summary="Chi tiết người dùng",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Thông tin người dùng"),
      *     @OA\Response(response=404, description="Không tìm thấy"),
@@ -80,6 +82,7 @@ class UserController extends Controller
      *     path="/api/v1/users",
      *     tags={"Users"},
      *     summary="Tạo người dùng mới",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -136,6 +139,7 @@ class UserController extends Controller
      *     path="/api/v1/users/{id}",
      *     tags={"Users"},
      *     summary="Cập nhật người dùng",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\RequestBody(
      *         required=true,
@@ -165,6 +169,7 @@ class UserController extends Controller
      *     path="/api/v1/users/{id}",
      *     tags={"Users"},
      *     summary="Xóa người dùng",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Xóa thành công"),
