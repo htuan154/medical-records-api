@@ -2,7 +2,10 @@
 
 namespace App\Services\CouchDB;
 
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
+use RuntimeException;
 
 class CouchClient
 {
@@ -13,18 +16,19 @@ class CouchClient
 
     public function __construct()
     {
-        $host = (string) config('couchdb.host', '127.0.0.1');
-        $port = (int)    config('couchdb.port', 5984);
+        $scheme   = (string) config('couchdb.scheme', 'http');   // <-- thêm scheme
+        $host     = (string) config('couchdb.host', '127.0.0.1');
+        $port     = (int)    config('couchdb.port', 5984);
 
-        $this->baseUrl  = "http://{$host}:{$port}";
+        $this->baseUrl  = rtrim("{$scheme}://{$host}:{$port}", '/');
         $this->username = (string) config('couchdb.username', '');
         $this->password = (string) config('couchdb.password', '');
     }
 
-    /** Chọn database */
+    /** Chọn database (có áp dụng prefix nếu có) */
     public function db(string $name): self
     {
-        $clone = clone $this;
+        $clone  = clone $this;
         $prefix = (string) config('couchdb.prefix', '');
         $clone->db = $prefix . $name;
         return $clone;
@@ -36,27 +40,43 @@ class CouchClient
         return Http::withBasicAuth($this->username, $this->password)
             ->baseUrl($this->baseUrl)
             ->acceptJson()
-            ->asJson();
+            ->asJson()
+            ->timeout(10)
+            ->connectTimeout(5);
+    }
+
+    /** Đảm bảo đã chọn DB trước khi gọi */
+    protected function ensureDb(): void
+    {
+        if (!$this->db) {
+            throw new RuntimeException('CouchClient: database is not selected. Hãy gọi ->db("users") trước.');
+        }
+    }
+
+    /** Parse JSON an toàn (ném lỗi khi JSON invalid) */
+    protected function parseJson($response): array
+    {
+        $data = $response->json();
+        if ($data === null && $response->body() !== 'null' && $response->body() !== '') {
+            throw new RuntimeException('CouchClient: cannot parse JSON response: ' . $response->body());
+        }
+        return is_array($data) ? $data : [];
     }
 
     /**
      * Chuẩn hoá query: booleans -> 'true' / 'false' đúng chuẩn CouchDB.
-     * Đồng thời “gột rửa” cả các trường hợp bị bao trong dấu ngoặc kép như "\"1\""…
+     * Đồng thời xử lý trường hợp bị bao bởi dấu ngoặc kép "\"1\""...
      */
     private function normalizeParams(array $params): array
     {
-        // Các key boolean CouchDB hỗ trợ ở query string
         $boolKeys = [
             'include_docs','reduce','group','descending','conflicts',
             'inclusive_end','stable','update','attachments','att_encoding_info'
         ];
 
         foreach ($params as $k => $v) {
-            if (!in_array($k, $boolKeys, true)) {
-                continue;
-            }
+            if (!in_array($k, $boolKeys, true)) continue;
 
-            // Nếu bị json_encode thành chuỗi có ngoặc kép, bóc ra:
             if (is_string($v)) {
                 $trim = trim($v);
                 if (strlen($trim) >= 2 && $trim[0] === '"' && substr($trim, -1) === '"') {
@@ -72,7 +92,6 @@ class CouchClient
             } elseif (in_array($v, $falsy, true)) {
                 $params[$k] = 'false';
             } else {
-                // Giá trị lạ -> ép false cho an toàn
                 $params[$k] = 'false';
             }
         }
@@ -87,60 +106,118 @@ class CouchClient
     /** GET /{db}/_all_docs */
     public function allDocs(array $params = []): array
     {
-        // mặc định include_docs = true để trả full doc
+        $this->ensureDb();
         $params = array_merge(['include_docs' => true], $params);
         $params = $this->normalizeParams($params);
 
-        return $this->http()->get("/{$this->db}/_all_docs", $params)->json();
+        try {
+            $res = $this->http()->get("/{$this->db}/_all_docs", $params);
+            return $this->parseJson($res);
+        } catch (ConnectionException|RequestException $e) {
+            throw new RuntimeException('CouchDB allDocs error: '.$e->getMessage(), 0, $e);
+        }
     }
 
     /** GET /{db}/{id} */
     public function get(string $id): array
     {
-        return $this->http()->get("/{$this->db}/{$id}")->json();
+        $this->ensureDb();
+        try {
+            $res = $this->http()->get("/{$this->db}/".ltrim($id, '/'));
+            return $this->parseJson($res);
+        } catch (ConnectionException|RequestException $e) {
+            throw new RuntimeException('CouchDB get error: '.$e->getMessage(), 0, $e);
+        }
     }
 
     /** POST /{db} */
     public function create(array $doc): array
     {
-        return $this->http()->post("/{$this->db}", $doc)->json();
+        $this->ensureDb();
+        try {
+            $res = $this->http()->post("/{$this->db}", $doc);
+            return $this->parseJson($res);
+        } catch (ConnectionException|RequestException $e) {
+            throw new RuntimeException('CouchDB create error: '.$e->getMessage(), 0, $e);
+        }
     }
 
     /** PUT /{db}/{id} */
     public function put(string $id, array $docWithRev): array
     {
-        return $this->http()->put("/{$this->db}/{$id}", $docWithRev)->json();
+        $this->ensureDb();
+        try {
+            $res = $this->http()->put("/{$this->db}/".ltrim($id, '/'), $docWithRev);
+            return $this->parseJson($res);
+        } catch (ConnectionException|RequestException $e) {
+            throw new RuntimeException('CouchDB put error: '.$e->getMessage(), 0, $e);
+        }
     }
 
     /** DELETE /{db}/{id}?rev=xxx */
     public function delete(string $id, string $rev): array
     {
-        return $this->http()->delete("/{$this->db}/{$id}", ['rev' => $rev])->json();
+        $this->ensureDb();
+        try {
+            $res = $this->http()->delete("/{$this->db}/".ltrim($id, '/'), ['rev' => $rev]);
+            return $this->parseJson($res);
+        } catch (ConnectionException|RequestException $e) {
+            throw new RuntimeException('CouchDB delete error: '.$e->getMessage(), 0, $e);
+        }
     }
 
     /** GET /{db}/_design/{design}/_view/{view} */
     public function view(string $design, string $view, array $params = []): array
     {
+        $this->ensureDb();
         $params = $this->normalizeParams($params);
-        return $this->http()->get("/{$this->db}/_design/{$design}/_view/{$view}", $params)->json();
+
+        try {
+            $res = $this->http()->get("/{$this->db}/_design/{$design}/_view/{$view}", $params);
+            return $this->parseJson($res);
+        } catch (ConnectionException|RequestException $e) {
+            throw new RuntimeException('CouchDB view error: '.$e->getMessage(), 0, $e);
+        }
     }
 
     /** POST /{db}/_bulk_docs */
     public function bulk(array $docs): array
     {
-        return $this->http()->post("/{$this->db}/_bulk_docs", ['docs' => $docs])->json();
+        $this->ensureDb();
+        try {
+            $res = $this->http()->post("/{$this->db}/_bulk_docs", ['docs' => $docs]);
+            return $this->parseJson($res);
+        } catch (ConnectionException|RequestException $e) {
+            throw new RuntimeException('CouchDB bulk error: '.$e->getMessage(), 0, $e);
+        }
     }
 
     /** HEAD /{db}/{id} -> doc có tồn tại không */
     public function exists(string $id): bool
     {
-        $resp = $this->http()->withOptions(['http_errors' => false])->head("/{$this->db}/{$id}");
-        return $resp->status() === 200;
+        $this->ensureDb();
+        $res = $this->http()->withOptions(['http_errors' => false])->head("/{$this->db}/".ltrim($id, '/'));
+        return $res->status() === 200;
     }
 
-    /** PUT design doc */
+    /** PUT design doc (id kiểu _design/users) */
     public function putDesign(string $designId, array $doc): array
     {
-        return $this->http()->put("/{$this->db}/{$designId}", $doc)->json();
+        $this->ensureDb();
+        try {
+            $res = $this->http()->put("/{$this->db}/".ltrim($designId, '/'), $doc);
+            return $this->parseJson($res);
+        } catch (ConnectionException|RequestException $e) {
+            throw new RuntimeException('CouchDB putDesign error: '.$e->getMessage(), 0, $e);
+        }
+    }
+
+    /* ===== Helpers bổ sung ===== */
+
+    /** Ping CouchDB: GET /_up -> {"status":"ok"} */
+    public function up(): array
+    {
+        $res = $this->http()->get('/_up');
+        return $this->parseJson($res);
     }
 }

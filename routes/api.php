@@ -16,14 +16,14 @@ use App\Http\Controllers\API\V1\StaffController;
 
 Route::prefix('v1')->group(function () {
     // PUBLIC AUTH routes (không cần authentication)
-    Route::post('/auth/login',   [AuthController::class, 'login']);
-    Route::post('/auth/refresh', [AuthController::class, 'refresh']);
+    Route::post('/login',   [AuthController::class, 'login']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
 
     // TẤT CẢ ROUTES KHÁC PHẢI CÓ JWT AUTHENTICATION
     Route::middleware('jwt')->group(function () {
         // AUTH routes (cần authentication)
-        Route::get('/auth/me', [AuthController::class, 'me']);
-        Route::post('/auth/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::post('/logout', [AuthController::class, 'logout']);
 
         // PATIENTS - giữ nguyên routes gốc + report
         Route::get('/patients-report', [PatientController::class, 'report']);

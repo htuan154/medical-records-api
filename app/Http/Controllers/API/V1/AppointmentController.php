@@ -7,7 +7,7 @@ use App\Services\CouchDB\appointmentService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
-    
+
 /**
  * @OA\Tag(
  *     name="Appointments",
@@ -31,6 +31,7 @@ class AppointmentController extends Controller
      *     path="/api/v1/appointments",
      *     tags={"Appointments"},
      *     summary="Danh sách cuộc hẹn",
+     *     security={{"bearerAuth":{}}},
      *     description="Trả về danh sách các appointment, có thể lọc theo patient_id, doctor_id, start, end, status",
      *     @OA\Parameter(
      *         name="limit",
@@ -138,6 +139,7 @@ class AppointmentController extends Controller
      *     path="/api/v1/appointments/{id}",
      *     tags={"Appointments"},
      *     summary="Lấy thông tin chi tiết cuộc hẹn",
+     *     security={{"bearerAuth":{}}},
      *     description="Trả về thông tin chi tiết của một appointment theo ID",
      *     @OA\Parameter(
      *         name="id",
@@ -202,6 +204,7 @@ class AppointmentController extends Controller
      *     path="/api/v1/appointments",
      *     tags={"Appointments"},
      *     summary="Tạo cuộc hẹn mới",
+     *     security={{"bearerAuth":{}}},
      *     description="Tạo một appointment mới trong hệ thống",
      *     @OA\RequestBody(
      *         required=true,
@@ -307,6 +310,7 @@ class AppointmentController extends Controller
      *     path="/api/v1/appointments/{id}",
      *     tags={"Appointments"},
      *     summary="Cập nhật thông tin cuộc hẹn",
+     *     security={{"bearerAuth":{}}},
      *     description="Cập nhật thông tin của một appointment theo ID (cần có _rev)",
      *     @OA\Parameter(
      *         name="id",
@@ -396,6 +400,7 @@ class AppointmentController extends Controller
      *     path="/api/v1/appointments/{id}",
      *     tags={"Appointments"},
      *     summary="Xóa cuộc hẹn",
+     *     security={{"bearerAuth":{}}},
      *     description="Xóa một appointment theo ID (cần có rev parameter)",
      *     @OA\Parameter(
      *         name="id",

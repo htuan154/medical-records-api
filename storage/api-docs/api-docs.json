@@ -19,7 +19,7 @@
                 ],
                 "summary": "Danh sách cuộc hẹn",
                 "description": "Trả về danh sách các appointment, có thể lọc theo patient_id, doctor_id, start, end, status",
-                "operationId": "2c064002f676fba99fc5cdec6d163780",
+                "operationId": "7166b44344ecf849d38ed890ab488260",
                 "parameters": [
                     {
                         "name": "limit",
@@ -159,7 +159,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -167,7 +172,7 @@
                 ],
                 "summary": "Tạo cuộc hẹn mới",
                 "description": "Tạo một appointment mới trong hệ thống",
-                "operationId": "058682f8a038f0ea8e7cb12dd411e7c3",
+                "operationId": "48ad38a8732bd904fd4128853fea9f31",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -352,7 +357,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/appointments/{id}": {
@@ -362,7 +372,7 @@
                 ],
                 "summary": "Lấy thông tin chi tiết cuộc hẹn",
                 "description": "Trả về thông tin chi tiết của một appointment theo ID",
-                "operationId": "8cbe062f9e982f17cb7458556472842e",
+                "operationId": "5b8183f39463fc6783cf9f6744043ba3",
                 "parameters": [
                     {
                         "name": "id",
@@ -492,7 +502,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -500,7 +515,7 @@
                 ],
                 "summary": "Cập nhật thông tin cuộc hẹn",
                 "description": "Cập nhật thông tin của một appointment theo ID (cần có _rev)",
-                "operationId": "608e45042e26700502cd51f33b41fa26",
+                "operationId": "0f3cad3a16f7e0dddfe41bd6b2abd986",
                 "parameters": [
                     {
                         "name": "id",
@@ -687,7 +702,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -695,7 +715,7 @@
                 ],
                 "summary": "Xóa cuộc hẹn",
                 "description": "Xóa một appointment theo ID (cần có rev parameter)",
-                "operationId": "67378e522d1df1231517e23d451c5e85",
+                "operationId": "0f2d2d132b2fa5cd69d1bad5d3ac0426",
                 "parameters": [
                     {
                         "name": "id",
@@ -823,7 +843,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/login": {
@@ -1061,7 +1086,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1136,7 +1166,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/doctors/{id}": {
@@ -1166,7 +1201,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -1226,7 +1266,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -1269,7 +1314,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/invoices": {
@@ -1341,7 +1391,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1427,7 +1482,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/invoices/{id}": {
@@ -1457,7 +1517,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -1515,7 +1580,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -1557,7 +1627,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/medical-records": {
@@ -1648,7 +1723,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1733,7 +1813,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/medical-records/{id}": {
@@ -1763,7 +1848,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -1833,7 +1923,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -1875,7 +1970,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/medical-tests": {
@@ -1961,7 +2061,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -2047,7 +2152,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/medical-tests/{id}": {
@@ -2077,7 +2187,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -2141,7 +2256,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -2183,7 +2303,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/medications": {
@@ -2277,7 +2402,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -2387,7 +2517,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/medications/{id}": {
@@ -2417,7 +2552,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -2482,7 +2622,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -2524,7 +2669,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/medications/{id}/stock-increase": {
@@ -2581,7 +2731,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/medications/{id}/stock-decrease": {
@@ -2638,7 +2793,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/patients": {
@@ -2681,7 +2841,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -2755,7 +2920,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/patients/{id}": {
@@ -2785,7 +2955,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -2850,7 +3025,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -2892,7 +3072,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/roles": {
@@ -2954,7 +3139,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -3019,7 +3209,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/roles/{id}": {
@@ -3049,7 +3244,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -3120,7 +3320,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -3162,7 +3367,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/staffs": {
@@ -3232,7 +3442,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -3322,7 +3537,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/staffs/{id}": {
@@ -3352,7 +3572,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -3421,7 +3646,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -3463,7 +3693,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/treatments": {
@@ -3569,7 +3804,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -3693,7 +3933,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/treatments/{id}": {
@@ -3723,7 +3968,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -3786,7 +4036,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -3828,7 +4083,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/users": {
@@ -3887,7 +4147,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -3968,7 +4233,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/users/{id}": {
@@ -3998,7 +4268,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -4070,7 +4345,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -4112,7 +4392,12 @@
                     "500": {
                         "description": "Lỗi server"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         }
     },

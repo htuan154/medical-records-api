@@ -29,7 +29,7 @@ class UsersRepository extends BaseCouchRepository implements UsersRepositoryInte
     public function byUsername(string $username, int $limit = 1, int $skip = 0): array
     {
         return $this->view('users', 'by_username', [
-            'key'          => json_encode($username),
+            'key'          => json_encode(mb_strtolower($username)),
             'include_docs' => true,
             'limit'        => $limit,
             'skip'         => $skip,
