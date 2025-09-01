@@ -31,6 +31,7 @@ class TreatmentController extends Controller
      *     path="/api/v1/treatments",
      *     tags={"Treatments"},
      *     summary="Danh sách điều trị",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
      *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
      *     @OA\Parameter(name="patient_id", in="query", @OA\Schema(type="string", description="ID bệnh nhân")),
@@ -74,6 +75,7 @@ class TreatmentController extends Controller
      *     path="/api/v1/treatments/{id}",
      *     tags={"Treatments"},
      *     summary="Chi tiết điều trị",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Thông tin điều trị"),
      *     @OA\Response(response=404, description="Không tìm thấy"),
@@ -91,6 +93,7 @@ class TreatmentController extends Controller
      *     path="/api/v1/treatments",
      *     tags={"Treatments"},
      *     summary="Tạo điều trị mới",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -170,6 +173,7 @@ class TreatmentController extends Controller
      *     path="/api/v1/treatments/{id}",
      *     tags={"Treatments"},
      *     summary="Cập nhật điều trị",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\RequestBody(
      *         required=true,
@@ -197,6 +201,7 @@ class TreatmentController extends Controller
      *     path="/api/v1/treatments/{id}",
      *     tags={"Treatments"},
      *     summary="Xóa điều trị",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Xóa thành công"),

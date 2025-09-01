@@ -31,6 +31,7 @@ class DoctorController extends Controller
      *     path="/api/v1/doctors",
      *     tags={"Doctors"},
      *     summary="Danh sách bác sĩ",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
      *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
      *     @OA\Parameter(name="q", in="query", @OA\Schema(type="string", example="Nguyễn")),
@@ -62,6 +63,7 @@ class DoctorController extends Controller
      *     path="/api/v1/doctors/{id}",
      *     tags={"Doctors"},
      *     summary="Chi tiết bác sĩ",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Thông tin bác sĩ"),
      *     @OA\Response(response=404, description="Không tìm thấy"),
@@ -79,6 +81,7 @@ class DoctorController extends Controller
      *     path="/api/v1/doctors",
      *     tags={"Doctors"},
      *     summary="Tạo bác sĩ mới",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -137,6 +140,7 @@ class DoctorController extends Controller
      *     path="/api/v1/doctors/{id}",
      *     tags={"Doctors"},
      *     summary="Cập nhật bác sĩ",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\RequestBody(
      *         required=true,
@@ -164,6 +168,7 @@ class DoctorController extends Controller
      *     path="/api/v1/doctors/{id}",
      *     tags={"Doctors"},
      *     summary="Xóa bác sĩ",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string", example="1-abc123")),
      *     @OA\Response(response=200, description="Xóa thành công"),

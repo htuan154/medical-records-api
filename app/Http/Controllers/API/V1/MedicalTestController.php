@@ -31,6 +31,7 @@ class MedicalTestController extends Controller
      *     path="/api/v1/medical-tests",
      *     tags={"Medical Tests"},
      *     summary="Danh sách xét nghiệm y tế",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
      *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
      *     @OA\Parameter(name="patient_id", in="query", @OA\Schema(type="string")),
@@ -72,6 +73,7 @@ class MedicalTestController extends Controller
      *     path="/api/v1/medical-tests/{id}",
      *     tags={"Medical Tests"},
      *     summary="Chi tiết xét nghiệm y tế",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Thông tin xét nghiệm y tế"),
      *     @OA\Response(response=404, description="Không tìm thấy"),
@@ -89,6 +91,7 @@ class MedicalTestController extends Controller
      *     path="/api/v1/medical-tests",
      *     tags={"Medical Tests"},
      *     summary="Tạo xét nghiệm y tế mới",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -146,6 +149,7 @@ class MedicalTestController extends Controller
      *     path="/api/v1/medical-tests/{id}",
      *     tags={"Medical Tests"},
      *     summary="Cập nhật xét nghiệm y tế",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\RequestBody(
      *         required=true,
@@ -174,6 +178,7 @@ class MedicalTestController extends Controller
      *     path="/api/v1/medical-tests/{id}",
      *     tags={"Medical Tests"},
      *     summary="Xóa xét nghiệm y tế",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Xóa thành công"),

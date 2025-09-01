@@ -31,6 +31,7 @@ class MedicationController extends Controller
      *     path="/api/v1/medications",
      *     tags={"Medications"},
      *     summary="Danh sách thuốc",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
      *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
      *     @OA\Parameter(name="q", in="query", @OA\Schema(type="string", description="Tìm kiếm theo tên thuốc")),
@@ -72,6 +73,7 @@ class MedicationController extends Controller
      *     path="/api/v1/medications/{id}",
      *     tags={"Medications"},
      *     summary="Chi tiết thuốc",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Thông tin thuốc"),
      *     @OA\Response(response=404, description="Không tìm thấy"),
@@ -89,6 +91,7 @@ class MedicationController extends Controller
      *     path="/api/v1/medications",
      *     tags={"Medications"},
      *     summary="Tạo thuốc mới",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -154,6 +157,7 @@ class MedicationController extends Controller
      *     path="/api/v1/medications/{id}",
      *     tags={"Medications"},
      *     summary="Cập nhật thuốc",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\RequestBody(
      *         required=true,
@@ -182,6 +186,7 @@ class MedicationController extends Controller
      *     path="/api/v1/medications/{id}",
      *     tags={"Medications"},
      *     summary="Xóa thuốc",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="Xóa thành công"),
@@ -203,6 +208,7 @@ class MedicationController extends Controller
      *     path="/api/v1/medications/{id}/stock-increase",
      *     tags={"Medications"},
      *     summary="Tăng tồn kho thuốc",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\RequestBody(
      *         required=true,
@@ -231,6 +237,7 @@ class MedicationController extends Controller
      *     path="/api/v1/medications/{id}/stock-decrease",
      *     tags={"Medications"},
      *     summary="Giảm tồn kho thuốc",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\RequestBody(
      *         required=true,
