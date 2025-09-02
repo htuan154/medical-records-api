@@ -1,68 +1,26 @@
+<!-- App.vue -->
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-      <router-link class="navbar-brand" to="/">MedRecords</router-link>
+  <div>
+    <!-- giữ nguyên navbar/header của bạn -->
 
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#mainNavbar"
-        aria-controls="mainNavbar"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="mainNavbar">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <router-link class="nav-link" to="/">Home</router-link>
-          </li>
-          <li class="nav-item" v-if="isAuthed">
-            <router-link class="nav-link" to="/patients">Bệnh nhân</router-link>
-          </li>
-        </ul>
-
-        <div class="d-flex align-items-center gap-2">
-          <span v-if="isAuthed" class="text-white-50 small">
-            Hi, <b>{{ me?.username || me?.name }}</b>
-          </span>
-          <button
-            v-if="isAuthed"
-            class="btn btn-outline-light btn-sm"
-            @click="onLogout"
-          >
-            Đăng xuất
-          </button>
-          <router-link v-else class="btn btn-light btn-sm" to="/login">
-            Đăng nhập
-          </router-link>
+    <main class="app-main">
+      <router-view v-slot="{ Component, route }">
+        <!-- Nếu route yêu cầu fullWidth (như Login) thì không bọc container -->
+        <component :is="Component" v-if="route.meta && route.meta.fullWidth" />
+        <!-- Mặc định: các trang còn lại bọc trong container như cũ -->
+        <div v-else class="container py-4">
+          <component :is="Component" />
         </div>
-      </div>
-    </div>
-  </nav>
-
-  <main class="py-4">
-    <div class="container">
-      <router-view />
-    </div>
-  </main>
+      </router-view>
+    </main>
+  </div>
 </template>
 
 <script>
-export default {
-  name: 'AppShell',
-  computed: {
-    isAuthed () { return this.$store.getters.isAuthenticated },
-    me () { return this.$store.state.user }
-  },
-  methods: {
-    async onLogout () {
-      await this.$store.dispatch('logout')
-      this.$router.push({ name: 'login' })
-    }
-  }
-}
+export default { name: 'App' }
 </script>
+
+<style>
+/* chỉnh chiều cao tối thiểu để nội dung không bị dính đáy khi có navbar */
+.app-main{ min-height: calc(100vh - 56px); } /* 56px ~ chiều cao navbar Bootstrap */
+</style>
