@@ -32,12 +32,13 @@ const tokenStore = {
     this.access = null
     this.refresh = null
     localStorage.removeItem('user')
+    localStorage.removeItem('token')
   }
 }
 
 // ---- Request: gắn Authorization ----
 api.interceptors.request.use(config => {
-  const token = tokenStore.access
+  const token = tokenStore.access || localStorage.getItem('token')
   if (token && !config.headers.Authorization) {
     config.headers.Authorization = `Bearer ${token}`
   }
