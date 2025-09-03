@@ -1,32 +1,32 @@
 // src/api/staffService.js
 import api from './axios'
 
-const buildQuery = (p = {}) =>
-  Object.entries(p)
-    .filter(([, v]) => v !== undefined && v !== null && v !== '')
-    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-    .join('&')
+// Với baseURL đã có /api/v1, chỉ cần /staffs
+const prefix = '/staffs'
 
 const StaffService = {
+  /**
+   * params hỗ trợ: { limit, skip, staff_type, department, status, day, q }
+   * (Backend sẽ bỏ qua tham số không dùng)
+   */
   list (params = {}) {
-    const qs = buildQuery(params)
-    return api.get(`/staff${qs ? `?${qs}` : ''}`).then((r) => r.data)
-  },
-  get (id) {
-    return api.get(`/staff/${id}`).then((r) => r.data)
-  },
-  create (payload) {
-    return api.post('/staff', payload).then((r) => r.data)
-  },
-  update (id, payload) {
-    return api.put(`/staff/${id}`, payload).then((r) => r.data)
-  },
-  remove (id) {
-    return api.delete(`/staff/${id}`).then((r) => r.data)
+    return api.get(prefix, { params }).then(r => r.data)
   },
 
-  assignRoles (id, roles = []) {
-    return api.post(`/staff/${id}/roles`, { roles }).then((r) => r.data)
+  get (id) {
+    return api.get(`${prefix}/${encodeURIComponent(id)}`).then(r => r.data)
+  },
+
+  create (payload) {
+    return api.post(prefix, payload).then(r => r.data)
+  },
+
+  update (id, payload) {
+    return api.put(`${prefix}/${encodeURIComponent(id)}`, payload).then(r => r.data)
+  },
+
+  remove (id) {
+    return api.delete(`${prefix}/${encodeURIComponent(id)}`).then(r => r.data)
   }
 }
 
