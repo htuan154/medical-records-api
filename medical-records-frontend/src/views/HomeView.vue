@@ -56,7 +56,7 @@
       <!-- Statistics Cards -->
       <div class="row mb-4">
         <div class="col-xl-3 col-md-6 mb-3" v-for="stat in statistics" :key="stat.title">
-          <div class="card stat-card h-100 border-0 shadow-sm">
+          <div class="card stat-card h-100 border-0 shadow-sm" :class="{ loading: loading }">
             <div class="card-body p-3">
               <div class="d-flex align-items-center">
                 <div class="stat-icon me-3" :style="{ background: stat.gradient }">
@@ -249,41 +249,55 @@
 </template>
 
 <script>
+// Import các service để lấy dữ liệu thực
+import PatientService from '@/api/patientService'
+import StaffService from '@/api/staffService'
+import DoctorService from '@/api/doctorService'
+import UserService from '@/api/userService'
+import RoleService from '@/api/roleService'
+import MedicalRecordService from '@/api/medicalRecordService'
+import AppointmentService from '@/api/appointmentService'
+import MedicalTestService from '@/api/medicalTestService'
+import TreatmentService from '@/api/treatmentService'
+import MedicationService from '@/api/medicationService'
+
 export default {
   name: 'HomeView',
   data () {
     return {
       currentDateTime: '',
+      // Thống kê với dữ liệu động
       statistics: [
         {
           title: 'Tổng bệnh nhân',
-          value: '2,847',
+          value: '0', // sẽ được cập nhật từ API
           icon: 'bi bi-people-fill',
           gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          trend: { isPositive: true, percentage: '12.5' }
+          trend: { isPositive: true, percentage: '0' }
         },
         {
           title: 'Hồ sơ y tế',
-          value: '5,234',
+          value: '0',
           icon: 'bi bi-file-medical-fill',
           gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-          trend: { isPositive: true, percentage: '8.2' }
+          trend: { isPositive: true, percentage: '0' }
         },
         {
-          title: 'Cuộc hẹn hôm nay',
-          value: '156',
-          icon: 'bi bi-calendar-check-fill',
+          title: 'Nhân viên',
+          value: '0',
+          icon: 'bi bi-person-workspace',
           gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-          trend: { isPositive: false, percentage: '3.1' }
+          trend: { isPositive: false, percentage: '0' }
         },
         {
-          title: 'Doanh thu tháng',
-          value: '₫45.2M',
-          icon: 'bi bi-graph-up-arrow',
+          title: 'Người dùng',
+          value: '0',
+          icon: 'bi bi-people-fill',
           gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-          trend: { isPositive: true, percentage: '15.8' }
+          trend: { isPositive: true, percentage: '0' }
         }
       ],
+      // Quick actions giữ nguyên
       quickActions: [
         {
           title: 'Thêm bệnh nhân mới',
@@ -293,11 +307,11 @@ export default {
           route: 'patients'
         },
         {
-          title: 'Tạo cuộc hẹn',
-          description: 'Lên lịch khám bệnh cho bệnh nhân',
-          icon: 'bi bi-calendar-plus-fill',
+          title: 'Quản lý nhân viên',
+          description: 'Quản lý thông tin nhân viên y tế',
+          icon: 'bi bi-person-workspace',
           color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-          route: 'appointments'
+          route: 'staff'
         },
         {
           title: 'Hồ sơ y tế',
@@ -307,85 +321,69 @@ export default {
           route: 'medical-records'
         },
         {
-          title: 'Xét nghiệm',
-          description: 'Quản lý kết quả xét nghiệm',
-          icon: 'bi bi-clipboard2-pulse-fill',
+          title: 'Quản lý người dùng',
+          description: 'Quản lý tài khoản và phân quyền',
+          icon: 'bi bi-people-fill',
           color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-          route: 'medical-tests'
+          route: 'users'
         },
         {
-          title: 'Đơn thuốc',
-          description: 'Kê đơn và quản lý thuốc',
-          icon: 'bi bi-capsule-pill',
+          title: 'Phân quyền',
+          description: 'Quản lý vai trò và quyền hạn',
+          icon: 'bi bi-shield-lock-fill',
           color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-          route: 'medications'
+          route: 'roles'
         },
         {
-          title: 'Hóa đơn',
-          description: 'Quản lý thanh toán và hóa đơn',
-          icon: 'bi bi-receipt-cutoff',
+          title: 'Báo cáo',
+          description: 'Xem báo cáo và thống kê',
+          icon: 'bi bi-bar-chart-fill',
           color: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-          route: 'invoices'
+          route: 'reports'
         }
       ],
+      // Cập nhật với dữ liệu động
       patientManagement: [
-        { title: 'Bệnh nhân', icon: 'bi bi-people-fill', colorClass: 'text-primary', route: 'patients', count: '2,847' },
-        { title: 'Hồ sơ y tế', icon: 'bi bi-file-medical-fill', colorClass: 'text-danger', route: 'medical-records', count: '5,234' },
-        { title: 'Cuộc hẹn', icon: 'bi bi-calendar-check-fill', colorClass: 'text-info', route: 'appointments', count: '1,456' },
-        { title: 'Xét nghiệm', icon: 'bi bi-clipboard2-pulse-fill', colorClass: 'text-success', route: 'medical-tests', count: '892' },
-        { title: 'Điều trị', icon: 'bi bi-heart-pulse-fill', colorClass: 'text-warning', route: 'treatments', count: '634' },
-        { title: 'Đơn thuốc', icon: 'bi bi-capsule-pill', colorClass: 'text-secondary', route: 'medications', count: '1,123' }
+        { title: 'Bệnh nhân', icon: 'bi bi-people-fill', colorClass: 'text-primary', route: 'patients', count: '0' },
+        { title: 'Hồ sơ y tế', icon: 'bi bi-file-medical-fill', colorClass: 'text-danger', route: 'medical-records', count: '0' },
+        { title: 'Cuộc hẹn', icon: 'bi bi-calendar-check-fill', colorClass: 'text-info', route: 'appointments', count: '0' },
+        { title: 'Xét nghiệm', icon: 'bi bi-clipboard2-pulse-fill', colorClass: 'text-success', route: 'medical-tests', count: '0' },
+        { title: 'Điều trị', icon: 'bi bi-heart-pulse-fill', colorClass: 'text-warning', route: 'treatments', count: '0' },
+        { title: 'Đơn thuốc', icon: 'bi bi-capsule-pill', colorClass: 'text-secondary', route: 'medications', count: '0' }
       ],
       systemManagement: [
-        { title: 'Bác sĩ', icon: 'bi bi-person-badge-fill', colorClass: 'text-primary', route: 'doctors', count: '89' },
-        { title: 'Nhân viên', icon: 'bi bi-person-workspace', colorClass: 'text-info', route: 'staff', count: '156' },
-        { title: 'Người dùng', icon: 'bi bi-people-fill', colorClass: 'text-success', route: 'users', count: '245' },
-        { title: 'Phân quyền', icon: 'bi bi-shield-lock-fill', colorClass: 'text-warning', route: 'roles', count: '12' },
-        { title: 'Hóa đơn', icon: 'bi bi-receipt-cutoff', colorClass: 'text-danger', route: 'invoices', count: '3,421' },
-        { title: 'Báo cáo', icon: 'bi bi-bar-chart-fill', colorClass: 'text-secondary', route: 'reports', count: '45' }
+        { title: 'Bác sĩ', icon: 'bi bi-person-badge-fill', colorClass: 'text-primary', route: 'doctors', count: '0' },
+        { title: 'Nhân viên', icon: 'bi bi-person-workspace', colorClass: 'text-info', route: 'staff', count: '0' },
+        { title: 'Người dùng', icon: 'bi bi-people-fill', colorClass: 'text-success', route: 'users', count: '0' },
+        { title: 'Phân quyền', icon: 'bi bi-shield-lock-fill', colorClass: 'text-warning', route: 'roles', count: '0' },
+        { title: 'Hóa đơn', icon: 'bi bi-receipt-cutoff', colorClass: 'text-danger', route: 'invoices', count: '0' },
+        { title: 'Báo cáo', icon: 'bi bi-bar-chart-fill', colorClass: 'text-secondary', route: 'reports', count: '0' }
       ],
       recentActivities: [
         {
           id: 1,
           icon: 'bi bi-person-plus-fill',
           iconClass: 'activity-icon-primary',
-          text: 'Bệnh nhân mới đăng ký: Nguyễn Văn A',
-          time: '5 phút trước'
+          text: 'Hệ thống đã sẵn sàng hoạt động',
+          time: 'Vừa xong'
         },
         {
           id: 2,
-          icon: 'bi bi-file-medical-fill',
+          icon: 'bi bi-shield-check-fill',
           iconClass: 'activity-icon-success',
-          text: 'Hồ sơ y tế được cập nhật',
-          time: '12 phút trước'
-        },
-        {
-          id: 3,
-          icon: 'bi bi-calendar-check-fill',
-          iconClass: 'activity-icon-info',
-          text: 'Cuộc hẹn mới được tạo',
-          time: '28 phút trước'
-        },
-        {
-          id: 4,
-          icon: 'bi bi-clipboard2-pulse-fill',
-          iconClass: 'activity-icon-warning',
-          text: 'Kết quả xét nghiệm sẵn sàng',
-          time: '1 giờ trước'
-        },
-        {
-          id: 5,
-          icon: 'bi bi-receipt-cutoff',
-          iconClass: 'activity-icon-danger',
-          text: 'Hóa đơn mới được thanh toán',
-          time: '2 giờ trước'
+          text: 'Đã tải xong dữ liệu thống kê',
+          time: 'Vừa xong'
         }
-      ]
+      ],
+      // Trạng thái loading
+      loading: true
     }
   },
-  mounted () {
+  async mounted () {
     this.updateDateTime()
-    setInterval(this.updateDateTime, 60000) // Cập nhật mỗi phút
+    setInterval(this.updateDateTime, 60000)
+    // Tải dữ liệu thống kê
+    await this.loadStatistics()
   },
   methods: {
     updateDateTime () {
@@ -398,11 +396,270 @@ export default {
         minute: '2-digit'
       })
     },
+
+    // Hàm tải dữ liệu thống kê từ API
+    async loadStatistics () {
+      this.loading = true
+      try {
+        // Tải tất cả dữ liệu song song
+        const [
+          patientsRes,
+          staffRes,
+          doctorsRes,
+          usersRes,
+          rolesRes,
+          medicalRecordsRes,
+          appointmentsRes,
+          medicalTestsRes,
+          treatmentsRes,
+          medicationsRes
+        ] = await Promise.allSettled([
+          this.getPatientCount(),
+          this.getStaffCount(),
+          this.getDoctorCount(),
+          this.getUserCount(),
+          this.getRoleCount(),
+          this.getMedicalRecordCount(),
+          this.getAppointmentCount(),
+          this.getMedicalTestCount(),
+          this.getTreatmentCount(),
+          this.getMedicationCount()
+        ])
+
+        // Cập nhật thống kê chính
+        if (patientsRes.status === 'fulfilled') {
+          this.statistics[0].value = this.formatNumber(patientsRes.value)
+          this.updateManagementCount('Bệnh nhân', patientsRes.value)
+        }
+
+        if (medicalRecordsRes.status === 'fulfilled') {
+          this.statistics[1].value = this.formatNumber(medicalRecordsRes.value)
+          this.updateManagementCount('Hồ sơ y tế', medicalRecordsRes.value)
+        }
+
+        if (staffRes.status === 'fulfilled') {
+          this.statistics[2].value = this.formatNumber(staffRes.value)
+          this.updateManagementCount('Nhân viên', staffRes.value)
+        }
+
+        if (usersRes.status === 'fulfilled') {
+          this.statistics[3].value = this.formatNumber(usersRes.value)
+          this.updateManagementCount('Người dùng', usersRes.value)
+        }
+
+        // Cập nhật các management counts khác
+        if (doctorsRes.status === 'fulfilled') {
+          this.updateManagementCount('Bác sĩ', doctorsRes.value)
+        }
+
+        if (rolesRes.status === 'fulfilled') {
+          this.updateManagementCount('Phân quyền', rolesRes.value)
+        }
+
+        if (appointmentsRes.status === 'fulfilled') {
+          this.updateManagementCount('Cuộc hẹn', appointmentsRes.value)
+        }
+
+        if (medicalTestsRes.status === 'fulfilled') {
+          this.updateManagementCount('Xét nghiệm', medicalTestsRes.value)
+        }
+
+        if (treatmentsRes.status === 'fulfilled') {
+          this.updateManagementCount('Điều trị', treatmentsRes.value)
+        }
+
+        if (medicationsRes.status === 'fulfilled') {
+          this.updateManagementCount('Đơn thuốc', medicationsRes.value)
+        }
+
+        // Cập nhật hoạt động gần đây
+        this.updateRecentActivities()
+      } catch (error) {
+        console.error('Lỗi khi tải dữ liệu thống kê:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // Các hàm lấy số liệu từ API
+    async getPatientCount () {
+      try {
+        const res = await PatientService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng bệnh nhân:', error)
+        return 0
+      }
+    },
+
+    async getStaffCount () {
+      try {
+        const res = await StaffService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng nhân viên:', error)
+        return 0
+      }
+    },
+
+    async getDoctorCount () {
+      try {
+        const res = await DoctorService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng bác sĩ:', error)
+        return 0
+      }
+    },
+
+    async getUserCount () {
+      try {
+        const res = await UserService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng người dùng:', error)
+        return 0
+      }
+    },
+
+    async getRoleCount () {
+      try {
+        const res = await RoleService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng vai trò:', error)
+        return 0
+      }
+    },
+
+    async getMedicalRecordCount () {
+      try {
+        const res = await MedicalRecordService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng hồ sơ y tế:', error)
+        return 0
+      }
+    },
+
+    async getAppointmentCount () {
+      try {
+        const res = await AppointmentService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng cuộc hẹn:', error)
+        return 0
+      }
+    },
+
+    async getMedicalTestCount () {
+      try {
+        const res = await MedicalTestService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng xét nghiệm:', error)
+        return 0
+      }
+    },
+
+    async getTreatmentCount () {
+      try {
+        const res = await TreatmentService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng điều trị:', error)
+        return 0
+      }
+    },
+
+    async getMedicationCount () {
+      try {
+        const res = await MedicationService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng đơn thuốc:', error)
+        return 0
+      }
+    },
+
+    // Helper function để extract total từ response
+    extractTotal (res) {
+      if (!res) return 0
+
+      // Thử các cấu trúc response khác nhau
+      if (typeof res.total === 'number') return res.total
+      if (typeof res.total_rows === 'number') return res.total_rows
+      if (typeof res.count === 'number') return res.count
+      if (res.data && typeof res.data.total === 'number') return res.data.total
+      if (res.data && typeof res.data.total_rows === 'number') return res.data.total_rows
+      if (res.meta && typeof res.meta.total === 'number') return res.meta.total
+      if (res.pagination && typeof res.pagination.total === 'number') return res.pagination.total
+
+      // Nếu trả về array, đếm length
+      if (Array.isArray(res)) return res.length
+      if (Array.isArray(res.data)) return res.data.length
+      if (Array.isArray(res.items)) return res.items.length
+      if (Array.isArray(res.rows)) return res.rows.length
+
+      return 0
+    },
+
+    // Format số với dấu phẩy
+    formatNumber (num) {
+      if (num === 0) return '0'
+      if (num < 1000) return num.toString()
+      if (num < 1000000) return (num / 1000).toFixed(1) + 'K'
+      return (num / 1000000).toFixed(1) + 'M'
+    },
+
+    // Cập nhật số liệu trong management cards
+    updateManagementCount (title, count) {
+      // Cập nhật trong patientManagement
+      const patientItem = this.patientManagement.find(item => item.title === title)
+      if (patientItem) {
+        patientItem.count = this.formatNumber(count)
+      }
+
+      // Cập nhật trong systemManagement
+      const systemItem = this.systemManagement.find(item => item.title === title)
+      if (systemItem) {
+        systemItem.count = this.formatNumber(count)
+      }
+    },
+
+    // Cập nhật hoạt động gần đây
+    updateRecentActivities () {
+      const now = new Date()
+      this.recentActivities = [
+        {
+          id: 1,
+          icon: 'bi bi-bar-chart-fill',
+          iconClass: 'activity-icon-success',
+          text: `Đã cập nhật thống kê lúc ${now.toLocaleTimeString('vi-VN')}`,
+          time: 'Vừa xong'
+        },
+        {
+          id: 2,
+          icon: 'bi bi-shield-check-fill',
+          iconClass: 'activity-icon-primary',
+          text: 'Hệ thống hoạt động bình thường',
+          time: 'Vừa xong'
+        },
+        ...this.recentActivities.slice(2) // Giữ lại các hoạt động cũ
+      ]
+    },
+
+    // Reload dữ liệu thống kê
+    async refreshStatistics () {
+      await this.loadStatistics()
+    },
+
     navigateTo (routeName) {
       if (routeName && this.$router.hasRoute(routeName)) {
         this.$router.push({ name: routeName })
       }
     },
+
     logout () {
       // Xóa token và thông tin user từ localStorage
       localStorage.removeItem('token')
@@ -431,9 +688,11 @@ export default {
         console.log('Đăng xuất thành công!')
       }
     },
+
     goToProfile () {
       this.$router.push({ name: 'profile' })
     },
+
     goToSettings () {
       this.$router.push({ name: 'settings' })
     }
@@ -669,5 +928,23 @@ export default {
   .action-desc {
     display: none;
   }
+}
+
+/* Thêm loading state cho statistics */
+.stat-card.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.stat-card.loading .stat-number::after {
+  content: '...';
+  animation: loading-dots 1.5s infinite;
+}
+
+@keyframes loading-dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
 }
 </style>
