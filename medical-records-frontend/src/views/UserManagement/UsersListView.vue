@@ -69,7 +69,7 @@
               </td>
             </tr>
 
-            <!-- Row details (giống mẫu Bệnh nhân) -->
+            <!-- Row details -->
             <tr v-if="isExpanded(u)" class="row-detail">
               <td :colspan="10">
                 <div class="detail-sections">
@@ -156,7 +156,7 @@
 
             <div class="col-md-6">
               <label class="form-label">Loại tài khoản</label>
-              <select v-model="form.account_type" class="form-select">
+              <select v-model="form.account_type" class="form-select" @change="onAccountTypeChange">
                 <option value="staff">staff</option>
                 <option value="doctor">doctor</option>
                 <option value="patient">patient</option>
@@ -166,17 +166,37 @@
 
           <div class="section-title">Liên kết</div>
           <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">Linked Staff Id</label>
-              <input v-model.trim="form.linked_staff_id" class="form-control" />
+            <!-- Staff combobox -->
+            <div class="col-md-12" v-if="form.account_type==='staff'">
+              <label class="form-label">Linked Staff</label>
+              <select v-model="form.linked_staff_id" class="form-select">
+                <option value="">-- chọn Staff chưa liên kết --</option>
+                <option v-for="s in unlinked.staffs" :key="s.id" :value="s.id">
+                  {{ s.code ? `${s.code} - ${s.name}` : s.name }}
+                </option>
+              </select>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">Linked Doctor Id</label>
-              <input v-model.trim="form.linked_doctor_id" class="form-control" />
+
+            <!-- Doctor combobox -->
+            <div class="col-md-12" v-else-if="form.account_type==='doctor'">
+              <label class="form-label">Linked Doctor</label>
+              <select v-model="form.linked_doctor_id" class="form-select">
+                <option value="">-- chọn Doctor chưa liên kết --</option>
+                <option v-for="d in unlinked.doctors" :key="d.id" :value="d.id">
+                  {{ d.code ? `${d.code} - ${d.name}` : d.name }}
+                </option>
+              </select>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">Linked Patient Id</label>
-              <input v-model.trim="form.linked_patient_id" class="form-control" />
+
+            <!-- Patient combobox -->
+            <div class="col-md-12" v-else-if="form.account_type==='patient'">
+              <label class="form-label">Linked Patient</label>
+              <select v-model="form.linked_patient_id" class="form-select">
+                <option value="">-- chọn Patient chưa liên kết --</option>
+                <option v-for="p in unlinked.patients" :key="p.id" :value="p.id">
+                  {{ p.code ? `${p.code} - ${p.name}` : p.name }}
+                </option>
+              </select>
             </div>
           </div>
 
@@ -203,6 +223,9 @@
 
 <script>
 import UserService from '@/api/userService'
+import StaffService from '@/api/staffService'
+import DoctorService from '@/api/doctorService'
+import PatientService from '@/api/patientService'
 
 export default {
   name: 'UsersListView',
@@ -222,7 +245,13 @@ export default {
       editingId: null,
       form: this.emptyForm(),
       // expand
-      expanded: {}
+      expanded: {},
+      // unlinked lists for combobox
+      unlinked: {
+        staffs: [],
+        doctors: [],
+        patients: []
+      }
     }
   },
   created () { this.fetch() },
@@ -245,7 +274,7 @@ export default {
       }
     },
 
-    // --- UI helpers
+    // ================= Helpers =================
     joinRoles (v) { return Array.isArray(v) ? v.join(', ') : (v || '-') },
     linkedAny (row) {
       if (row.account_type === 'doctor') return row.linked_doctor_id || '-'
@@ -261,7 +290,78 @@ export default {
       this.expanded = { ...this.expanded, [id]: !this.expanded[id] }
     },
 
-    // --- Data
+    // => RÚT MẢNG TỪ NHIỀU KIỂU RESPONSE
+    arrFromResponse (res) {
+      if (!res) return []
+      if (Array.isArray(res)) return res
+      if (Array.isArray(res.items)) return res.items
+      if (Array.isArray(res.data)) return res.data
+      if (res.rows && Array.isArray(res.rows)) return res.rows.map(r => r.doc || r.value || r)
+      if (res.data?.items && Array.isArray(res.data.items)) return res.data.items
+      if (Array.isArray(res.result)) return res.result
+      if (res.result?.items && Array.isArray(res.result.items)) return res.result.items
+      return []
+    },
+
+    // ======== Unlinked helpers (lọc FE) ========
+    _isUnlinked (x) { return !x?.userId && !x?.linkedUserId && !x?.hasAccount },
+    _pick (o, keys, fb) { for (const k of keys) if (o && o[k] != null && o[k] !== '') return o[k]; return fb },
+    _toItems (arr, ids, codes, names) {
+      return (arr || []).map(x => ({
+        id: this._pick(x, ids, x.id || x._id),
+        code: this._pick(x, codes, ''),
+        name: this._pick(x, names, x.fullName || x.name || `#${x.id || x._id}`)
+      }))
+    },
+
+    // ======== NẠP COMBOBOX (KHÔNG GỬI QUERY) ========
+    async _loadUnlinkedStaffs () {
+      try {
+        // Không gửi tham số -> tránh 401 do rule BE
+        const res = await StaffService.list()
+        const rawAll = this.arrFromResponse(res)
+        const raw = rawAll.filter(this._isUnlinked)
+        this.unlinked.staffs = this._toItems(raw, ['id', 'staffId', '_id'], ['code', 'staffCode'], ['fullName', 'name', 'displayName'])
+      } catch (e) {
+        console.error('Load staffs failed', e)
+        this.unlinked.staffs = []
+      }
+    },
+    async _loadUnlinkedDoctors () {
+      try {
+        const res = await DoctorService.list()
+        const rawAll = this.arrFromResponse(res)
+        const raw = rawAll.filter(this._isUnlinked)
+        this.unlinked.doctors = this._toItems(raw, ['id', 'doctorId', '_id'], ['licenseNumber', 'code'], ['fullName', 'name', 'displayName'])
+      } catch (e) {
+        console.error('Load doctors failed', e)
+        this.unlinked.doctors = []
+      }
+    },
+    async _loadUnlinkedPatients () {
+      try {
+        const res = await PatientService.list() // <— KHÔNG GỬI ?limit=1 nữa
+        const rawAll = this.arrFromResponse(res)
+        const raw = rawAll.filter(this._isUnlinked)
+        this.unlinked.patients = this._toItems(raw, ['id', 'patientId', '_id'], ['patientCode', 'code'], ['fullName', 'name', 'displayName'])
+      } catch (e) {
+        console.error('Load patients failed', e)
+        this.unlinked.patients = []
+      }
+    },
+
+    async onAccountTypeChange () {
+      // reset các field liên kết
+      this.form.linked_staff_id = ''
+      this.form.linked_doctor_id = ''
+      this.form.linked_patient_id = ''
+      // nạp danh sách phù hợp (không param)
+      if (this.form.account_type === 'staff') await this._loadUnlinkedStaffs()
+      else if (this.form.account_type === 'doctor') await this._loadUnlinkedDoctors()
+      else if (this.form.account_type === 'patient') await this._loadUnlinkedPatients()
+    },
+
+    // --- Data (Users list) — GIỮ NGUYÊN limit/skip như code bạn chạy được
     async fetch () {
       this.loading = true
       this.error = ''
@@ -283,7 +383,6 @@ export default {
           items = res.data; total = res.total ?? items.length
         } else if (Array.isArray(res)) { items = res; total = res.length }
 
-        // map tối thiểu
         this.items = items.map(d => ({
           ...d,
           role_names: Array.isArray(d.role_names) ? d.role_names : (d.role ? [d.role] : [])
@@ -310,6 +409,7 @@ export default {
       this.editingId = null
       this.form = this.emptyForm()
       this.showModal = true
+      this.onAccountTypeChange() // load unlinked theo 'staff' mặc định
     },
     openEdit (row) {
       this.editingId = row._id || row.id || row.username
@@ -329,6 +429,7 @@ export default {
         status: row.status || 'active'
       }
       this.showModal = true
+      this.onAccountTypeChange()
     },
     close () { if (!this.saving) this.showModal = false },
 
@@ -342,9 +443,9 @@ export default {
           email: this.form.email,
           role_names: this.form.role ? [this.form.role] : (Array.isArray(this.form.role_names) ? this.form.role_names : []),
           account_type: this.form.account_type,
-          linked_staff_id: this.form.linked_staff_id || undefined,
-          linked_doctor_id: this.form.linked_doctor_id || undefined,
-          linked_patient_id: this.form.linked_patient_id || undefined,
+          linked_staff_id: this.form.account_type === 'staff' ? (this.form.linked_staff_id || undefined) : undefined,
+          linked_doctor_id: this.form.account_type === 'doctor' ? (this.form.linked_doctor_id || undefined) : undefined,
+          linked_patient_id: this.form.account_type === 'patient' ? (this.form.linked_patient_id || undefined) : undefined,
           status: this.form.status
         }
         if (!this.editingId && this.form.password) payload.password = this.form.password
@@ -387,7 +488,7 @@ export default {
 /* table */
 :deep(table.table) th, :deep(table.table) td { vertical-align: middle; }
 
-/* row detail style (giống mẫu bệnh nhân) */
+/* row detail style */
 .row-detail td { background: #fff; }
 .detail-sections { border-top: 1px solid #e5e7eb; padding: 12px 10px 6px; }
 .detail-title { font-weight: 700; color: #111827; margin: 8px 0; }

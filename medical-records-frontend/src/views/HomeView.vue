@@ -195,55 +195,6 @@
         </div>
       </div>
 
-      <!-- System Status -->
-      <div class="row">
-        <div class="col-12">
-          <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-0">
-              <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">
-                  <i class="bi bi-shield-check text-success me-2"></i>
-                  Trạng thái hệ thống
-                </h5>
-                <div class="system-status">
-                  <span class="badge bg-success">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Hoạt động bình thường
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="row text-center">
-                <div class="col-md-3 col-6 mb-3">
-                  <div class="system-metric">
-                    <div class="metric-value text-success">99.9%</div>
-                    <div class="metric-label">Uptime</div>
-                  </div>
-                </div>
-                <div class="col-md-3 col-6 mb-3">
-                  <div class="system-metric">
-                    <div class="metric-value text-primary">245ms</div>
-                    <div class="metric-label">Độ trễ trung bình</div>
-                  </div>
-                </div>
-                <div class="col-md-3 col-6 mb-3">
-                  <div class="system-metric">
-                    <div class="metric-value text-warning">15GB</div>
-                    <div class="metric-label">Dung lượng sử dụng</div>
-                  </div>
-                </div>
-                <div class="col-md-3 col-6 mb-3">
-                  <div class="system-metric">
-                    <div class="metric-value text-info">1,234</div>
-                    <div class="metric-label">Phiên hoạt động</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
