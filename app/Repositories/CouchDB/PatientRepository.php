@@ -14,6 +14,27 @@ class PatientRepository extends BaseCouchRepository implements PatientsRepositor
         parent::__construct($client);
     }
 
+
+    public function get(string $id): array
+    {
+        return parent::get($id);
+    }
+
+    public function create(array $data): array
+    {
+        return parent::create($data);
+    }
+
+    public function update(string $id, array $data): array
+    {
+        return parent::update($id, $data);
+    }
+
+    public function delete(string $id, string $rev): array
+    {
+        return parent::delete($id, $rev);
+    }
+
     /** Danh sách đầy đủ kèm include_docs */
     public function allFull(int $limit = 50, int $skip = 0): array
     {

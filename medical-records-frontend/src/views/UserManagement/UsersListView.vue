@@ -134,18 +134,20 @@
             </div>
 
             <div class="col-md-6" v-if="!editingId">
-              <label class="form-label">Mật khẩu (tạo mới)</label>
-              <input v-model="form.password" type="text" class="form-control" placeholder="Để trống nếu không đổi" />
+              <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+              <input v-model="form.password" type="password" class="form-control" required
+                     placeholder="Nhập mật khẩu cho tài khoản mới" />
             </div>
             <div class="col-md-6" v-else>
-              <label class="form-label">Mật khẩu mới (khi sửa)</label>
-              <input v-model="form.newPassword" type="text" class="form-control" placeholder="Bỏ trống nếu không đổi" />
+              <label class="form-label">Mật khẩu mới</label>
+              <input v-model="form.newPassword" type="password" class="form-control"
+                     placeholder="Bỏ trống nếu không đổi mật khẩu" />
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Vai trò</label>
-              <select v-model="form.role" class="form-select">
-                <option value="">-- chọn --</option>
+              <label class="form-label">Vai trò <span class="text-danger">*</span></label>
+              <select v-model="form.role" class="form-select" required @change="onRoleChange">
+                <option value="">-- chọn vai trò --</option>
                 <option value="admin">admin</option>
                 <option value="doctor">doctor</option>
                 <option value="nurse">nurse</option>
@@ -155,8 +157,8 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Loại tài khoản</label>
-              <select v-model="form.account_type" class="form-select" @change="onAccountTypeChange">
+              <label class="form-label">Loại tài khoản <small class="text-muted">(auto từ vai trò)</small></label>
+              <select v-model="form.account_type" class="form-select" disabled>
                 <option value="staff">staff</option>
                 <option value="doctor">doctor</option>
                 <option value="patient">patient</option>
@@ -164,11 +166,22 @@
             </div>
           </div>
 
-          <div class="section-title">Liên kết</div>
+          <div class="section-title">
+            Liên kết
+            <small class="text-muted">
+              ({{ form.role === 'doctor' ? 'Bác sĩ' :
+                   form.role === 'patient' ? 'Bệnh nhân' :
+                   'Nhân viên' }})
+            </small>
+          </div>
+
           <div class="row g-3">
-            <!-- Staff combobox -->
-            <div class="col-md-12" v-if="form.account_type==='staff'">
-              <label class="form-label">Linked Staff</label>
+            <!-- Staff combobox - cho admin, nurse, receptionist -->
+            <div class="col-md-12" v-if="form.account_type === 'staff'">
+              <label class="form-label">
+                Linked Staff
+                <small class="text-muted">(cho {{ form.role || 'admin/nurse/receptionist' }})</small>
+              </label>
               <select v-model="form.linked_staff_id" class="form-select">
                 <option value="">-- chọn Staff chưa liên kết --</option>
                 <option v-for="s in unlinked.staffs" :key="s.id" :value="s.id">
@@ -177,9 +190,12 @@
               </select>
             </div>
 
-            <!-- Doctor combobox -->
-            <div class="col-md-12" v-else-if="form.account_type==='doctor'">
-              <label class="form-label">Linked Doctor</label>
+            <!-- Doctor combobox - chỉ cho doctor -->
+            <div class="col-md-12" v-else-if="form.account_type === 'doctor'">
+              <label class="form-label">
+                Linked Doctor
+                <small class="text-muted">(cho vai trò doctor)</small>
+              </label>
               <select v-model="form.linked_doctor_id" class="form-select">
                 <option value="">-- chọn Doctor chưa liên kết --</option>
                 <option v-for="d in unlinked.doctors" :key="d.id" :value="d.id">
@@ -188,9 +204,12 @@
               </select>
             </div>
 
-            <!-- Patient combobox -->
-            <div class="col-md-12" v-else-if="form.account_type==='patient'">
-              <label class="form-label">Linked Patient</label>
+            <!-- Patient combobox - chỉ cho patient -->
+            <div class="col-md-12" v-else-if="form.account_type === 'patient'">
+              <label class="form-label">
+                Linked Patient
+                <small class="text-muted">(cho vai trò patient)</small>
+              </label>
               <select v-model="form.linked_patient_id" class="form-select">
                 <option value="">-- chọn Patient chưa liên kết --</option>
                 <option v-for="p in unlinked.patients" :key="p.id" :value="p.id">
@@ -367,13 +386,20 @@ export default {
       this.error = ''
       try {
         const skip = (this.page - 1) * this.pageSize
-        const res = await UserService.list({
-          q: this.q || undefined,
+        const params = {
           limit: this.pageSize,
           offset: skip,
           skip
-        })
-        // normalize CouchDB / Laravel
+        }
+
+        // ✅ Thêm search param nếu có
+        if (this.q?.trim()) {
+          params.username = this.q.trim() // Backend hỗ trợ search by username
+        }
+
+        const res = await UserService.list(params)
+
+        // normalize response
         let items = []; let total = 0; let offset = null
         if (res && Array.isArray(res.rows)) {
           items = (res.rows || []).map(r => r.doc || r.value || r)
@@ -381,7 +407,9 @@ export default {
           offset = res.offset ?? 0
         } else if (res && res.data && Array.isArray(res.data)) {
           items = res.data; total = res.total ?? items.length
-        } else if (Array.isArray(res)) { items = res; total = res.length }
+        } else if (Array.isArray(res)) {
+          items = res; total = res.length
+        }
 
         this.items = items.map(d => ({
           ...d,
@@ -433,23 +461,51 @@ export default {
     },
     close () { if (!this.saving) this.showModal = false },
 
+    // ✅ SỬA: Validation form trước khi save
     async save () {
       if (this.saving) return
+
+      // ✅ Validate required fields
+      if (!this.form.username?.trim()) {
+        alert('Username là bắt buộc')
+        return
+      }
+      if (!this.form.email?.trim()) {
+        alert('Email là bắt buộc')
+        return
+      }
+      if (!this.form.role?.trim()) {
+        alert('Vai trò là bắt buộc')
+        return
+      }
+      if (!this.editingId && !this.form.password?.trim()) {
+        alert('Mật khẩu là bắt buộc khi tạo mới')
+        return
+      }
+
       this.saving = true
       try {
         const payload = {
           type: 'user',
-          username: this.form.username,
-          email: this.form.email,
-          role_names: this.form.role ? [this.form.role] : (Array.isArray(this.form.role_names) ? this.form.role_names : []),
+          username: this.form.username.trim(),
+          email: this.form.email.trim(),
+          role_names: this.form.role ? [this.form.role] : [],
           account_type: this.form.account_type,
           linked_staff_id: this.form.account_type === 'staff' ? (this.form.linked_staff_id || undefined) : undefined,
           linked_doctor_id: this.form.account_type === 'doctor' ? (this.form.linked_doctor_id || undefined) : undefined,
           linked_patient_id: this.form.account_type === 'patient' ? (this.form.linked_patient_id || undefined) : undefined,
           status: this.form.status
         }
-        if (!this.editingId && this.form.password) payload.password = this.form.password
-        if (this.editingId && this.form.newPassword) payload.password = this.form.newPassword
+
+        // ✅ Password handling
+        if (!this.editingId && this.form.password?.trim()) {
+          payload.password = this.form.password.trim()
+        }
+        if (this.editingId && this.form.newPassword?.trim()) {
+          payload.password = this.form.newPassword.trim()
+        }
+
+        // ✅ CouchDB fields
         if (this.form._id) payload._id = this.form._id
         if (this.form._rev) payload._rev = this.form._rev
 
@@ -469,16 +525,56 @@ export default {
       }
     },
 
+    // ✅ SỬA: Remove với error handling tốt hơn
     async remove (row) {
       if (!confirm(`Xóa người dùng "${row.username}"?`)) return
+
       try {
-        const id = row._id || row.id || row.username
-        await UserService.remove(id)
+        const id = row._id || row.id
+        if (!id) {
+          alert('Không tìm thấy ID người dùng')
+          return
+        }
+
+        const rev = row._rev
+        if (!rev) {
+          alert('Không tìm thấy revision của document')
+          return
+        }
+
+        await UserService.remove(id, rev)
+        alert('Xóa thành công!')
         await this.fetch()
       } catch (e) {
         console.error(e)
         alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
       }
+    },
+
+    // ✅ THÊM: Auto mapping role → account_type
+    getRoleMapping (role) {
+      const mapping = {
+        doctor: 'doctor',
+        patient: 'patient',
+        admin: 'staff',
+        nurse: 'staff',
+        receptionist: 'staff'
+      }
+      return mapping[role] || 'staff'
+    },
+
+    // ✅ SỬA: onRoleChange - auto update account_type khi đổi role
+    onRoleChange () {
+      // Auto update account_type dựa vào role
+      this.form.account_type = this.getRoleMapping(this.form.role)
+
+      // Reset các field liên kết
+      this.form.linked_staff_id = ''
+      this.form.linked_doctor_id = ''
+      this.form.linked_patient_id = ''
+
+      // Load danh sách tương ứng
+      this.onAccountTypeChange()
     }
   }
 }

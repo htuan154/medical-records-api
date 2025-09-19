@@ -3,12 +3,14 @@
 namespace App\Services\CouchDB;
 
 use App\Repositories\CouchDB\PatientRepository;
+use App\Repositories\CouchDB\UsersRepository;
 
 class PatientService
 {
     public function __construct(
         private CouchClient $client,
-        private PatientRepository $repo
+        private PatientRepository $repo,
+        private UsersRepository $usersRepo  // ✅ Add this property
     ) {}
 
     /** Tạo/cập nhật design doc _design/patients để tránh not_found view */
@@ -99,13 +101,92 @@ JS
         return ['status' => (!empty($res['ok']) ? 200 : 400), 'data' => $res];
     }
 
-    /** Xoá – yêu cầu rev */
+    /** Xoá – yêu cầu rev và validate kết quả */
     public function delete(string $id, ?string $rev): array
     {
         if (!$rev) {
-            return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Missing rev parameter']];
+            return [
+                'status' => 400,
+                'data' => [
+                    'error' => 'missing_rev',
+                    'reason' => 'Revision parameter is required for delete operation'
+                ]
+            ];
         }
-        $res = $this->repo->delete($id, $rev);
-        return ['status' => (!empty($res['ok']) ? 200 : 400), 'data' => $res];
+
+        try {
+            // ✅ BƯỚC 1: Tìm User liên kết với Patient này
+            $linkedUsers = $this->usersRepo->byPatient($id);
+
+            // ✅ BƯỚC 2: Xóa Patient trước
+            $result = $this->repo->delete($id, $rev);
+
+            // Check nếu CouchDB trả về error
+            if (isset($result['error'])) {
+                $status = match($result['error']) {
+                    'not_found' => 404,
+                    'conflict' => 409,
+                    default => 400
+                };
+
+                return [
+                    'status' => $status,
+                    'data' => $result
+                ];
+            }
+
+            // ✅ BƯỚC 3: Cascade delete User liên kết
+            $deletedUsers = [];
+            if (isset($result['ok']) && $result['ok'] === true && !empty($linkedUsers['rows'])) {
+                foreach ($linkedUsers['rows'] as $row) {
+                    $userDoc = $row['doc'] ?? $row['value'] ?? $row;
+                    if (isset($userDoc['_id']) && isset($userDoc['_rev'])) {
+                        try {
+                            $userDeleteResult = $this->usersRepo->delete($userDoc['_id'], $userDoc['_rev']);
+                            if (isset($userDeleteResult['ok']) && $userDeleteResult['ok']) {
+                                $deletedUsers[] = $userDoc['_id'];
+                            }
+                        } catch (\Exception $e) {
+                            error_log("Failed to delete linked user {$userDoc['_id']}: " . $e->getMessage());
+                        }
+                    }
+                }
+            }
+
+            // ✅ BƯỚC 4: Return kết quả với thông tin cascade
+            if (isset($result['ok']) && $result['ok'] === true) {
+                return [
+                    'status' => 200,
+                    'data' => [
+                        'ok' => true,
+                        'id' => $result['id'] ?? $id,
+                        'rev' => $result['rev'] ?? null,
+                        'cascade_deleted_users' => $deletedUsers,
+                        'message' => count($deletedUsers) > 0
+                            ? "Patient và " . count($deletedUsers) . " user liên kết đã được xóa"
+                            : "Patient đã được xóa"
+                    ]
+                ];
+            }
+
+            return [
+                'status' => 400,
+                'data' => [
+                    'error' => 'unknown_result',
+                    'reason' => 'Delete operation did not return expected result',
+                    'result' => $result
+                ]
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'status' => 500,
+                'data' => [
+                    'error' => 'delete_failed',
+                    'message' => $e->getMessage()
+                ]
+            ];
+        }
     }
+
 }

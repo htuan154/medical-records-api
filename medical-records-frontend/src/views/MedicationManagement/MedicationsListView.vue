@@ -421,12 +421,26 @@ export default {
 
     async remove (row) {
       if (!confirm(`Xóa thuốc "${row.name || 'này'}"?`)) return
+
       try {
         const id = row._id || row.id
-        await MedicationService.remove(id)
+        if (!id) {
+          alert('Không tìm thấy ID thuốc')
+          return
+        }
+
+        const rev = row._rev
+        if (!rev) {
+          alert('Không tìm thấy revision của document')
+          return
+        }
+
+        // ✅ Truyền cả id và rev
+        await MedicationService.remove(id, rev)
+        alert('Xóa thành công!')
         await this.fetch()
       } catch (e) {
-        console.error(e)
+        console.error('Remove error:', e)
         alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
       }
     }

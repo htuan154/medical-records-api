@@ -112,9 +112,58 @@ JS
     public function delete(string $id, ?string $rev): array
     {
         if (!$rev) {
-            return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Missing rev']];
+            return [
+                'status' => 400,
+                'data' => [
+                    'error' => 'missing_rev',
+                    'reason' => 'Revision parameter is required for delete operation'
+                ]
+            ];
         }
-        $res = $this->repo->delete($id, $rev);
-        return ['status' => (!empty($res['ok']) ? 200 : 400), 'data' => $res];
+
+        try {
+            $result = $this->repo->delete($id, $rev);
+
+            // Check nếu CouchDB trả về error
+            if (isset($result['error'])) {
+                $status = match($result['error']) {
+                    'not_found' => 404,
+                    'conflict' => 409,
+                    default => 400
+                };
+
+                return [
+                    'status' => $status,
+                    'data' => $result
+                ];
+            }
+
+            // Check nếu operation thành công
+            if (isset($result['ok']) && $result['ok'] === true) {
+                return [
+                    'status' => 200,
+                    'data' => $result
+                ];
+            }
+
+            // Trường hợp không xác định được kết quả
+            return [
+                'status' => 400,
+                'data' => [
+                    'error' => 'unknown_result',
+                    'reason' => 'Delete operation did not return expected result',
+                    'result' => $result
+                ]
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'status' => 500,
+                'data' => [
+                    'error' => 'delete_failed',
+                    'message' => $e->getMessage()
+                ]
+            ];
+        }
     }
 }

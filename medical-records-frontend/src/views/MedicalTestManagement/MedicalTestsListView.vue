@@ -529,11 +529,26 @@ export default {
       }
     },
 
+    // ✅ FIX: Remove với rev parameter
     async remove (row) {
       if (!confirm(`Xóa xét nghiệm "${row.name || 'này'}"?`)) return
+
       try {
         const id = row._id || row.id
-        await MedicalTestService.remove(id)
+        if (!id) {
+          alert('Không tìm thấy ID xét nghiệm')
+          return
+        }
+
+        const rev = row._rev
+        if (!rev) {
+          alert('Không tìm thấy revision của document')
+          return
+        }
+
+        // ✅ Truyền cả id và rev
+        await MedicalTestService.remove(id, rev)
+        alert('Xóa thành công!')
         await this.fetch()
       } catch (e) {
         console.error('Remove error:', e)

@@ -10,5 +10,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 
 // Bootstrap JS bundle (đã gồm Popper)
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import { initAuth } from './api/axios'
+initAuth()
 
 createApp(App).use(store).use(router).mount('#app')

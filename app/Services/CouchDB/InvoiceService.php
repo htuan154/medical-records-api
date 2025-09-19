@@ -3,12 +3,14 @@
 namespace App\Services\CouchDB;
 
 use App\Repositories\CouchDB\InvoicesRepository;
+use App\Repositories\CouchDB\MedicationsRepository;
 
 class InvoiceService
 {
     public function __construct(
         private CouchClient $client,
-        private InvoicesRepository $repo
+        private InvoicesRepository $repo,
+        private MedicationsRepository $medicationsRepo  // ✅ Inject MedicationsRepository
     ) {}
 
     /** Đảm bảo _design/invoices tồn tại với các view cần thiết */
@@ -113,7 +115,60 @@ JS
         $data['type']       = $data['type'] ?? 'invoice';
         $data['created_at'] = $data['created_at'] ?? now()->toIso8601String();
         $data['updated_at'] = $data['updated_at'] ?? now()->toIso8601String();
-        return $this->repo->create($data);
+        
+        try {
+            // ✅ BƯỚC 1: Tạo invoice
+            $invoiceResult = $this->repo->create($data);
+            
+            if (!isset($invoiceResult['ok']) || !$invoiceResult['ok']) {
+                return $invoiceResult;
+            }
+            
+            // ✅ BƯỚC 2: Decrease medication stock nếu có
+            $this->decreaseMedicationStock($data['services'] ?? []);
+            
+            return $invoiceResult;
+            
+        } catch (\Exception $e) {
+            return [
+                'error' => 'create_failed',
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
+    // ✅ NEW: Decrease medication stock
+    private function decreaseMedicationStock(array $services): void
+    {
+        foreach ($services as $service) {
+            if (
+                ($service['service_type'] ?? '') === 'medication' && 
+                !empty($service['medication_id']) && 
+                ($service['quantity'] ?? 0) > 0
+            ) {
+                try {
+                    $medicationId = $service['medication_id'];
+                    $quantity = (int) $service['quantity'];
+                    
+                    // Get current medication doc
+                    $medicationDoc = $this->medicationsRepo->get($medicationId);
+                    
+                    if (!isset($medicationDoc['error'])) {
+                        $currentStock = (int) ($medicationDoc['inventory']['current_stock'] ?? 0);
+                        $newStock = max(0, $currentStock - $quantity);
+                        
+                        // Update stock
+                        $medicationDoc['inventory']['current_stock'] = $newStock;
+                        $medicationDoc['updated_at'] = now()->toIso8601String();
+                        
+                        $this->medicationsRepo->update($medicationId, $medicationDoc);
+                    }
+                } catch (\Exception $e) {
+                    // Log error but don't fail invoice creation
+                    error_log("Failed to decrease medication stock for {$medicationId}: " . $e->getMessage());
+                }
+            }
+        }
     }
 
     public function update(string $id, array $data): array
@@ -130,9 +185,55 @@ JS
     public function delete(string $id, ?string $rev): array
     {
         if (!$rev) {
-            return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Missing rev']];
+            return [
+                'status' => 400,
+                'data' => [
+                    'error' => 'missing_rev',
+                    'reason' => 'Revision parameter is required for delete operation'
+                ]
+            ];
         }
-        $res = $this->repo->delete($id, $rev);
-        return ['status' => (!empty($res['ok']) ? 200 : 400), 'data' => $res];
+
+        try {
+            $result = $this->repo->delete($id, $rev);
+            
+            if (isset($result['error'])) {
+                $status = match($result['error']) {
+                    'not_found' => 404,
+                    'conflict' => 409,
+                    default => 400
+                };
+                
+                return [
+                    'status' => $status,
+                    'data' => $result
+                ];
+            }
+            
+            if (isset($result['ok']) && $result['ok'] === true) {
+                return [
+                    'status' => 200,
+                    'data' => $result
+                ];
+            }
+            
+            return [
+                'status' => 400,
+                'data' => [
+                    'error' => 'unknown_result',
+                    'reason' => 'Delete operation did not return expected result',
+                    'result' => $result
+                ]
+            ];
+            
+        } catch (\Exception $e) {
+            return [
+                'status' => 500,
+                'data' => [
+                    'error' => 'delete_failed',
+                    'message' => $e->getMessage()
+                ]
+            ];
+        }
     }
 }

@@ -158,11 +158,39 @@ class CouchClient
     public function delete(string $id, string $rev): array
     {
         $this->ensureDb();
+
+        if (empty($rev)) {
+            return [
+                'ok' => false,
+                'error' => 'bad_request',
+                'reason' => 'Missing revision parameter'
+            ];
+        }
+
         try {
-            $res = $this->http()->delete("/{$this->db}/".ltrim($id, '/'), ['rev' => $rev]);
-            return $this->parseJson($res);
+
+            $url = "/{$this->db}/" . ltrim($id, '/') . "?rev=" . urlencode($rev);
+
+            $res = $this->http()
+                ->withOptions(['http_errors' => false])  // Không throw exception cho 4xx/5xx
+                ->delete($url);
+
+            // Parse response
+            $data = $this->parseJson($res);
+
+            // Nếu status không phải 200/201/202, CouchDB sẽ trả về error trong body
+            if ($res->status() >= 400) {
+                return $data; // Trả về error response từ CouchDB
+            }
+
+            return $data;
+
         } catch (ConnectionException|RequestException $e) {
-            throw new RuntimeException('CouchDB delete error: '.$e->getMessage(), 0, $e);
+            return [
+                'ok' => false,
+                'error' => 'connection_error',
+                'reason' => $e->getMessage()
+            ];
         }
     }
 

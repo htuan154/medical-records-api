@@ -18,7 +18,14 @@ const MedicalRecordService = {
   update (id, payload) {
     return api.put(`/medical-records/${id}`, payload).then((r) => r.data)
   },
-  remove (id) {
+
+  // ✅ FIX: Thêm rev parameter support
+  remove (id, rev) {
+    // Nếu có rev, truyền qua query parameter
+    if (rev) {
+      return api.delete(`/medical-records/${id}?rev=${encodeURIComponent(rev)}`).then((r) => r.data)
+    }
+    // Nếu không có rev, gọi như cũ (backend sẽ tự lấy rev)
     return api.delete(`/medical-records/${id}`).then((r) => r.data)
   },
 

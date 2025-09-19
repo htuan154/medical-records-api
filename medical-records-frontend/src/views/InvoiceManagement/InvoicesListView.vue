@@ -104,10 +104,22 @@
         </tbody>
       </table>
 
+      <!-- ✅ BETTER: Enhanced pagination với page selector -->
       <div class="d-flex justify-content-between align-items-center">
-        <div>Trang {{ page }} / {{ Math.max(1, Math.ceil((total || 0) / pageSize)) }}</div>
-        <div class="btn-group">
+        <div>
+          Trang {{ page }} / {{ Math.max(1, Math.ceil((total || 0) / pageSize)) }}
+          <span class="text-muted">({{ total || 0 }} tổng)</span>
+        </div>
+
+        <!-- Page selector -->
+        <div class="d-flex align-items-center gap-2">
           <button class="btn btn-outline-secondary" @click="prev" :disabled="page <= 1 || loading">‹ Trước</button>
+
+          <!-- Quick page jumps -->
+          <select v-model.number="page" class="form-select form-select-sm" style="width: auto;" @change="fetch">
+            <option v-for="p in Math.min(10, Math.ceil((total || 0) / pageSize))" :key="p" :value="p">{{ p }}</option>
+          </select>
+
           <button class="btn btn-outline-secondary" @click="next" :disabled="!hasMore || loading">Sau ›</button>
         </div>
       </div>
@@ -171,26 +183,121 @@
               <thead>
               <tr>
                 <th style="width:16%">Loại</th>
-                <th style="width:40%">Mô tả</th>
+                <th style="width:36%">Mô tả / Thuốc</th>
                 <th style="width:10%" class="text-end">SL</th>
                 <th style="width:16%" class="text-end">Đơn giá</th>
                 <th style="width:16%" class="text-end">Thành tiền</th>
-                <th style="width:2%"></th>
+                <th style="width:6%"></th>
               </tr>
               </thead>
               <tbody>
               <tr v-for="(s, i) in form.services" :key="i">
-                <td><input v-model.trim="s.service_type" class="form-control form-control-sm" placeholder="consultation / medication / ..."/></td>
-                <td><input v-model.trim="s.description" class="form-control form-control-sm" placeholder="Mô tả dịch vụ"/></td>
-                <td><input v-model.number="s.quantity" type="number" min="0" class="form-control form-control-sm text-end" @input="recalcService(i)"/></td>
-                <td><input v-model.number="s.unit_price" type="number" min="0" class="form-control form-control-sm text-end" @input="recalcService(i)"/></td>
+                <td>
+                  <select v-model="s.service_type" class="form-select form-select-sm" @change="onServiceTypeChange(i)" :disabled="s.medication_id">
+                    <option value="consultation">Khám bệnh</option>
+                    <option value="medication">Thuốc</option>
+                    <option value="test">Xét nghiệm</option>
+                    <option value="procedure">Thủ thuật</option>
+                  </select>
+                </td>
+                <td>
+                  <!-- ✅ Medication lookup -->
+                  <div v-if="s.service_type === 'medication'" class="position-relative">
+                    <!-- Select dropdown -->
+                    <select
+                      v-if="!s.medication_id"
+                      v-model="s.selected_medication_temp"
+                      class="form-select form-select-sm"
+                      @change="onMedicationSelect(i)"
+                      @focus="loadMedicationOptions"
+                    >
+                      <option value="">-- Chọn thuốc --</option>
+                      <optgroup v-for="group in groupedMedications" :key="group.label" :label="group.label">
+                        <option
+                          v-for="med in group.medications"
+                          :key="med._id"
+                          :value="med._id"
+                        >
+                          {{ getMedicationName(med) }} ({{ getMedicationStrength(med) }}) - {{ formatPrice(getMedicationPrice(med)) }}đ - Tồn: {{ getMedicationStock(med) }}
+                        </option>
+                      </optgroup>
+                    </select>
+
+                    <!-- Selected medication display -->
+                    <div v-if="s.medication_id" class="selected-medication">
+                      <div class="fw-bold text-success">✓ {{ s.description }}</div>
+                      <div class="small text-muted">
+                        Giá: {{ formatPrice(s.unit_price) }}đ | Tồn: {{ s.available_stock || 0 }}
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-secondary ms-2"
+                          @click="clearMedication(i)"
+                        >
+                          Đổi thuốc
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Text input cho các service khác -->
+                  <input
+                    v-else
+                    v-model.trim="s.description"
+                    class="form-control form-control-sm"
+                    placeholder="Mô tả dịch vụ"
+                  />
+                </td>
+                <td>
+                  <!-- ✅ Quantity controls với + - buttons cho medication -->
+                  <div v-if="s.service_type === 'medication' && s.medication_id" class="input-group input-group-sm">
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      @click="decreaseQuantity(i)"
+                      :disabled="s.quantity <= 1"
+                    >-</button>
+                    <input
+                      v-model.number="s.quantity"
+                      type="number"
+                      min="1"
+                      class="form-control text-center"
+                      @input="recalcService(i)"
+                      readonly
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      @click="increaseQuantity(i)"
+                    >+</button>
+                  </div>
+
+                  <!-- Normal input cho service khác -->
+                  <input
+                    v-else
+                    v-model.number="s.quantity"
+                    type="number"
+                    min="0"
+                    class="form-control form-control-sm text-end"
+                    @input="recalcService(i)"
+                  />
+                </td>
+                <td>
+                  <input
+                    v-model.number="s.unit_price"
+                    type="number"
+                    min="0"
+                    class="form-control form-control-sm text-end"
+                    @input="recalcService(i)"
+                    :readonly="s.medication_id"
+                  />
+                </td>
                 <td class="text-end">{{ n(s.total_price) }}</td>
                 <td class="text-end">
                   <button type="button" class="btn btn-sm btn-outline-danger" @click="removeService(i)">×</button>
                 </td>
               </tr>
               <tr v-if="!form.services.length">
-                <td colspan="6" class="text-muted small">Chưa có dịch vụ — bấm “+ Thêm dịch vụ”</td>
+                <td colspan="6" class="text-muted small">Chưa có dịch vụ — bấm "+ Thêm dịch vụ"</td>
               </tr>
               </tbody>
             </table>
@@ -202,41 +309,82 @@
           <div class="row g-3">
             <div class="col-md-3">
               <label class="form-label">Tạm tính</label>
-              <input v-model.number="form.subtotal" type="number" min="0" class="form-control" @input="recalcTotals"/>
+              <input v-model.number="form.subtotal" type="number" min="0" class="form-control" readonly />
             </div>
             <div class="col-md-3">
               <label class="form-label">Thuế (%)</label>
-              <input v-model.number="form.tax_rate" type="number" min="0" step="0.01" class="form-control" @input="recalcTotals"/>
+              <input v-model.number="form.tax_rate" type="number" value="0" class="form-control" readonly />
             </div>
             <div class="col-md-3">
               <label class="form-label">Tiền thuế</label>
-              <input v-model.number="form.tax_amount" type="number" min="0" class="form-control" @input="recalcTotals"/>
+              <input v-model.number="form.tax_amount" type="number" value="0" class="form-control" readonly />
             </div>
             <div class="col-md-3">
               <label class="form-label">Tổng cộng</label>
-              <input v-model.number="form.total_amount" type="number" min="0" class="form-control" @input="recalcTotals"/>
+              <input v-model.number="form.total_amount" type="number" min="0" class="form-control" readonly />
             </div>
 
             <div class="col-md-3">
               <label class="form-label">BH chi trả (%)</label>
-              <input v-model.number="form.insurance_coverage" type="number" min="0" max="1" step="0.01" class="form-control" @input="recalcTotals"/>
+              <input v-model.number="form.insurance_coverage" type="number" min="0" max="100" class="form-control" readonly />
             </div>
             <div class="col-md-3">
               <label class="form-label">Tiền BH</label>
-              <input v-model.number="form.insurance_amount" type="number" min="0" class="form-control" @input="recalcTotals"/>
+              <input v-model.number="form.insurance_amount" type="number" min="0" class="form-control" readonly />
             </div>
             <div class="col-md-3">
               <label class="form-label">BN phải trả</label>
-              <input v-model.number="form.patient_payment" type="number" min="0" class="form-control"/>
+              <input v-model.number="form.patient_payment" type="number" min="0" class="form-control" readonly />
             </div>
             <div class="col-md-3">
               <label class="form-label">PT Thanh toán</label>
-              <input v-model.trim="form.payment_method" class="form-control" placeholder="cash / card / transfer"/>
+              <select v-model="form.payment_method" class="form-select" @change="onPaymentMethodChange">
+                <option value="">-- Chọn --</option>
+                <option value="cash">Tiền mặt</option>
+                <option value="card">Thẻ</option>
+                <option value="transfer">Chuyển khoản</option>
+                <option value="insurance">Bảo hiểm</option>
+              </select>
             </div>
 
             <div class="col-md-4">
               <label class="form-label">Ngày thanh toán</label>
-              <input v-model="form.paid_date" type="datetime-local" class="form-control"/>
+              <input
+                v-model="form.paid_date"
+                type="datetime-local"
+                class="form-control"
+                :readonly="form.payment_status !== 'paid'"
+              />
+            </div>
+
+            <!-- ✅ NEW: Payment status display -->
+            <div class="col-md-12">
+              <div class="d-flex align-items-center gap-3">
+                <span class="fw-bold">Trạng thái:</span>
+                <span :class="['badge', 'fs-6', statusClass(form.payment_status)]">
+                  {{ getPaymentStatusText(form.payment_status) }}
+                </span>
+
+                <!-- Quick payment buttons -->
+                <div class="btn-group btn-group-sm" v-if="form.payment_status !== 'paid'">
+                  <button
+                    type="button"
+                    class="btn btn-outline-success"
+                    @click="markAsPaid"
+                    :disabled="form.total_amount <= 0"
+                  >
+                    Đánh dấu đã thanh toán
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-warning"
+                    @click="markAsPartial"
+                    :disabled="form.total_amount <= 0"
+                  >
+                    Thanh toán một phần
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -253,6 +401,7 @@
 <script>
 import InvoiceService from '@/api/invoiceService'
 import PatientService from '@/api/patientService'
+import MedicationService from '@/api/medicationService' // ✅ Import MedicationService
 
 // Helper function tạo số hóa đơn random
 function generateInvoiceNumber () {
@@ -288,10 +437,49 @@ export default {
       patientOptions: [],
       recordOptions: [],
       patientsMap: {},
-      optionsLoaded: false
+      optionsLoaded: false,
+      // ✅ NEW: Medication lookup data
+      medicationOptions: {},
+      showMedicationOptions: {},
+      medicationSearchTimers: {},
+      medicationBlurTimers: {}, // Prevent dropdown close when clicking option
+
+      // ✅ UPDATED: Simpler medication state
+      allMedications: [],
+      groupedMedications: [],
+      medicationsLoaded: false
     }
   },
   created () { this.fetch() },
+  computed: {
+    // ✅ UPDATED: Enhanced auto payment status
+    autoPaymentStatus () {
+      const total = Number(this.form.total_amount || 0)
+      const patientPayment = Number(this.form.patient_payment || 0)
+
+      if (total === 0) return 'unpaid'
+      if (patientPayment >= total) return 'paid'
+      if (patientPayment > 0) return 'partial'
+      return 'unpaid'
+    }
+  },
+  watch: {
+    // ✅ UPDATED: Auto sync payment status và method
+    'form.patient_payment' () {
+      const newStatus = this.autoPaymentStatus
+      if (this.form.payment_status !== newStatus) {
+        this.form.payment_status = newStatus
+        this.updatePaymentDateTime()
+      }
+    },
+    'form.total_amount' () {
+      const newStatus = this.autoPaymentStatus
+      if (this.form.payment_status !== newStatus) {
+        this.form.payment_status = newStatus
+        this.updatePaymentDateTime()
+      }
+    }
+  },
   methods: {
     /* ===== helpers ===== */
     rowKey (r, idx) { return r._id || r.id || `${idx}` },
@@ -316,12 +504,12 @@ export default {
         return v
       }
     },
+    // ✅ NEW: Format price method thay cho filter
+    formatPrice (value) {
+      return Number(value || 0).toLocaleString()
+    },
     n (v) {
-      try {
-        return Number(v || 0).toLocaleString()
-      } catch {
-        return v
-      }
+      return this.formatPrice(v)
     },
     displayName (o) {
       return o?.full_name || o?.name || o?.display_name || o?.code || o?.username
@@ -453,6 +641,7 @@ export default {
     async onPatientChange () {
       this.form.medical_record_id = ''
       await this.loadRecordsForPatient(this.form.patient_id)
+      await this.loadPatientInsurance(this.form.patient_id)
     },
 
     async loadRecordsForPatient (patientId) {
@@ -479,17 +668,18 @@ export default {
 
     /* ===== modal ===== */
     emptyForm () {
+      const now = new Date()
       return {
         _id: null,
         _rev: null,
         patient_id: '',
         medical_record_id: '',
-        invoice_number: generateInvoiceNumber(), // Tự động tạo số HĐ
-        invoice_date: new Date().toISOString().slice(0, 10), // Ngày hiện tại
-        due_date: '',
+        invoice_number: generateInvoiceNumber(),
+        invoice_date: now.toISOString().slice(0, 10), // Today
+        due_date: now.toISOString().slice(0, 10), // Same day payment
         services: [],
         subtotal: 0,
-        tax_rate: 0,
+        tax_rate: 0, // ✅ 0% tax
         tax_amount: 0,
         total_amount: 0,
         insurance_coverage: 0,
@@ -497,7 +687,7 @@ export default {
         patient_payment: 0,
         payment_status: 'unpaid',
         payment_method: '',
-        paid_date: '',
+        paid_date: now.toISOString().slice(0, 16), // ✅ Current datetime
         created_at: null,
         updated_at: null
       }
@@ -506,10 +696,17 @@ export default {
     openCreate () {
       this.editingId = null
       this.form = this.emptyForm()
-      // Tạo số HĐ mới mỗi lần mở modal
-      this.form.invoice_number = generateInvoiceNumber()
+
+      // ✅ Set payment date to current time
+      const now = new Date()
+      this.form.paid_date = now.toISOString().slice(0, 16)
+
+      // ✅ Default payment method
+      this.form.payment_method = 'cash'
+
       this.showModal = true
       this.ensureOptionsLoaded()
+      this.loadMedicationOptions()
       this.recordOptions = []
     },
 
@@ -531,6 +728,7 @@ export default {
       }
       this.showModal = true
       this.ensureOptionsLoaded()
+      this.loadMedicationOptions() // Load medications
       this.loadRecordsForPatient(this.form.patient_id)
       this.recalcAllServices()
       this.recalcTotals()
@@ -540,18 +738,106 @@ export default {
       if (!this.saving) this.showModal = false
     },
 
+    // ✅ NEW: Service type change handler
+    onServiceTypeChange (serviceIndex) {
+      const service = this.form.services[serviceIndex]
+
+      if (service.service_type === 'medication') {
+        // Reset medication fields
+        this.clearMedication(serviceIndex)
+      } else {
+        // Reset to manual input
+        this.clearMedication(serviceIndex)
+      }
+
+      this.recalcService(serviceIndex)
+    },
+
+    // ✅ UPDATED: Enhanced search với better error handling
+    selectMedication (serviceIndex, medication) {
+      console.log('Selecting medication:', medication) // Debug
+
+      if (medication.error) {
+        return // Don't select error items
+      }
+
+      const service = this.form.services[serviceIndex]
+
+      // Clear timers
+      if (this.medicationBlurTimers[serviceIndex]) {
+        clearTimeout(this.medicationBlurTimers[serviceIndex])
+      }
+
+      // Set medication data
+      service.medication_id = medication._id || medication.id
+      service.medication_query = this.getMedicationName(medication)
+      service.description = `${this.getMedicationName(medication)} (${this.getMedicationStrength(medication)})`
+      service.unit_price = Number(this.getMedicationPrice(medication))
+      service.available_stock = Number(this.getMedicationStock(medication))
+
+      // Auto set quantity = 1 if not set
+      if (!service.quantity || service.quantity <= 0) {
+        service.quantity = 1
+      }
+
+      // Hide dropdown
+      this.showMedicationOptions[serviceIndex] = false
+      this.medicationOptions[serviceIndex] = []
+
+      console.log('Updated service:', service) // Debug
+
+      this.recalcService(serviceIndex)
+    },
+
+    // ✅ UPDATED: Clear medication selection
+    clearMedication (serviceIndex) {
+      const service = this.form.services[serviceIndex]
+
+      service.medication_id = null
+      service.medication_query = ''
+      service.description = ''
+      service.unit_price = 0
+      service.available_stock = undefined
+      service.selected_medication_temp = ''
+
+      this.medicationOptions[serviceIndex] = []
+      this.showMedicationOptions[serviceIndex] = false
+
+      this.recalcService(serviceIndex)
+    },
+
     addService () {
       this.form.services = [...this.form.services, {
-        service_type: '',
+        service_type: 'consultation',
         description: '',
-        quantity: 0,
+        quantity: 1, // ✅ Default quantity = 1
         unit_price: 0,
-        total_price: 0
+        total_price: 0,
+        // medication fields
+        medication_id: null,
+        selected_medication_temp: '',
+        available_stock: undefined
       }]
       this.recalcTotals()
     },
 
     removeService (i) {
+      // Clear all timers
+      if (this.medicationSearchTimers[i]) {
+        clearTimeout(this.medicationSearchTimers[i])
+        delete this.medicationSearchTimers[i]
+      }
+
+      if (this.medicationBlurTimers[i]) {
+        clearTimeout(this.medicationBlurTimers[i])
+        delete this.medicationBlurTimers[i]
+      }
+
+      // Remove from options
+      delete this.medicationOptions[i]
+      delete this.showMedicationOptions[i]
+
+      // Remove service
       this.form.services = this.form.services.filter((_, idx) => idx !== i)
       this.recalcTotals()
     },
@@ -569,23 +855,42 @@ export default {
     },
 
     recalcTotals () {
+      // Tính subtotal từ services
       const subtotal = (this.form.services || []).reduce((sum, s) => sum + Number(s.total_price || 0), 0)
-      const taxAmount = this.form.tax_amount || (Number(this.form.tax_rate || 0) * subtotal)
-      const totalAmount = this.form.total_amount || (subtotal + Number(taxAmount || 0))
-      const insuranceAmount = this.form.insurance_amount || (Number(this.form.insurance_coverage || 0) * totalAmount)
-      const patientPayment = totalAmount - Number(insuranceAmount || 0)
-
       this.form.subtotal = subtotal
-      this.form.tax_amount = taxAmount
-      this.form.total_amount = totalAmount
-      this.form.insurance_amount = insuranceAmount
-      this.form.patient_payment = patientPayment
+
+      // ✅ Thuế = 0%
+      this.form.tax_rate = 0
+      this.form.tax_amount = 0
+
+      // Total = subtotal + tax (= subtotal vì tax = 0)
+      this.form.total_amount = subtotal
+
+      // ✅ Tính bảo hiểm theo %
+      const insuranceCoverage = Number(this.form.insurance_coverage || 0) / 100
+      this.form.insurance_amount = this.form.total_amount * insuranceCoverage
+
+      // BN phải trả = total - insurance
+      this.form.patient_payment = this.form.total_amount - this.form.insurance_amount
+
+      // ✅ Auto update payment status (sẽ trigger watcher)
+      // Watcher sẽ tự động update payment_status
     },
 
     async save () {
       if (this.saving) return
       this.saving = true
       try {
+        // ✅ Validation: medication chỉ validate tồn tại, không validate stock
+        for (const service of this.form.services) {
+          if (service.service_type === 'medication' && service.medication_id) {
+            if (service.quantity < 1) {
+              alert(`Số lượng thuốc "${service.description}" phải ít nhất là 1!`)
+              return
+            }
+          }
+        }
+
         const payload = {
           type: 'invoice',
           patient_id: this.form.patient_id || undefined,
@@ -600,12 +905,13 @@ export default {
             description: s.description || undefined,
             quantity: Number(s.quantity || 0),
             unit_price: Number(s.unit_price || 0),
-            total_price: Number(s.total_price || 0)
+            total_price: Number(s.total_price || 0),
+            medication_id: s.medication_id || undefined
           })),
           payment_info: {
             subtotal: Number(this.form.subtotal || 0),
-            tax_rate: Number(this.form.tax_rate || 0),
-            tax_amount: Number(this.form.tax_amount || 0),
+            tax_rate: 0, // ✅ Always 0%
+            tax_amount: 0,
             total_amount: Number(this.form.total_amount || 0),
             insurance_coverage: Number(this.form.insurance_coverage || 0),
             insurance_amount: Number(this.form.insurance_amount || 0),
@@ -636,14 +942,262 @@ export default {
     },
 
     async remove (row) {
-      if (!confirm(`Xoá hoá đơn "${row.invoice_number || 'này'}"?`)) return
+      if (!confirm(`Xóa hóa đơn "${row.invoice_number || 'này'}"?`)) return
+
       try {
         const id = row._id || row.id
-        await InvoiceService.remove(id)
+        if (!id) {
+          alert('Không tìm thấy ID hóa đơn')
+          return
+        }
+
+        const rev = row._rev
+        if (!rev) {
+          alert('Không tìm thấy revision của document')
+          return
+        }
+
+        // ✅ Truyền cả id và rev
+        await InvoiceService.remove(id, rev)
+        alert('Xóa thành công!')
         await this.fetch()
       } catch (e) {
-        console.error(e)
-        alert(e?.response?.data?.message || e?.message || 'Xoá thất bại')
+        console.error('Remove error:', e)
+        alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
+      }
+    },
+
+    async loadPatientInsurance (patientId) {
+      try {
+        if (!patientId) {
+          this.form.insurance_coverage = 0
+          this.recalcTotals()
+          return
+        }
+
+        const patient = await PatientService.get(patientId)
+        const insurance = patient?.medical_info?.insurance || patient?.insurance
+
+        if (insurance && insurance.provider && insurance.valid_until) {
+          // Check if insurance is still valid
+          const validUntil = new Date(insurance.valid_until)
+          const now = new Date()
+          if (validUntil > now) {
+            // Set insurance coverage based on provider
+            let coverage = 0
+            const provider = (insurance.provider || '').toLowerCase()
+            if (provider.includes('bhyt') || provider.includes('bảo hiểm y tế')) {
+              coverage = 80 // BHYT covers 80%
+            } else if (provider.includes('bảo việt') || provider.includes('pvi')) {
+              coverage = 70 // Private insurance 70%
+            } else {
+              coverage = 50 // Default coverage 50%
+            }
+            this.form.insurance_coverage = coverage
+          } else {
+            this.form.insurance_coverage = 0 // Expired insurance
+          }
+        } else {
+          this.form.insurance_coverage = 0 // No insurance
+        }
+        this.recalcTotals()
+      } catch (e) {
+        console.error('Load insurance error:', e)
+        this.form.insurance_coverage = 0
+        this.recalcTotals()
+      }
+    },
+
+    // ✅ NEW: Helper methods để extract medication data
+    getMedicationName (med) {
+      return med.medication_info?.name ||
+             med.name ||
+             med.medication_name ||
+             'Tên thuốc không xác định'
+    },
+
+    getMedicationStrength (med) {
+      return med.medication_info?.strength ||
+             med.strength ||
+             med.dosage ||
+             'Không xác định'
+    },
+
+    getMedicationPrice (med) {
+      return med.inventory?.unit_cost ||
+             med.unit_cost ||
+             med.price ||
+             0
+    },
+
+    getMedicationStock (med) {
+      return med.inventory?.current_stock ||
+             med.current_stock ||
+             med.stock ||
+             0
+    },
+
+    // ✅ NEW: Quantity controls cho medication
+    increaseQuantity (serviceIndex) {
+      const service = this.form.services[serviceIndex]
+      service.quantity = (service.quantity || 0) + 1
+      this.recalcService(serviceIndex)
+    },
+
+    decreaseQuantity (serviceIndex) {
+      const service = this.form.services[serviceIndex]
+      if (service.quantity > 1) {
+        service.quantity = service.quantity - 1
+        this.recalcService(serviceIndex)
+      }
+    },
+
+    // ✅ SIMPLIFIED: Load all medications once
+    async loadMedicationOptions () {
+      if (this.medicationsLoaded) return
+
+      try {
+        console.log('Loading all medications...')
+        const response = await MedicationService.list({ limit: 1000 })
+
+        let medications = []
+        if (Array.isArray(response.rows)) {
+          medications = response.rows.map(r => r.doc || r.value || r)
+        } else if (Array.isArray(response.data)) {
+          medications = response.data
+        } else if (Array.isArray(response)) {
+          medications = response
+        }
+
+        // Filter active medications with stock
+        this.allMedications = medications.filter(med => {
+          const isActive = (med.status || '').toLowerCase() === 'active'
+          const hasStock = this.getMedicationStock(med) > 0
+          return isActive && hasStock
+        })
+
+        // Group by medication type
+        this.groupMedications()
+        this.medicationsLoaded = true
+
+        console.log('Loaded medications:', this.allMedications.length)
+      } catch (e) {
+        console.error('Load medications error:', e)
+        this.allMedications = []
+      }
+    },
+
+    // ✅ NEW: Group medications by type/category
+    groupMedications () {
+      const groups = {}
+
+      this.allMedications.forEach(med => {
+        const type = med.medication_info?.type ||
+                    med.type ||
+                    med.category ||
+                    'Khác'
+
+        if (!groups[type]) {
+          groups[type] = []
+        }
+        groups[type].push(med)
+      })
+
+      this.groupedMedications = Object.keys(groups)
+        .sort()
+        .map(type => ({
+          label: type,
+          medications: groups[type].sort((a, b) =>
+            this.getMedicationName(a).localeCompare(this.getMedicationName(b))
+          )
+        }))
+    },
+
+    // ✅ NEW: Missing onMedicationSelect method
+    onMedicationSelect (serviceIndex) {
+      const service = this.form.services[serviceIndex]
+      const medicationId = service.selected_medication_temp
+
+      if (!medicationId) {
+        this.clearMedication(serviceIndex)
+        return
+      }
+
+      const medication = this.allMedications.find(m => m._id === medicationId || m.id === medicationId)
+      if (!medication) {
+        alert('Không tìm thấy thông tin thuốc')
+        return
+      }
+
+      console.log('Selected medication:', medication)
+
+      // Set medication data
+      service.medication_id = medication._id || medication.id
+      service.description = `${this.getMedicationName(medication)} (${this.getMedicationStrength(medication)})`
+      service.unit_price = Number(this.getMedicationPrice(medication))
+      service.available_stock = Number(this.getMedicationStock(medication))
+
+      // Auto set quantity = 1
+      if (!service.quantity || service.quantity <= 0) {
+        service.quantity = 1
+      }
+
+      // Clear temp selection
+      service.selected_medication_temp = ''
+
+      this.recalcService(serviceIndex)
+    },
+
+    // ✅ NEW: Payment status text
+    getPaymentStatusText (status) {
+      const statusMap = {
+        unpaid: 'Chưa thanh toán',
+        partial: 'Thanh toán một phần',
+        paid: 'Đã thanh toán',
+        void: 'Đã hủy'
+      }
+      return statusMap[status] || status
+    },
+
+    // ✅ NEW: Payment method change handler
+    onPaymentMethodChange () {
+      // Auto set payment status if method is selected and amount > 0
+      if (this.form.payment_method && this.form.total_amount > 0) {
+        if (this.form.payment_status === 'unpaid') {
+          this.markAsPaid()
+        }
+      }
+    },
+
+    // ✅ NEW: Mark as paid
+    markAsPaid () {
+      this.form.payment_status = 'paid'
+      this.form.patient_payment = this.form.total_amount
+      this.updatePaymentDateTime()
+
+      // Auto set payment method if not set
+      if (!this.form.payment_method) {
+        this.form.payment_method = 'cash'
+      }
+    },
+
+    // ✅ NEW: Mark as partial
+    markAsPartial () {
+      this.form.payment_status = 'partial'
+      // Don't auto-change patient_payment, let user input
+      this.updatePaymentDateTime()
+    },
+
+    // ✅ NEW: Update payment datetime
+    updatePaymentDateTime () {
+      if (this.form.payment_status === 'paid' || this.form.payment_status === 'partial') {
+        if (!this.form.paid_date) {
+          const now = new Date()
+          this.form.paid_date = now.toISOString().slice(0, 16)
+        }
+      } else {
+        // Clear payment date if unpaid
+        this.form.paid_date = ''
       }
     }
   }
@@ -666,4 +1220,51 @@ export default {
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; z-index: 1050; }
 .modal-card { width: min(1000px, 96vw); background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 20px 50px rgba(0,0,0,.25); max-height: 92vh; overflow: auto; }
 .section-title { font-weight: 600; margin: 14px 0 8px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb; }
+
+/* ✅ UPDATED: Selected medication styles */
+.selected-medication {
+  padding: 0.5rem;
+  background-color: #f8fffe;
+  border: 1px solid #20c997;
+  border-radius: 0.375rem;
+}
+
+.selected-medication .fw-bold {
+  color: #198754;
+}
+
+/* Remove dropdown styles - không cần nữa */
+.medication-dropdown,
+.medication-dropdown-header,
+.medication-option {
+  /* REMOVED */
+}
+
+/* Combobox styles */
+.form-select option {
+  padding: 0.5rem;
+}
+
+optgroup {
+  font-weight: 600;
+  color: #495057;
+}
+
+/* ✅ NEW: Payment status styles */
+.badge.fs-6 {
+  font-size: 0.875rem !important;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Payment button styles */
+.btn-group-sm .btn {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Readonly payment date when not paid */
+input[readonly] {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
 </style>
