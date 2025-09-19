@@ -3,37 +3,32 @@ import api, { tokenStore } from './axios'
 
 const AuthService = {
   async login (credentials) {
-    // đúng route: POST /login
     const { data } = await api.post('/login', credentials)
-    // đúng field: snake_case
-    if (data?.access_token) tokenStore.access = data.access_token
+    if (data?.access_token) {
+      tokenStore.access = data.access_token
+      api.defaults.headers.common.Authorization = `Bearer ${data.access_token}` // set ngay
+    }
     if (data?.refresh_token) tokenStore.refresh = data.refresh_token
     if (data?.user) localStorage.setItem('user', JSON.stringify(data.user))
     return data
   },
 
-  async logout () {
-    try {
-      // đúng route: POST /logout (không cần body)
-      await api.post('/logout')
-    } catch (e) {
-      // ignore
-    } finally {
-      tokenStore.clear()
-    }
+  async me () {
+    const { data } = await api.get('/me')
+    return data
   },
 
-  // đúng route: GET /me
-  me () {
-    return api.get('/me').then(r => r.data)
+  async logout () {
+    try { await api.post('/logout') } catch (_) {}
+    tokenStore.clear()
   },
 
   async refresh () {
-    const { data } = await api.post('/refresh', {
-      // đúng field: refresh_token
-      refresh_token: tokenStore.refresh
-    })
-    if (data?.access_token) tokenStore.access = data.access_token
+    const { data } = await api.post('/refresh', { refresh_token: tokenStore.refresh })
+    if (data?.access_token) {
+      tokenStore.access = data.access_token
+      api.defaults.headers.common.Authorization = `Bearer ${data.access_token}`
+    }
     if (data?.refresh_token) tokenStore.refresh = data.refresh_token
     return data
   }

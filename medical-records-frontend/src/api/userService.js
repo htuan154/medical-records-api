@@ -21,7 +21,14 @@ const UserService = {
   update (id, payload) {
     return api.put(`/users/${id}`, payload).then((r) => r.data)
   },
-  remove (id) {
+
+  // ✅ Sửa remove method
+  remove (id, rev) {
+    // Nếu có rev, truyền qua query parameter
+    if (rev) {
+      return api.delete(`/users/${id}?rev=${encodeURIComponent(rev)}`).then((r) => r.data)
+    }
+    // Nếu không có rev, gọi như cũ (backend sẽ tự lấy rev)
     return api.delete(`/users/${id}`).then((r) => r.data)
   },
 

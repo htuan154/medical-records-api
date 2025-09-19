@@ -18,14 +18,6 @@ class MedicalRecordController extends Controller
 {
     public function __construct(private MedicalRecordService $svc) {}
 
-    private function error(Throwable $e, int $code = 500)
-    {
-        return response()->json([
-            'error'   => class_basename($e),
-            'message' => $e->getMessage(),
-        ], $code);
-    }
-
     /**
      * @OA\Get(
      *     path="/api/v1/medical-records",
@@ -117,19 +109,29 @@ class MedicalRecordController extends Controller
     {
         try {
             $data = $req->validate([
-                '_id'                                   => 'sometimes|string',
-                'type'                                  => 'sometimes|in:medical_record',
-                'patient_id'                            => 'required|string',
-                'doctor_id'                             => 'required|string',
-                'visit_info.visit_date'                 => 'required|date',
-                'visit_info.visit_type'                 => 'nullable|string',
-                'visit_info.chief_complaint'            => 'nullable|string',
-                'visit_info.appointment_id'             => 'nullable|string',
-                'examination'                            => 'nullable|array',
-                'diagnosis'                              => 'nullable|array',
-                'treatment_plan'                         => 'nullable|array',
-                'attachments'                            => 'nullable|array',
-                'status'                                 => 'nullable|in:scheduled,completed,cancelled',
+                '_id'                       => 'sometimes|string',
+                'type'                      => 'sometimes|in:medical_record',
+                'patient_id'                => 'required|string',
+                'doctor_id'                 => 'required|string',
+                'visit_info'                => 'nullable|array',
+                'visit_info.visit_date'     => 'nullable|string',  // ✅ Accept string, validate in service
+                'visit_info.visit_type'     => 'nullable|string',
+                'visit_info.chief_complaint'=> 'nullable|string',
+                'visit_info.appointment_id' => 'nullable|string',
+                'examination'               => 'nullable|array',
+                'examination.vital_signs'   => 'nullable|array',
+                'examination.physical_exam' => 'nullable|array',
+                'diagnosis'                 => 'nullable|array',
+                'diagnosis.primary'         => 'nullable|array',
+                'diagnosis.secondary'       => 'nullable|array',
+                'diagnosis.differential'    => 'nullable|array',
+                'treatment_plan'            => 'nullable|array',
+                'treatment_plan.medications'=> 'nullable|array',
+                'treatment_plan.procedures' => 'nullable|array',
+                'treatment_plan.lifestyle_advice' => 'nullable|array',
+                'treatment_plan.follow_up'  => 'nullable|array',
+                'attachments'               => 'nullable|array',
+                'status'                    => 'nullable|in:draft,in_progress,completed,canceled',
             ]);
 
             $created = $this->svc->create($data);
@@ -185,10 +187,96 @@ class MedicalRecordController extends Controller
      *     @OA\Response(response=500, description="Lỗi server")
      * )
      */
-    public function destroy(Request $req, string $id)
+    public function destroy(Request $request, string $id)
     {
-        $rev = $req->query('rev') ?? $req->input('rev');
-        $res = $this->svc->delete($id, $rev);
-        return response()->json($res['data'], $res['status']);
+        try {
+            $rev = $request->query('rev');
+
+            // ✅ Nếu không có rev, lấy document hiện tại
+            if (empty($rev)) {
+                $result = $this->svc->find($id);
+                
+                // Check nếu service trả về status 404
+                if ($result['status'] === 404) {
+                    return response()->json(['error' => 'not_found', 'message' => 'Medical record not found'], 404);
+                }
+                
+                // Lấy _rev từ data
+                $rev = $result['data']['_rev'] ?? null;
+                if (!$rev) {
+                    return response()->json([
+                        'error' => 'missing_rev', 
+                        'message' => 'Cannot get document revision'
+                    ], 400);
+                }
+            }
+
+            // ✅ Thực hiện xóa và check kết quả
+            $deleteResult = $this->svc->delete($id, $rev);
+            
+            // Check status từ service
+            if ($deleteResult['status'] !== 200) {
+                return response()->json($deleteResult['data'], $deleteResult['status']);
+            }
+
+            // ✅ Verify delete thành công
+            if (!isset($deleteResult['data']['ok']) || !$deleteResult['data']['ok']) {
+                return response()->json([
+                    'error' => 'delete_failed',
+                    'message' => 'Delete operation did not complete successfully'
+                ], 500);
+            }
+
+            return response()->json([
+                'ok' => true, 
+                'message' => 'Medical record deleted successfully'
+            ], 200);
+
+        } catch (Throwable $e) {
+            // ✅ Nếu conflict, thử lại với rev mới nhất
+            if (str_contains(strtolower($e->getMessage()), 'conflict')) {
+                try {
+                    $result = $this->svc->find($id);
+                    if ($result['status'] === 404) {
+                        return response()->json(['error' => 'not_found'], 404);
+                    }
+                    
+                    $latestRev = $result['data']['_rev'] ?? null;
+                    if (!$latestRev) {
+                        return response()->json(['error' => 'missing_rev'], 400);
+                    }
+
+                    $retryResult = $this->svc->delete($id, $latestRev);
+                    
+                    if ($retryResult['status'] !== 200) {
+                        return response()->json($retryResult['data'], $retryResult['status']);
+                    }
+
+                    return response()->json([
+                        'ok' => true, 
+                        'message' => 'Medical record deleted successfully (retry)'
+                    ], 200);
+                    
+                } catch (Throwable $retryError) {
+                    return response()->json([
+                        'error' => 'delete_failed',
+                        'message' => 'Failed to delete after retry: ' . $retryError->getMessage()
+                    ], 500);
+                }
+            }
+
+            return response()->json([
+                'error' => 'server_error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function error(Throwable $e, int $code = 500)
+    {
+        return response()->json([
+            'error'   => class_basename($e),
+            'message' => $e->getMessage(),
+        ], $code);
     }
 }

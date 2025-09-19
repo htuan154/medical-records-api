@@ -16,8 +16,21 @@ const MedicationService = {
   update (id, payload) {
     return api.put(`/medications/${id}`, payload).then((r) => r.data)
   },
-  remove (id) {
+  remove (id, rev) {
+    if (rev) {
+      return api.delete(`/medications/${id}?rev=${encodeURIComponent(rev)}`).then((r) => r.data)
+    }
     return api.delete(`/medications/${id}`).then((r) => r.data)
+  },
+
+  // ✅ NEW: Search method cho medication lookup
+  search (query) {
+    const qs = buildQuery({
+      q: query,
+      limit: 20,
+      include_docs: true
+    })
+    return api.get(`/medications${qs ? `?${qs}` : ''}`).then((r) => r.data)
   }
 }
 

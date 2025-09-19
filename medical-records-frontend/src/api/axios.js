@@ -1,116 +1,102 @@
 // src/api/axios.js
 import axios from 'axios'
 
-const API_BASE = 'http://localhost:9000/api/v1'
+// Đồng bộ đúng host bạn đang login (127.0.0.1):
+const API_BASE = 'http://127.0.0.1:9000/api/v1'
+// Nếu BE là /api/v1/auth/refresh thì đổi thành '/auth/refresh'
+const REFRESH_PATH = '/refresh'
 
 const api = axios.create({
   baseURL: API_BASE,
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json'
-  },
+  headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
   timeout: 20000
+  // withCredentials: true, // bật nếu dùng cookie-session
 })
 
-// ---- Helpers lưu token ----
-const tokenStore = {
-  get access () {
-    return localStorage.getItem('access_token')
-  },
-  set access (val) {
-    if (val) localStorage.setItem('access_token', val)
-    else localStorage.removeItem('access_token')
-  },
-  get refresh () {
-    return localStorage.getItem('refresh_token')
-  },
-  set refresh (val) {
-    if (val) localStorage.setItem('refresh_token', val)
-    else localStorage.removeItem('refresh_token')
-  },
+// ===== Token store: chỉ dùng 2 key chuẩn =====
+export const tokenStore = {
+  get access () { return localStorage.getItem('access_token') },
+  set access (v) { v ? localStorage.setItem('access_token', v) : localStorage.removeItem('access_token') },
+  get refresh () { return localStorage.getItem('refresh_token') },
+  set refresh (v) { v ? localStorage.setItem('refresh_token', v) : localStorage.removeItem('refresh_token') },
   clear () {
-    this.access = null
-    this.refresh = null
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
     localStorage.removeItem('user')
-    localStorage.removeItem('token')
+    delete api.defaults.headers.common.Authorization
   }
 }
 
-// ---- Request: gắn Authorization ----
-api.interceptors.request.use(config => {
-  const token = tokenStore.access || localStorage.getItem('token')
-  if (token && !config.headers.Authorization) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
+// ===== Gắn Bearer token cho mọi request =====
+api.interceptors.request.use((cfg) => {
+  const t = tokenStore.access
+  if (t) cfg.headers.Authorization = `Bearer ${t}`
+  return cfg
 })
 
-// ---- Response: tự refresh khi 401 ----
-let isRefreshing = false
-let pendingQueue = []
+// ===== Cho phép app khởi động đọc token & set header ngay (tránh race 401) =====
+export function initAuth () {
+  const t = tokenStore.access
+  if (t) api.defaults.headers.common.Authorization = `Bearer ${t}`
+}
 
-const processQueue = (error, token = null) => {
-  pendingQueue.forEach(({ resolve, reject, cfg }) => {
-    if (error) {
-      reject(error)
-    } else {
-      cfg.headers.Authorization = `Bearer ${token}`
+let isRefreshing = false
+let queue = []
+
+function flushQueue (error, newToken) {
+  queue.forEach(({ resolve, reject, cfg }) => {
+    if (error) reject(error)
+    else {
+      cfg.headers.Authorization = `Bearer ${newToken}`
       resolve(api(cfg))
     }
   })
-  pendingQueue = []
+  queue = []
 }
 
-const raw = axios.create({ baseURL: API_BASE })
+const raw = axios.create({ baseURL: API_BASE }) // gọi refresh tách biệt
 
 api.interceptors.response.use(
-  res => res,
-  async error => {
-    const originalConfig = error?.config
-    const status = error?.response?.status
-
-    if (status === 401 && !originalConfig?._retry) {
+  (res) => res,
+  async (err) => {
+    const status = err?.response?.status
+    const cfg = err?.config
+    if (status === 401 && cfg && !cfg._retry) {
       if (!tokenStore.refresh) {
         tokenStore.clear()
-        return Promise.reject(error)
+        return Promise.reject(err)
       }
 
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          pendingQueue.push({ resolve, reject, cfg: originalConfig })
-        })
+        return new Promise((resolve, reject) => queue.push({ resolve, reject, cfg }))
       }
 
-      originalConfig._retry = true
+      cfg._retry = true
       isRefreshing = true
       try {
-        // đúng route + field snake_case
-        const resp = await raw.post('/refresh', {
-          refresh_token: tokenStore.refresh
-        })
-        const newAccess = resp?.data?.access_token
-        const newRefresh = resp?.data?.refresh_token
+        const r = await raw.post(REFRESH_PATH, { refresh_token: tokenStore.refresh })
+        const newAccess = r?.data?.access_token
+        const newRefresh = r?.data?.refresh_token
+        if (!newAccess) throw new Error('No access_token from refresh')
 
-        if (newAccess) tokenStore.access = newAccess
+        tokenStore.access = newAccess
         if (newRefresh) tokenStore.refresh = newRefresh
+        api.defaults.headers.common.Authorization = `Bearer ${newAccess}`
 
-        processQueue(null, newAccess)
+        flushQueue(null, newAccess)
         isRefreshing = false
 
-        originalConfig.headers.Authorization = `Bearer ${newAccess}`
-        return api(originalConfig)
+        cfg.headers.Authorization = `Bearer ${newAccess}`
+        return api(cfg)
       } catch (e) {
-        processQueue(e, null)
+        flushQueue(e, null)
         isRefreshing = false
         tokenStore.clear()
         return Promise.reject(e)
       }
     }
-
-    return Promise.reject(
-      error?.response?.data || { message: error?.message || 'Request error', status }
-    )
+    return Promise.reject(err?.response?.data || err)
   }
 )
+
 export default api
-export { tokenStore }

@@ -48,11 +48,15 @@ class UserController extends Controller
 
             $limit = (int) $req->query('limit', 50);
             $skip  = (int) $req->query('skip', 0);
+
+            // ✅ Support search by username
             $filters = [
-                'username'   => $req->query('username'),
+                'username'   => $req->query('username'),  // ✅ Thêm username search
+                'q'          => $req->query('q'),         // ✅ Thêm q search
                 'staff_id'   => $req->query('staff_id'),
                 'patient_id' => $req->query('patient_id'),
             ];
+
             return response()->json($this->svc->list($limit, $skip, $filters), 200);
         } catch (Throwable $e) {
             return $this->error($e);
@@ -108,22 +112,23 @@ class UserController extends Controller
             $data = $req->validate([
                 '_id'            => 'sometimes|string',
                 'type'           => 'sometimes|in:user',
-                'username'       => 'required|string',
-                'email'          => 'nullable|email',
-                'password_hash'  => 'required|string', // gửi hash sẵn (bcrypt)
-                'role_names'     => 'required|array',
+                'username'       => 'required|string|min:3|max:50',
+                'email'          => 'required|email',
+                'password'       => 'required|string|min:6',  // ✅ Password required
+                'role_names'     => 'required|array|min:1',   // ✅ Role required
                 'role_names.*'   => 'string',
-                'account_type'   => 'required|in:staff,patient',
+                'account_type'   => 'required|in:staff,doctor,patient',
                 'linked_staff_id'=> 'nullable|string',
+                'linked_doctor_id'=> 'nullable|string',
                 'linked_patient_id'=> 'nullable|string',
                 'status'         => 'nullable|in:active,inactive',
             ]);
 
-            // nếu muốn tự hash từ plaintext:
-            // if (!empty($data['password'])) {
-            //     $data['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
-            //     unset($data['password']);
-            // }
+            // ✅ Hash password
+            if (!empty($data['password'])) {
+                $data['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
+                unset($data['password']);
+            }
 
             $created = $this->svc->create($data);
             return response()->json($created, !empty($created['ok']) ? 201 : 400);
@@ -179,10 +184,88 @@ class UserController extends Controller
      *     @OA\Response(response=500, description="Lỗi server")
      * )
      */
-    public function destroy(Request $req, string $id)
+    public function destroy(Request $request, string $id)
     {
-        $rev = $req->query('rev') ?? $req->input('rev');
-        $res = $this->svc->delete($id, $rev);
-        return response()->json($res['data'], $res['status']);
+        try {
+            $rev = $request->query('rev');
+
+            // Nếu không có rev, lấy document hiện tại
+            if (empty($rev)) {
+                $result = $this->svc->find($id);
+
+                // Check nếu service trả về status 404
+                if ($result['status'] === 404) {
+                    return response()->json(['error' => 'not_found', 'message' => 'User not found'], 404);
+                }
+
+                // Lấy _rev từ data
+                $rev = $result['data']['_rev'] ?? null;
+                if (!$rev) {
+                    return response()->json([
+                        'error' => 'missing_rev',
+                        'message' => 'Cannot get document revision'
+                    ], 400);
+                }
+            }
+
+            // Thực hiện xóa và check kết quả
+            $deleteResult = $this->svc->delete($id, $rev);
+
+            // Check status từ service
+            if ($deleteResult['status'] !== 200) {
+                return response()->json($deleteResult['data'], $deleteResult['status']);
+            }
+
+            // Verify delete thành công
+            if (!isset($deleteResult['data']['ok']) || !$deleteResult['data']['ok']) {
+                return response()->json([
+                    'error' => 'delete_failed',
+                    'message' => 'Delete operation did not complete successfully'
+                ], 500);
+            }
+
+            return response()->json([
+                'ok' => true,
+                'message' => 'User deleted successfully'
+            ], 200);
+
+        } catch (Throwable $e) {
+            // Nếu conflict, thử lại với rev mới nhất
+            if (str_contains(strtolower($e->getMessage()), 'conflict')) {
+                try {
+                    $result = $this->svc->find($id);
+                    if ($result['status'] === 404) {
+                        return response()->json(['error' => 'not_found'], 404);
+                    }
+
+                    $latestRev = $result['data']['_rev'] ?? null;
+                    if (!$latestRev) {
+                        return response()->json(['error' => 'missing_rev'], 400);
+                    }
+
+                    $retryResult = $this->svc->delete($id, $latestRev);
+
+                    if ($retryResult['status'] !== 200) {
+                        return response()->json($retryResult['data'], $retryResult['status']);
+                    }
+
+                    return response()->json([
+                        'ok' => true,
+                        'message' => 'User deleted successfully (retry)'
+                    ], 200);
+
+                } catch (Throwable $retryError) {
+                    return response()->json([
+                        'error' => 'delete_failed',
+                        'message' => 'Failed to delete after retry: ' . $retryError->getMessage()
+                    ], 500);
+                }
+            }
+
+            return response()->json([
+                'error' => 'server_error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -17,7 +17,16 @@ abstract class BaseCouchRepository
     public function get(string $id): array           { return $this->client->get($id); }
     public function create(array $doc): array        { return $this->client->create($doc); }
     public function update(string $id, array $doc): array { return $this->client->put($id, $doc); }
-    public function delete(string $id, string $rev): array { return $this->client->delete($id, $rev); }
+
+    public function delete(string $id, string $rev): array
+    {
+        if (!$rev) {
+            return ['ok' => false, 'error' => 'conflict', 'reason' => 'Missing rev'];
+        }
+
+        return $this->client->delete($id, $rev);
+    }
+
     public function view(string $design, string $view, array $params = []): array
     { return $this->client->view($design, $view, $params); }
 }

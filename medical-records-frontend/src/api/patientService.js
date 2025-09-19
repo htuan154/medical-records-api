@@ -21,8 +21,10 @@ const PatientService = {
   update (id, payload) {
     return api.put(`/patients/${id}`, payload).then((r) => r.data)
   },
-  remove (id) {
-    return api.delete(`/patients/${id}`).then((r) => r.data)
+  remove (id, rev) {
+    const params = {}
+    if (rev) params.rev = rev
+    return api.delete(`/patients/${id}`, { params }).then(r => r.data)
   },
 
   // liên quan đến bệnh án & lịch hẹn của bệnh nhân

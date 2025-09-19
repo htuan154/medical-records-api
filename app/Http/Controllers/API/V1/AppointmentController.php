@@ -401,73 +401,97 @@ class AppointmentController extends Controller
      *     tags={"Appointments"},
      *     summary="Xóa cuộc hẹn",
      *     security={{"bearerAuth":{}}},
-     *     description="Xóa một appointment theo ID (cần có rev parameter)",
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID của appointment",
-     *         @OA\Schema(type="string", example="appointment_123")
-     *     ),
-     *     @OA\Parameter(
-     *         name="rev",
-     *         in="query",
-     *         required=true,
-     *         description="Revision của document",
-     *         @OA\Schema(type="string", example="1-abc123")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Xóa thành công",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="ok", type="boolean", example=true),
-     *             @OA\Property(property="id", type="string", example="appointment_123"),
-     *             @OA\Property(property="rev", type="string", example="2-def456")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Thiếu rev parameter",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="error", type="string", example="bad_request"),
-     *             @OA\Property(property="reason", type="string", example="Missing rev parameter")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Không tìm thấy appointment",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="error", type="string", example="not_found"),
-     *             @OA\Property(property="reason", type="string", example="missing")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=409,
-     *         description="Conflict - Document đã được cập nhật",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="error", type="string", example="conflict"),
-     *             @OA\Property(property="reason", type="string", example="Document update conflict")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Lỗi server",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="error", type="string", example="Exception"),
-     *             @OA\Property(property="message", type="string", example="Database connection failed")
-     *         )
-     *     )
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Xóa thành công"),
+     *     @OA\Response(response=400, description="Thiếu rev parameter"),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=409, description="Conflict"),
+     *     @OA\Response(response=500, description="Lỗi server")
      * )
      */
-    public function destroy(Request $req, string $id)
+    public function destroy(Request $request, string $id)
     {
-        $rev = $req->query('rev') ?? $req->input('rev');
-        $res = $this->svc->delete($id, $rev);
-        return response()->json($res['data'], $res['status']);
+        try {
+            $rev = $request->query('rev');
+
+            // ✅ Nếu không có rev, lấy document hiện tại
+            if (empty($rev)) {
+                $result = $this->svc->find($id);
+                
+                // Check nếu service trả về status 404
+                if ($result['status'] === 404) {
+                    return response()->json(['error' => 'not_found', 'message' => 'Appointment not found'], 404);
+                }
+                
+                // Lấy _rev từ data
+                $rev = $result['data']['_rev'] ?? null;
+                if (!$rev) {
+                    return response()->json([
+                        'error' => 'missing_rev', 
+                        'message' => 'Cannot get document revision'
+                    ], 400);
+                }
+            }
+
+            // ✅ Thực hiện xóa và check kết quả
+            $deleteResult = $this->svc->delete($id, $rev);
+            
+            // Check status từ service
+            if ($deleteResult['status'] !== 200) {
+                return response()->json($deleteResult['data'], $deleteResult['status']);
+            }
+
+            // ✅ Verify delete thành công
+            if (!isset($deleteResult['data']['ok']) || !$deleteResult['data']['ok']) {
+                return response()->json([
+                    'error' => 'delete_failed',
+                    'message' => 'Delete operation did not complete successfully'
+                ], 500);
+            }
+
+            return response()->json([
+                'ok' => true, 
+                'message' => 'Appointment deleted successfully'
+            ], 200);
+
+        } catch (Throwable $e) {
+            // ✅ Nếu conflict, thử lại với rev mới nhất
+            if (str_contains(strtolower($e->getMessage()), 'conflict')) {
+                try {
+                    $result = $this->svc->find($id);
+                    if ($result['status'] === 404) {
+                        return response()->json(['error' => 'not_found'], 404);
+                    }
+                    
+                    $latestRev = $result['data']['_rev'] ?? null;
+                    if (!$latestRev) {
+                        return response()->json(['error' => 'missing_rev'], 400);
+                    }
+
+                    $retryResult = $this->svc->delete($id, $latestRev);
+                    
+                    if ($retryResult['status'] !== 200) {
+                        return response()->json($retryResult['data'], $retryResult['status']);
+                    }
+
+                    return response()->json([
+                        'ok' => true, 
+                        'message' => 'Appointment deleted successfully (retry)'
+                    ], 200);
+                    
+                } catch (Throwable $retryError) {
+                    return response()->json([
+                        'error' => 'delete_failed',
+                        'message' => 'Failed to delete after retry: ' . $retryError->getMessage()
+                    ], 500);
+                }
+            }
+
+            return response()->json([
+                'error' => 'server_error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

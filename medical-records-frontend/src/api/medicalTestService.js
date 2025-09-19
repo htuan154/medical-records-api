@@ -18,7 +18,12 @@ const MedicalTestService = {
   update (id, payload) {
     return api.put(`/medical-tests/${id}`, payload).then((r) => r.data)
   },
-  remove (id) {
+  remove (id, rev) {
+    // Nếu có rev, truyền qua query parameter
+    if (rev) {
+      return api.delete(`/medical-tests/${id}?rev=${encodeURIComponent(rev)}`).then((r) => r.data)
+    }
+    // Nếu không có rev, gọi như cũ (backend sẽ tự lấy rev)
     return api.delete(`/medical-tests/${id}`).then((r) => r.data)
   }
 }

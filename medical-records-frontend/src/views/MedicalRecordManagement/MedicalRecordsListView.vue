@@ -700,9 +700,23 @@ export default {
 
     async remove (row) {
       if (!confirm('Xóa hồ sơ này?')) return
+
       try {
         const id = row._id || row.id
-        await MedicalRecordService.remove(id)
+        if (!id) {
+          alert('Không tìm thấy ID hồ sơ')
+          return
+        }
+
+        const rev = row._rev
+        if (!rev) {
+          alert('Không tìm thấy revision của document')
+          return
+        }
+
+        // ✅ Truyền cả id và rev
+        await MedicalRecordService.remove(id, rev)
+        alert('Xóa thành công!')
         await this.fetch()
       } catch (e) {
         console.error(e)

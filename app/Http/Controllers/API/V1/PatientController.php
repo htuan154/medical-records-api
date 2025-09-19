@@ -174,14 +174,58 @@ class PatientController extends Controller
      *     @OA\Response(response=500, description="Lỗi server")
      * )
      */
-    public function destroy(Request $req, string $id)
-    {
-        try {
-            $rev = $req->query('rev') ?? $req->input('rev');
-            $res = $this->svc->delete($id, $rev);
-            return response()->json($res['data'], $res['status']);
-        } catch (Throwable $e) {
-            return $this->error($e);
+public function destroy(\Illuminate\Http\Request $request, string $id)
+{
+    try {
+        // 1) Lấy rev từ client
+        $rev = $request->query('rev');
+
+        // 2) Nếu không có rev -> fetch doc để lấy _rev mới nhất
+        if (empty($rev)) {
+            $result = $this->svc->find($id);
+
+            // ✅ Check status đúng cách
+            if ($result['status'] === 404) {
+                return response()->json(['error' => 'not_found'], 404);
+            }
+
+            // ✅ Lấy _rev từ data
+            $rev = $result['data']['_rev'] ?? null;
+            if (!$rev) {
+                return response()->json([
+                    'error' => 'missing_rev',
+                    'reason' => 'Cannot get document revision'
+                ], 400);
+            }
         }
+
+        // 3) Xóa lần đầu
+        $res = $this->svc->delete($id, $rev);
+
+        // 4) Nếu conflict -> retry với rev mới nhất
+        if (($res['status'] ?? 0) === 409 || ($res['data']['error'] ?? '') === 'conflict') {
+            $result = $this->svc->find($id);
+            if ($result['status'] === 404) {
+                return response()->json(['error' => 'not_found'], 404);
+            }
+
+            $latestRev = $result['data']['_rev'] ?? null;
+            if ($latestRev) {
+                $res = $this->svc->delete($id, $latestRev);
+            }
+        }
+
+        return response()->json($res['data'], $res['status'] ?? 200);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'ok'     => false,
+            'error'  => 'server_error',
+            'reason' => $e->getMessage(),
+        ], 500);
     }
+}
+
+
+
 }

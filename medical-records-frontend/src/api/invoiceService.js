@@ -16,7 +16,12 @@ const InvoiceService = {
   update (id, payload) {
     return api.put(`/invoices/${id}`, payload).then((r) => r.data)
   },
-  remove (id) {
+
+  // ✅ FIX: Thêm rev parameter support
+  remove (id, rev) {
+    if (rev) {
+      return api.delete(`/invoices/${id}?rev=${encodeURIComponent(rev)}`).then((r) => r.data)
+    }
     return api.delete(`/invoices/${id}`).then((r) => r.data)
   },
 
