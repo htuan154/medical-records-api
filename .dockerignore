@@ -1,4 +1,4 @@
-# .dockerignore (gợi ý)
+# .dockerignore gợi ý
 .git
 .github
 node_modules
@@ -10,7 +10,6 @@ docker-compose.yml
 vendor
 *.md
 
-# Quan trọng: cho phép copy các file cần thiết
 !Dockerfile
 !composer.json
 !composer.lock
