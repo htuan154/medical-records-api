@@ -1,7 +1,7 @@
-# ---------- Stage: vendor (chạy composer bằng PHP 8.2) ----------
+# ---------- Stage: vendor (composer chạy bằng PHP 8.2) ----------
 FROM php:8.2-fpm-alpine AS vendor
 
-# Cài packages để build ext và chạy composer
+# Lib cần để cài ext + chạy composer
 RUN apk add --no-cache bash curl git unzip libzip-dev icu-dev oniguruma-dev \
     && docker-php-ext-install pdo pdo_mysql mbstring intl zip opcache
 
@@ -12,7 +12,7 @@ RUN curl -sS https://getcomposer.org/installer \
 WORKDIR /app
 COPY composer.json composer.lock ./
 
-# Ép platform về 8.2 để lockfile nhất quán
+# Khóa platform về 8.2 để tương thích nette/schema (≤ PHP 8.3)
 RUN composer config platform.php 8.2.0 \
  && COMPOSER_ALLOW_SUPERUSER=1 composer install \
       --no-dev --no-interaction --prefer-dist --optimize-autoloader
@@ -20,27 +20,30 @@ RUN composer config platform.php 8.2.0 \
 # ---------- Stage: runtime ----------
 FROM php:8.2-fpm-alpine
 
-# Web + process supervisor + build deps cho ext
+# Web server & supervisor + libs cho ext
 RUN apk add --no-cache nginx supervisor bash curl git libzip-dev icu-dev oniguruma-dev \
  && docker-php-ext-install pdo pdo_mysql mbstring intl zip opcache
 
-# OPCache tối ưu
-COPY opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+# OPCache
+COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
-# Nginx & Supervisor
-COPY default.conf /etc/nginx/conf.d/default.conf
+# Nginx & Supervisor configs (đúng path theo repo)
+COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY supervisord.conf /etc/supervisord.conf
 
 # Ứng dụng
 WORKDIR /app
 COPY . /app
-# Copy vendor đã build sẵn từ stage "vendor"
+
+# Vendor đã build sẵn ở stage "vendor"
 COPY --from=vendor /app/vendor /app/vendor
 
-# Entrypoint: set PORT, cache artisan, chạy php-fpm + nginx qua supervisor
+# Entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+# Port cho Render/Heroku style
 ENV PORT=8080
 EXPOSE 8080
+
 CMD ["/entrypoint.sh"]
