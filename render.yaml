@@ -1,0 +1,64 @@
+services:
+  - type: web
+    name: medical-records-api
+    runtime: docker
+    plan: free
+    repo: https://github.com/htuan154/medical-records-api
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    healthCheckPath: /health
+    # Nếu web phụ thuộc CouchDB, thêm dependsOn để Render start CouchDB trước
+    dependsOn:
+      - name: couchdb
+        required: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_DRIVER
+        value: file
+      - key: APP_URL
+        value: https://medical-records-api.onrender.com
+      # Secrets (dán trên Dashboard Render)
+      - key: APP_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      # CouchDB nội bộ (khớp private service bên dưới)
+      - key: COUCHDB_SCHEME
+        value: http
+      - key: COUCHDB_HOST
+        value: couchdb
+      - key: COUCHDB_PORT
+        value: "5984"
+      - key: COUCHDB_USER
+        sync: false
+      - key: COUCHDB_PASSWORD
+        sync: false
+      # CORS nếu cần
+      - key: CORS_ALLOWED_ORIGINS
+        value: "*"
+
+  - type: private_service
+    name: couchdb
+    runtime: docker
+    image:
+      url: docker.io/library/couchdb:3.3
+    plan: free
+    envVars:
+      - key: COUCHDB_USER
+        sync: false
+      - key: COUCHDB_PASSWORD
+        sync: false
+    disk:
+      name: couchdb-data
+      mountPath: /opt/couchdb/data
+      sizeGB: 1
+    ports:
+      - port: 5984
+        protocol: tcp
