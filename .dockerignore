@@ -1,23 +1,17 @@
-# Bỏ những thứ không cần đưa vào build context
+# .dockerignore (gợi ý)
 .git
 .github
-docker-compose.yml
 node_modules
 storage/logs/*
-storage/framework/cache/*
-storage/framework/sessions/*
-storage/framework/views/*
+storage/framework/*
 tests
 .env
+docker-compose.yml
+vendor
 *.md
 
-# Nếu bạn copy vendor từ stage composer thì vendor trong context không cần
-vendor
-
-# WHITELIST các file cấu hình cần thiết
+# Quan trọng: cho phép copy các file cần thiết
 !Dockerfile
 !composer.json
 !composer.lock
 !docker/**
-!entrypoint.sh
-!supervisord.conf
