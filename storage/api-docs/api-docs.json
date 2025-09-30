@@ -714,134 +714,40 @@
                     "Appointments"
                 ],
                 "summary": "Xóa cuộc hẹn",
-                "description": "Xóa một appointment theo ID (cần có rev parameter)",
                 "operationId": "0f2d2d132b2fa5cd69d1bad5d3ac0426",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID của appointment",
                         "required": true,
                         "schema": {
-                            "type": "string",
-                            "example": "appointment_123"
+                            "type": "string"
                         }
                     },
                     {
                         "name": "rev",
                         "in": "query",
-                        "description": "Revision của document",
                         "required": true,
                         "schema": {
-                            "type": "string",
-                            "example": "1-abc123"
+                            "type": "string"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Xóa thành công",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "ok": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "id": {
-                                            "type": "string",
-                                            "example": "appointment_123"
-                                        },
-                                        "rev": {
-                                            "type": "string",
-                                            "example": "2-def456"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Xóa thành công"
                     },
                     "400": {
-                        "description": "Thiếu rev parameter",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "bad_request"
-                                        },
-                                        "reason": {
-                                            "type": "string",
-                                            "example": "Missing rev parameter"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Thiếu rev parameter"
                     },
                     "404": {
-                        "description": "Không tìm thấy appointment",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "not_found"
-                                        },
-                                        "reason": {
-                                            "type": "string",
-                                            "example": "missing"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Không tìm thấy"
                     },
                     "409": {
-                        "description": "Conflict - Document đã được cập nhật",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "conflict"
-                                        },
-                                        "reason": {
-                                            "type": "string",
-                                            "example": "Document update conflict"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Conflict"
                     },
                     "500": {
-                        "description": "Lỗi server",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "Exception"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Database connection failed"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Lỗi server"
                     }
                 },
                 "security": [

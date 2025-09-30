@@ -2,6 +2,8 @@
 
 return [
     'default' => 'default',
+    'generate_always' => true,
+    'proxy' => true,   
     'documentations' => [
         'default' => [
             'api' => [
