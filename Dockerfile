@@ -15,7 +15,7 @@ COPY composer.json composer.lock ./
 
 RUN composer config platform.php 8.2.0 \
  && COMPOSER_ALLOW_SUPERUSER=1 composer install \
-      --no-dev --no-interaction --prefer-dist --optimize-autoloader
+  --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
 
 # =========================
