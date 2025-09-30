@@ -23,6 +23,7 @@ fi
 php artisan storage:link || true
 php artisan config:clear || true
 php artisan cache:clear || true
+php artisan view:clear || true
 php artisan config:cache || true
 # Pre-generate Swagger docs to avoid first-hit 500 if the folder is empty or permissions were missing
 php artisan l5-swagger:generate || true

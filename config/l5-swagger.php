@@ -23,8 +23,8 @@ return [
                 ],
             ],
             'paths' => [
-                // Force absolute paths so assets resolve to https on Render
-                'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
+                // Use relative paths so Swagger UI fetches docs from the same origin (avoid cross-origin/CORS)
+                'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', false),
     // Path to swagger-ui assets (package expects this relative path)
     'swagger_ui_assets_path' => env('L5_SWAGGER_UI_ASSETS_PATH', 'vendor/swagger-api/swagger-ui/dist/'),
         'docs_json' => 'api-docs.json',
