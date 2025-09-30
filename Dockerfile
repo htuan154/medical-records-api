@@ -30,6 +30,7 @@ RUN apk add --no-cache nginx supervisor bash curl git libzip-dev icu-dev oniguru
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # Nginx & Supervisor (CHÚ Ý: đúng path theo repo hiện tại)
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY docker/supervisord.conf   /etc/supervisord.conf
 
