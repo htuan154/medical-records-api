@@ -16,14 +16,14 @@ class CouchClient
 
     public function __construct()
     {
-        $scheme   = (string) config('couchdb.scheme', 'http');   // <-- thêm scheme
-        $host     = (string) config('couchdb.host', '127.0.0.1');
-        $port     = (int)    config('couchdb.port', 5984);
-
+        $scheme   = env('COUCHDB_SCHEME', 'http');             // ✅ từ ENV
+        $host     = env('COUCHDB_HOST', '127.0.0.1');          // ✅
+        $port     = (int) env('COUCHDB_PORT', $scheme === 'https' ? 443 : 5984); // ✅
         $this->baseUrl  = rtrim("{$scheme}://{$host}:{$port}", '/');
-        $this->username = (string) config('couchdb.username', '');
-        $this->password = (string) config('couchdb.password', '');
+        $this->username = env('COUCHDB_USERNAME', '');
+        $this->password = env('COUCHDB_PASSWORD', '');
     }
+
 
     /** Chọn database (có áp dụng prefix nếu có) */
     public function db(string $name): self
