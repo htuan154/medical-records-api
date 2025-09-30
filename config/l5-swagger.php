@@ -3,7 +3,8 @@
 return [
     'default' => 'default',
     'generate_always' => true,
-    'proxy' => true,   
+    // behind Render proxy; let l5-swagger be proxy-aware
+    'proxy' => true,
     'documentations' => [
         'default' => [
             'api' => [
@@ -22,6 +23,7 @@ return [
                 ],
             ],
             'paths' => [
+                // Force absolute paths so assets resolve to https on Render
                 'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
         'swagger_ui_assets_path' => env('L5_SWAGGER_UI_ASSETS_PATH', 'vendor/swagger-api/swagger-ui/dist/'),
         'docs_json' => 'api-docs.json',
@@ -239,7 +241,7 @@ return [
          * Edit to trust the proxy's ip address - needed for AWS Load Balancer
          * string[]
          */
-        'proxy' => false,
+    'proxy' => true,
 
         /*
          * Configs plugin allows to fetch external configs instead of passing them to SwaggerUIBundle.
