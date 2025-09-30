@@ -25,8 +25,8 @@ return [
             'paths' => [
                 // Force absolute paths so assets resolve to https on Render
                 'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
-    // Use an absolute filesystem path to the swagger-ui dist inside vendor
-    'swagger_ui_assets_path' => base_path('vendor/swagger-api/swagger-ui/dist/'),
+    // Path to swagger-ui assets (package expects this relative path)
+    'swagger_ui_assets_path' => env('L5_SWAGGER_UI_ASSETS_PATH', 'vendor/swagger-api/swagger-ui/dist/'),
         'docs_json' => 'api-docs.json',
         'docs_yaml' => 'api-docs.yaml',
         'format_to_use_for_docs' => env('L5_FORMAT_TO_USE_FOR_DOCS', 'json'),
