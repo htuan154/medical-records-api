@@ -112,10 +112,32 @@ class PatientController extends Controller
                 'personal_info.phone'       => 'nullable|string',
                 'personal_info.birth_date'  => 'nullable|date',
                 'personal_info.id_number'   => 'nullable|string',
+                'personal_info.email'       => 'nullable|email',
                 'medical_info'              => 'nullable|array',
                 'address'                   => 'nullable|array',
                 'status'                    => 'nullable|in:active,inactive',
             ]);
+
+            // Nếu client POST kèm cả _id và _rev -> xem như cập nhật để tránh conflict
+            if (!empty($data['_id']) && !empty($data['_rev'])) {
+                $res = $this->svc->update($data['_id'], $data);
+                return response()->json($res['data'], $res['status']);
+            }
+
+            // Nếu có _id mà doc đã tồn tại -> trả 409 hướng dẫn dùng PUT hoặc bỏ _id
+            if (!empty($data['_id'])) {
+                $existing = $this->svc->find($data['_id']);
+                if (($existing['status'] ?? 200) === 200) {
+                    return response()->json([
+                        'error' => 'conflict',
+                        'message' => 'Document with the same _id already exists. Use PUT /api/v1/patients/{id} with a valid _rev to update, or remove _id to auto-generate.',
+                        'existing' => [
+                            'id' => $data['_id'],
+                            'rev' => $existing['data']['_rev'] ?? null
+                        ]
+                    ], 409);
+                }
+            }
 
             $created = $this->svc->create($data);
             return response()->json($created, !empty($created['ok']) ? 201 : 400);

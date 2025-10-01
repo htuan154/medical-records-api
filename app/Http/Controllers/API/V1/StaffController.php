@@ -117,23 +117,37 @@ class StaffController extends Controller
             $data = $req->validate([
                 '_id'        => 'sometimes|string',
                 'type'       => 'sometimes|in:staff',
-                'full_name'  => 'required|string',
-                'staff_type' => 'required|string',
-                'gender'     => 'nullable|string',
-                'phone'      => 'nullable|string',
-                'email'      => 'nullable|email',
-                'department' => 'nullable|string',
+                'full_name'  => 'required|string|min:2|max:255',
+                'staff_type' => 'required|string|min:2|max:100',
+                'gender'     => 'nullable|string|in:Nam,Nữ,Khác,male,female,other',
+                'phone'      => 'nullable|string|regex:/^[0-9+\-\s()]+$/|max:20',
+                'email'      => 'nullable|email|max:255',
+                'department' => 'nullable|string|max:255',
                 'shift'      => 'nullable|array',
                 'shift.days' => 'nullable|array',
-                'shift.start'=> 'nullable|string',
-                'shift.end'  => 'nullable|string',
+                'shift.days.*' => 'string|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday,mon,tue,wed,thu,fri,sat,sun',
+                // Dùng date_format để tránh lỗi regex khi sử dụng ký tự '|' trong pattern
+                'shift.start'=> 'nullable|string|date_format:H:i',
+                'shift.end'  => 'nullable|string|date_format:H:i',
                 'status'     => 'nullable|in:active,inactive',
             ]);
 
             $created = $this->svc->create($data);
             return response()->json($created, !empty($created['ok']) ? 201 : 400);
         } catch (ValidationException $ve) {
-            return response()->json(['error' => 'validation_error', 'details' => $ve->errors()], 422);
+            return response()->json([
+                'error' => 'validation_error', 
+                'message' => 'Dữ liệu không hợp lệ', 
+                'details' => $ve->errors(),
+                'rules_info' => [
+                    'full_name' => 'Bắt buộc, tối thiểu 2 ký tự',
+                    'staff_type' => 'Bắt buộc, ví dụ: doctor, nurse, admin',
+                    'gender' => 'Tùy chọn: Nam, Nữ, Khác hoặc male, female, other',
+                    'phone' => 'Tùy chọn, chỉ chấp nhận số và ký tự đặc biệt',
+                    'shift.days' => 'Tùy chọn: monday/mon, tuesday/tue, etc.',
+                    'status' => 'Tùy chọn: active hoặc inactive'
+                ]
+            ], 422);
         } catch (Throwable $e) {
             return $this->error($e);
         }

@@ -102,13 +102,42 @@ JS
 
     public function update(string $id, array $data): array
     {
-        $data['_id'] = $id;
-        if (empty($data['_rev'])) {
-            return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Missing _rev']];
+        // Lấy document hiện tại
+        $current = $this->repo->get($id);
+        if (isset($current['error']) && $current['error'] === 'not_found') {
+            return ['status' => 404, 'data' => $current];
         }
-        $data['updated_at'] = now()->toIso8601String();
 
-        $res = $this->repo->update($id, $data);
+        // Lấy _rev: ưu tiên từ client, nếu thiếu dùng _rev hiện tại
+        $rev = $data['_rev'] ?? ($current['_rev'] ?? null);
+        if (!$rev) {
+            return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Missing _rev and cannot resolve latest revision']];
+        }
+
+        // Merge doc theo kiểu patch, không ghi đè _id
+        $merged = $this->mergeDocs($current, $data);
+        $merged['_id']       = $id;
+        $merged['_rev']      = $rev;
+        $merged['type']      = $current['type'] ?? 'user';
+        $merged['updated_at']= now()->toIso8601String();
+
+        $res = $this->repo->update($id, $merged);
+        if (isset($res['error']) && $res['error'] === 'conflict') {
+            // Retry với _rev mới nhất
+            $latest = $this->repo->get($id);
+            if (!isset($latest['error'])) {
+                $merged = $this->mergeDocs($latest, $data);
+                $merged['_id']  = $id;
+                $merged['_rev'] = $latest['_rev'] ?? null;
+                if (!$merged['_rev']) {
+                    return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Cannot resolve latest _rev to retry']];
+                }
+                $merged['type']       = $latest['type'] ?? 'user';
+                $merged['updated_at'] = now()->toIso8601String();
+                $res = $this->repo->update($id, $merged);
+            }
+        }
+
         return ['status' => (!empty($res['ok']) ? 200 : 400), 'data' => $res];
     }
 
@@ -130,6 +159,13 @@ JS
 
             // Check nếu CouchDB trả về error
             if (isset($result['error'])) {
+                // Nếu đã bị xóa trước đó
+                if ($result['error'] === 'not_found' && ($result['reason'] ?? '') === 'deleted') {
+                    return [
+                        'status' => 200,
+                        'data' => [ 'ok' => true, 'id' => $id, 'message' => 'Document already deleted' ]
+                    ];
+                }
                 $status = match($result['error']) {
                     'not_found' => 404,
                     'conflict' => 409,
@@ -169,5 +205,19 @@ JS
                 ]
             ];
         }
+    }
+
+    /** Đệ quy merge mảng (không ghi đè _id) */
+    private function mergeDocs(array $base, array $changes): array
+    {
+        foreach ($changes as $k => $v) {
+            if ($k === '_id') continue;
+            if (is_array($v) && isset($base[$k]) && is_array($base[$k])) {
+                $base[$k] = $this->mergeDocs($base[$k], $v);
+            } else {
+                $base[$k] = $v;
+            }
+        }
+        return $base;
     }
 }

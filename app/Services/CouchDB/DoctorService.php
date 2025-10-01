@@ -59,7 +59,7 @@ JS
     public function list(int $limit = 50, int $skip = 0, array $filters = []): array
     {
         if (!empty($filters['q'])) {
-            return $this->repo->ByName($filters['q'], $limit, $skip);
+            return $this->repo->byName($filters['q'], $limit, $skip);
         }
         if (!empty($filters['specialty'])) {
             return $this->repo->bySpecialty($filters['specialty'], $limit, $skip);

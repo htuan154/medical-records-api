@@ -18,6 +18,22 @@ Route::prefix('v1')->group(function () {
     // PUBLIC AUTH routes (không cần authentication)
     Route::post('/login',   [AuthController::class, 'login']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
+    
+    // PUBLIC STAFF routes for testing
+    Route::middleware('log.request')->group(function () {
+        Route::get('/staffs-public',       [StaffController::class, 'index']);
+        Route::post('/staffs-public',      [StaffController::class, 'store']);
+        Route::get('/staffs-public/{id}',  [StaffController::class, 'show']);
+        Route::put('/staffs-public/{id}',  [StaffController::class, 'update']);
+        Route::delete('/staffs-public/{id}', [StaffController::class, 'destroy']);
+        
+        // PUBLIC USER routes for testing
+        Route::get('/users-public',       [UserController::class, 'index']);
+        Route::post('/users-public',      [UserController::class, 'store']);
+        Route::get('/users-public/{id}',  [UserController::class, 'show']);
+        Route::put('/users-public/{id}',  [UserController::class, 'update']);
+        Route::delete('/users-public/{id}', [UserController::class, 'destroy']);
+    });
 
     // TẤT CẢ ROUTES KHÁC PHẢI CÓ JWT AUTHENTICATION
     Route::middleware('jwt')->group(function () {
@@ -108,6 +124,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/docs', fn () => redirect('/api/documentation'));
 });
 Route::get('/ping', fn() => response()->json(['ok' => true]));
+Route::get('/health', fn() => response()->json(['status' => 'ok', 'timestamp' => now()->toIso8601String()]));
 Route::fallback(function () {
     return response()->json([
         'message' => 'Route not found.'

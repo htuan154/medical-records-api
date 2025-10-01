@@ -110,6 +110,7 @@ class MedicalRecordController extends Controller
         try {
             $data = $req->validate([
                 '_id'                       => 'sometimes|string',
+                '_rev'                      => 'sometimes|string',
                 'type'                      => 'sometimes|in:medical_record',
                 'patient_id'                => 'required|string',
                 'doctor_id'                 => 'required|string',
@@ -133,6 +134,12 @@ class MedicalRecordController extends Controller
                 'attachments'               => 'nullable|array',
                 'status'                    => 'nullable|in:draft,in_progress,completed,canceled',
             ]);
+
+            // Hỗ trợ POST-as-update khi có _id + _rev (tiện test trên Swagger)
+            if (!empty($data['_id']) && !empty($data['_rev'])) {
+                $res = $this->svc->update($data['_id'], $data);
+                return response()->json($res['data'], $res['status']);
+            }
 
             $created = $this->svc->create($data);
             return response()->json($created, !empty($created['ok']) ? 201 : 400);
@@ -189,87 +196,9 @@ class MedicalRecordController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        try {
-            $rev = $request->query('rev');
-
-            // ✅ Nếu không có rev, lấy document hiện tại
-            if (empty($rev)) {
-                $result = $this->svc->find($id);
-                
-                // Check nếu service trả về status 404
-                if ($result['status'] === 404) {
-                    return response()->json(['error' => 'not_found', 'message' => 'Medical record not found'], 404);
-                }
-                
-                // Lấy _rev từ data
-                $rev = $result['data']['_rev'] ?? null;
-                if (!$rev) {
-                    return response()->json([
-                        'error' => 'missing_rev', 
-                        'message' => 'Cannot get document revision'
-                    ], 400);
-                }
-            }
-
-            // ✅ Thực hiện xóa và check kết quả
-            $deleteResult = $this->svc->delete($id, $rev);
-            
-            // Check status từ service
-            if ($deleteResult['status'] !== 200) {
-                return response()->json($deleteResult['data'], $deleteResult['status']);
-            }
-
-            // ✅ Verify delete thành công
-            if (!isset($deleteResult['data']['ok']) || !$deleteResult['data']['ok']) {
-                return response()->json([
-                    'error' => 'delete_failed',
-                    'message' => 'Delete operation did not complete successfully'
-                ], 500);
-            }
-
-            return response()->json([
-                'ok' => true, 
-                'message' => 'Medical record deleted successfully'
-            ], 200);
-
-        } catch (Throwable $e) {
-            // ✅ Nếu conflict, thử lại với rev mới nhất
-            if (str_contains(strtolower($e->getMessage()), 'conflict')) {
-                try {
-                    $result = $this->svc->find($id);
-                    if ($result['status'] === 404) {
-                        return response()->json(['error' => 'not_found'], 404);
-                    }
-                    
-                    $latestRev = $result['data']['_rev'] ?? null;
-                    if (!$latestRev) {
-                        return response()->json(['error' => 'missing_rev'], 400);
-                    }
-
-                    $retryResult = $this->svc->delete($id, $latestRev);
-                    
-                    if ($retryResult['status'] !== 200) {
-                        return response()->json($retryResult['data'], $retryResult['status']);
-                    }
-
-                    return response()->json([
-                        'ok' => true, 
-                        'message' => 'Medical record deleted successfully (retry)'
-                    ], 200);
-                    
-                } catch (Throwable $retryError) {
-                    return response()->json([
-                        'error' => 'delete_failed',
-                        'message' => 'Failed to delete after retry: ' . $retryError->getMessage()
-                    ], 500);
-                }
-            }
-
-            return response()->json([
-                'error' => 'server_error',
-                'message' => $e->getMessage()
-            ], 500);
-        }
+        $rev = $request->query('rev');
+        $res = $this->svc->delete($id, $rev);
+        return response()->json($res['data'], $res['status']);
     }
 
     private function error(Throwable $e, int $code = 500)
