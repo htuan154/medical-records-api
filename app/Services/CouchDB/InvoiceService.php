@@ -10,10 +10,10 @@ class InvoiceService
     public function __construct(
         private CouchClient $client,
         private InvoicesRepository $repo,
-        private MedicationsRepository $medicationsRepo  // ✅ Inject MedicationsRepository
+        private MedicationsRepository $medicationsRepo
     ) {}
 
-    /** Đảm bảo _design/invoices tồn tại với các view cần thiết */
+    // Ensure design doc exists
     public function ensureDesignDoc(): array
     {
         $db = $this->client->db('invoices');
@@ -83,7 +83,7 @@ JS
         return $db->create($doc);
     }
 
-    /** List + filter: patient_id | number | date range | payment_status */
+    // List with filters
     public function list(int $limit = 50, int $skip = 0, array $filters = []): array
     {
         if (!empty($filters['patient_id'])) {
@@ -112,60 +112,49 @@ JS
 
     public function create(array $data): array
     {
+        // Ignore _rev on create to avoid conflicts from Swagger examples
+        unset($data['_rev']);
+
         $data['type']       = $data['type'] ?? 'invoice';
         $data['created_at'] = $data['created_at'] ?? now()->toIso8601String();
         $data['updated_at'] = $data['updated_at'] ?? now()->toIso8601String();
-        
+
         try {
-            // ✅ BƯỚC 1: Tạo invoice
             $invoiceResult = $this->repo->create($data);
-            
             if (!isset($invoiceResult['ok']) || !$invoiceResult['ok']) {
                 return $invoiceResult;
             }
-            
-            // ✅ BƯỚC 2: Decrease medication stock nếu có
+
+            // Optional: adjust medication stock based on services
             $this->decreaseMedicationStock($data['services'] ?? []);
-            
+
             return $invoiceResult;
-            
         } catch (\Exception $e) {
             return [
                 'error' => 'create_failed',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ];
         }
     }
 
-    // ✅ NEW: Decrease medication stock
+    // Decrease medication stock if service contains medication items
     private function decreaseMedicationStock(array $services): void
     {
         foreach ($services as $service) {
-            if (
-                ($service['service_type'] ?? '') === 'medication' && 
-                !empty($service['medication_id']) && 
-                ($service['quantity'] ?? 0) > 0
-            ) {
+            if (($service['service_type'] ?? '') === 'medication' && !empty($service['medication_id']) && ($service['quantity'] ?? 0) > 0) {
                 try {
                     $medicationId = $service['medication_id'];
                     $quantity = (int) $service['quantity'];
-                    
-                    // Get current medication doc
                     $medicationDoc = $this->medicationsRepo->get($medicationId);
-                    
                     if (!isset($medicationDoc['error'])) {
                         $currentStock = (int) ($medicationDoc['inventory']['current_stock'] ?? 0);
-                        $newStock = max(0, $currentStock - $quantity);
-                        
-                        // Update stock
-                        $medicationDoc['inventory']['current_stock'] = $newStock;
+                        $medicationDoc['inventory']['current_stock'] = max(0, $currentStock - $quantity);
                         $medicationDoc['updated_at'] = now()->toIso8601String();
-                        
                         $this->medicationsRepo->update($medicationId, $medicationDoc);
                     }
                 } catch (\Exception $e) {
-                    // Log error but don't fail invoice creation
-                    error_log("Failed to decrease medication stock for {$medicationId}: " . $e->getMessage());
+                    // best-effort only
+                    error_log("Failed to decrease medication stock for {$service['medication_id']}:");
                 }
             }
         }
@@ -173,67 +162,90 @@ JS
 
     public function update(string $id, array $data): array
     {
-        $data['_id'] = $id;
-        if (empty($data['_rev'])) {
-            return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Missing _rev']];
+        // Fetch current doc and merge; retry once on conflict
+        $current = $this->repo->get($id);
+        if (isset($current['error']) && $current['error'] === 'not_found') {
+            return ['status' => 404, 'data' => $current];
         }
-        $data['updated_at'] = now()->toIso8601String();
-        $res = $this->repo->update($id, $data);
-        return ['status' => (!empty($res['ok']) ? 200 : 400), 'data' => $res];
+
+        $attempt = function(array $baseDoc) use ($id, $data) {
+            $merged = $this->mergeDocs($baseDoc, $data);
+            $merged['_id'] = $id;
+            $merged['_rev'] = $baseDoc['_rev'] ?? ($data['_rev'] ?? null);
+            $merged['type'] = $baseDoc['type'] ?? 'invoice';
+            $merged['updated_at'] = now()->toIso8601String();
+            return $this->repo->update($id, $merged);
+        };
+
+        $res = $attempt($current);
+        if (($res['error'] ?? '') === 'conflict') {
+            $latest = $this->repo->get($id);
+            if (!isset($latest['error'])) {
+                $res2 = $attempt($latest);
+                return ['status' => (!isset($res2['error']) ? 200 : 409), 'data' => $res2];
+            }
+        }
+        return ['status' => (!isset($res['error']) ? 200 : 400), 'data' => $res];
     }
 
     public function delete(string $id, ?string $rev): array
     {
-        if (!$rev) {
-            return [
-                'status' => 400,
-                'data' => [
-                    'error' => 'missing_rev',
-                    'reason' => 'Revision parameter is required for delete operation'
-                ]
-            ];
-        }
-
         try {
+            if (!$rev) {
+                $doc = $this->repo->get($id);
+                if (isset($doc['error'])) {
+                    // already deleted or missing
+                    return ['status' => 200, 'data' => ['ok' => true, 'id' => $id, 'already' => 'deleted_or_missing']];
+                }
+                $rev = $doc['_rev'] ?? null;
+            }
+
+            if (!$rev) {
+                return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Missing rev']];
+            }
+
             $result = $this->repo->delete($id, $rev);
-            
-            if (isset($result['error'])) {
-                $status = match($result['error']) {
-                    'not_found' => 404,
-                    'conflict' => 409,
-                    default => 400
-                };
-                
-                return [
-                    'status' => $status,
-                    'data' => $result
-                ];
+            if (($result['error'] ?? '') === 'conflict') {
+                $latest = $this->repo->get($id);
+                if (!isset($latest['error']) && isset($latest['_rev'])) {
+                    $retry = $this->repo->delete($id, $latest['_rev']);
+                    if (!isset($retry['error'])) {
+                        return ['status' => 200, 'data' => $retry];
+                    }
+                    if (($retry['error'] ?? '') === 'not_found') {
+                        return ['status' => 200, 'data' => ['ok' => true, 'id' => $id, 'already' => 'deleted']];
+                    }
+                    return ['status' => 409, 'data' => $retry];
+                }
             }
-            
-            if (isset($result['ok']) && $result['ok'] === true) {
-                return [
-                    'status' => 200,
-                    'data' => $result
-                ];
+
+            if (($result['error'] ?? '') === 'not_found') {
+                return ['status' => 200, 'data' => ['ok' => true, 'id' => $id, 'already' => 'deleted']];
             }
-            
-            return [
-                'status' => 400,
-                'data' => [
-                    'error' => 'unknown_result',
-                    'reason' => 'Delete operation did not return expected result',
-                    'result' => $result
-                ]
-            ];
-            
+
+            return ['status' => (!isset($result['error']) ? 200 : 400), 'data' => $result];
         } catch (\Exception $e) {
-            return [
-                'status' => 500,
-                'data' => [
-                    'error' => 'delete_failed',
-                    'message' => $e->getMessage()
-                ]
-            ];
+            return ['status' => 500, 'data' => ['error' => 'server_error', 'message' => $e->getMessage()]];
         }
+    }
+
+    // recursive merge helper; associative arrays merge, numeric arrays replace
+    private function mergeDocs(array $base, array $incoming): array
+    {
+        $result = $base;
+        foreach ($incoming as $k => $v) {
+            if ($k === '_id' || $k === '_rev') continue;
+            if (is_array($v) && isset($base[$k]) && is_array($base[$k])) {
+                $isAssoc = static function(array $arr) { return array_keys($arr) !== range(0, count($arr) - 1); };
+                if ($isAssoc($v) && $isAssoc($base[$k])) {
+                    $result[$k] = $this->mergeDocs($base[$k], $v);
+                } else {
+                    $result[$k] = $v;
+                }
+            } else {
+                $result[$k] = $v;
+            }
+        }
+        return $result;
     }
 }

@@ -185,9 +185,8 @@ class InvoiceController extends Controller
      *     summary="Xóa hóa đơn",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Parameter(name="rev", in="query", required=true, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="rev", in="query", required=false, @OA\Schema(type="string"), description="Optional; server will auto-resolve latest rev if omitted"),
      *     @OA\Response(response=200, description="Xóa thành công"),
-     *     @OA\Response(response=400, description="Thiếu rev parameter"),
      *     @OA\Response(response=404, description="Không tìm thấy"),
      *     @OA\Response(response=409, description="Conflict"),
      *     @OA\Response(response=500, description="Lỗi server")

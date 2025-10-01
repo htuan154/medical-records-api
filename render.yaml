@@ -36,7 +36,7 @@ services:
         value: couchdb
       - key: COUCHDB_PORT
         value: "5984"
-      - key: COUCHDB_USER
+      - key: COUCHDB_USERNAME
         sync: false
       - key: COUCHDB_PASSWORD
         sync: false
@@ -51,7 +51,7 @@ services:
       url: docker.io/library/couchdb:3.3
     plan: free
     envVars:
-      - key: COUCHDB_USER
+      - key: COUCHDB_USERNAME
         sync: false
       - key: COUCHDB_PASSWORD
         sync: false

@@ -136,22 +136,108 @@ JS
 
     public function update(string $id, array $data): array
     {
-        $data['_id'] = $id;
-        if (empty($data['_rev'])) {
-            return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Missing _rev']];
-        }
-        $data['updated_at'] = now()->toIso8601String();
+    // Lấy document hiện tại để resolve _rev và merge patch
+    $current = $this->repo->get($id);
+    if (isset($current['error']) && $current['error'] === 'not_found') {
+      return ['status' => 404, 'data' => $current];
+    }
 
-        $res = $this->repo->update($id, $data);
-        return ['status' => (!empty($res['ok']) ? 200 : 400), 'data' => $res];
+    $rev = $data['_rev'] ?? ($current['_rev'] ?? null);
+    if (!$rev) {
+      return [
+        'status' => 409,
+        'data' => ['error' => 'conflict', 'reason' => 'Missing _rev and cannot resolve latest revision']
+      ];
+    }
+
+    $merged = $this->mergeDocs($current, $data);
+    $merged['_id']        = $id;
+    $merged['_rev']       = $rev;
+    $merged['type']       = $current['type'] ?? 'treatment';
+    $merged['updated_at'] = now()->toIso8601String();
+
+    // Thử cập nhật lần 1
+    $res = $this->repo->update($id, $merged);
+    if (isset($res['error']) && $res['error'] === 'conflict') {
+      // Lấy _rev mới nhất và thử lại 1 lần
+      $latest = $this->repo->get($id);
+      if (!isset($latest['error'])) {
+        $merged = $this->mergeDocs($latest, $data);
+        $merged['_id']  = $id;
+        $merged['_rev'] = $latest['_rev'] ?? null;
+        if (!$merged['_rev']) {
+          return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Cannot resolve latest _rev to retry']];
+        }
+        $merged['type']       = $latest['type'] ?? 'treatment';
+        $merged['updated_at'] = now()->toIso8601String();
+        $res = $this->repo->update($id, $merged);
+      }
+    }
+
+    return ['status' => (!empty($res['ok']) ? 200 : 400), 'data' => $res];
     }
 
     public function delete(string $id, ?string $rev): array
     {
-        if (!$rev) {
-            return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Missing rev']];
-        }
-        $res = $this->repo->delete($id, $rev);
-        return ['status' => (!empty($res['ok']) ? 200 : 400), 'data' => $res];
+    // Nếu không có rev -> cố gắng lấy rev mới nhất
+    if (!$rev) {
+      $doc = $this->repo->get($id);
+      if (isset($doc['error'])) {
+        return [
+          'status' => $doc['error'] === 'not_found' ? 404 : 400,
+          'data'   => $doc,
+        ];
+      }
+      $rev = $doc['_rev'] ?? null;
+      if (!$rev) {
+        return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Missing rev and cannot resolve latest revision']];
+      }
     }
+
+    $res = $this->repo->delete($id, $rev);
+
+    // Xử lý idempotent và retry khi conflict
+    if (isset($res['error'])) {
+      // Nếu đã bị xoá trước đó -> xem như thành công
+      if ($res['error'] === 'not_found' && ($res['reason'] ?? '') === 'deleted') {
+        return [
+          'status' => 200,
+          'data' => [
+            'ok' => true,
+            'id' => $id,
+            'message' => 'Document already deleted'
+          ]
+        ];
+      }
+
+      // Nếu conflict -> lấy rev mới nhất và thử lại 1 lần
+      if ($res['error'] === 'conflict') {
+        $latest = $this->repo->get($id);
+        if (!isset($latest['error'])) {
+          $retry = $this->repo->delete($id, $latest['_rev'] ?? '');
+          if (isset($retry['ok']) && $retry['ok']) {
+            return ['status' => 200, 'data' => $retry];
+          }
+          // Rơi xuống return chung bên dưới
+          $res = $retry;
+        }
+      }
+    }
+
+    return ['status' => (!empty($res['ok']) ? 200 : (isset($res['error']) && $res['error'] === 'not_found' ? 404 : 400)), 'data' => $res];
+    }
+
+  /** Đệ quy merge mảng (không ghi đè _id) */
+  private function mergeDocs(array $base, array $changes): array
+  {
+    foreach ($changes as $k => $v) {
+      if ($k === '_id') continue;
+      if (is_array($v) && isset($base[$k]) && is_array($base[$k])) {
+        $base[$k] = $this->mergeDocs($base[$k], $v);
+      } else {
+        $base[$k] = $v;
+      }
+    }
+    return $base;
+  }
 }

@@ -104,6 +104,7 @@ class RoleController extends Controller
         try {
             $data = $req->validate([
                 '_id'          => 'sometimes|string',
+                '_rev'         => 'sometimes|string',
                 'type'         => 'sometimes|in:role',
                 'name'         => 'required|string',
                 'display_name' => 'nullable|string',
@@ -112,6 +113,12 @@ class RoleController extends Controller
                 'description'  => 'nullable|string',
                 'status'       => 'nullable|in:active,inactive',
             ]);
+
+            // Nếu gửi kèm _id + _rev -> cho phép POST-as-update để test thuận tiện
+            if (!empty($data['_id']) && !empty($data['_rev'])) {
+                $res = $this->svc->update($data['_id'], $data);
+                return response()->json($res['data'], $res['status']);
+            }
 
             $created = $this->svc->create($data);
             return response()->json($created, !empty($created['ok']) ? 201 : 400);

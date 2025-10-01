@@ -119,12 +119,34 @@ class DoctorController extends Controller
                 'professional_info.education'           => 'nullable|array',
                 'professional_info.certifications'      => 'nullable|array',
                 'schedule.working_days'                 => 'nullable|array',
-                'schedule.working_hours.start'          => 'nullable|string',
-                'schedule.working_hours.end'            => 'nullable|string',
-                'schedule.break_time.start'             => 'nullable|string',
-                'schedule.break_time.end'               => 'nullable|string',
+                'schedule.working_days.*'               => 'string|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday,mon,tue,wed,thu,fri,sat,sun',
+                'schedule.working_hours.start'          => 'nullable|string|date_format:H:i',
+                'schedule.working_hours.end'            => 'nullable|string|date_format:H:i',
+                'schedule.break_time.start'             => 'nullable|string|date_format:H:i',
+                'schedule.break_time.end'               => 'nullable|string|date_format:H:i',
                 'status'                                => 'nullable|in:active,inactive',
             ]);
+
+            // Nếu client POST kèm cả _id và _rev -> xem như yêu cầu update
+            if (!empty($data['_id']) && !empty($data['_rev'])) {
+                $res = $this->svc->update($data['_id'], $data);
+                return response()->json($res['data'], $res['status']);
+            }
+
+            // Tránh xung đột: nếu client gửi _id đã tồn tại thì trả về 409 với hướng dẫn
+            if (!empty($data['_id'])) {
+                $existing = $this->svc->find($data['_id']);
+                if (($existing['status'] ?? 200) === 200) {
+                    return response()->json([
+                        'error' => 'conflict',
+                        'message' => 'Document with the same _id already exists. Use PUT /api/v1/doctors/{id} with a valid _rev to update, or remove _id to auto-generate.',
+                        'existing' => [
+                            'id' => $data['_id'],
+                            'rev' => $existing['data']['_rev'] ?? null
+                        ]
+                    ], 409);
+                }
+            }
 
             $created = $this->svc->create($data);
             return response()->json($created, !empty($created['ok']) ? 201 : 400);

@@ -112,19 +112,47 @@ class UserController extends Controller
             $data = $req->validate([
                 '_id'            => 'sometimes|string',
                 'type'           => 'sometimes|in:user',
-                'username'       => 'required|string|min:3|max:50',
-                'email'          => 'required|email',
-                'password'       => 'required|string|min:6',  // ✅ Password required
-                'role_names'     => 'required|array|min:1',   // ✅ Role required
-                'role_names.*'   => 'string',
+                'username'       => 'required|string|min:3|max:50|regex:/^[a-zA-Z0-9_]+$/',
+                'email'          => 'required|email|max:255',
+                // Cho phép gửi password (plain) hoặc password_hash (đã băm)
+                'password'       => 'required_without:password_hash|string|min:6|max:255',
+                'password_hash'  => 'required_without:password|string|min:20',
+                'role_names'     => 'required|array|min:1',
+                'role_names.*'   => 'string|max:50',
                 'account_type'   => 'required|in:staff,doctor,patient',
-                'linked_staff_id'=> 'nullable|string',
-                'linked_doctor_id'=> 'nullable|string',
-                'linked_patient_id'=> 'nullable|string',
+                'linked_staff_id'=> 'nullable|string|max:255',
+                'linked_doctor_id'=> 'nullable|string|max:255',
+                'linked_patient_id'=> 'nullable|string|max:255',
                 'status'         => 'nullable|in:active,inactive',
             ]);
 
-            // ✅ Hash password
+            // Nếu client POST kèm cả _id và _rev -> xem như cập nhật
+            if (!empty($data['_id']) && !empty($data['_rev'])) {
+                // Hash password nếu được gửi dạng plain
+                if (!empty($data['password'])) {
+                    $data['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
+                    unset($data['password']);
+                }
+                $res = $this->svc->update($data['_id'], $data);
+                return response()->json($res['data'], $res['status']);
+            }
+
+            // Nếu có _id đã tồn tại -> trả 409 hướng dẫn dùng PUT hoặc bỏ _id
+            if (!empty($data['_id'])) {
+                $existing = $this->svc->find($data['_id']);
+                if (($existing['status'] ?? 200) === 200) {
+                    return response()->json([
+                        'error' => 'conflict',
+                        'message' => 'Document with the same _id already exists. Use PUT /api/v1/users/{id} with a valid _rev to update, or remove _id to auto-generate.',
+                        'existing' => [
+                            'id' => $data['_id'],
+                            'rev' => $existing['data']['_rev'] ?? null
+                        ]
+                    ], 409);
+                }
+            }
+
+            // Hash password nếu được gửi dạng plain
             if (!empty($data['password'])) {
                 $data['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
                 unset($data['password']);
@@ -133,7 +161,19 @@ class UserController extends Controller
             $created = $this->svc->create($data);
             return response()->json($created, !empty($created['ok']) ? 201 : 400);
         } catch (ValidationException $ve) {
-            return response()->json(['error' => 'validation_error', 'details' => $ve->errors()], 422);
+            return response()->json([
+                'error' => 'validation_error', 
+                'message' => 'Dữ liệu không hợp lệ', 
+                'details' => $ve->errors(),
+                'rules_info' => [
+                    'username' => 'Bắt buộc, 3-50 ký tự, chỉ chữ cái, số và dấu gạch dưới',
+                    'email' => 'Bắt buộc, định dạng email hợp lệ',
+                    'password|password_hash' => 'Bắt buộc: cung cấp password (sẽ được hash) hoặc password_hash đã hash',
+                    'role_names' => 'Bắt buộc, ít nhất 1 role, ví dụ: ["admin", "user"]',
+                    'account_type' => 'Bắt buộc: staff, doctor, hoặc patient',
+                    'status' => 'Tùy chọn: active hoặc inactive'
+                ]
+            ], 422);
         } catch (Throwable $e) {
             return $this->error($e);
         }
