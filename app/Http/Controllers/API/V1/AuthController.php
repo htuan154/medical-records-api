@@ -50,7 +50,10 @@ class AuthController extends Controller
      *                 @OA\Property(property="username", type="string"),
      *                 @OA\Property(property="role_names", type="array", @OA\Items(type="string")),
      *                 @OA\Property(property="permissions", type="array", @OA\Items(type="string")),
-     *                 @OA\Property(property="status", type="string")
+     *                 @OA\Property(property="status", type="string"),
+     *                 @OA\Property(property="linked_patient_id", type="string", description="ID bệnh nhân liên kết (nếu có)"),
+     *                 @OA\Property(property="linked_staff_id", type="string", description="ID nhân viên liên kết (nếu có)"),
+     *                 @OA\Property(property="linked_doctor_id", type="string", description="ID bác sĩ liên kết (nếu có)")
      *             )
      *         )
      *     ),
@@ -89,16 +92,30 @@ class AuthController extends Controller
 
             $tokens = $this->jwt->issueTokens($user, $perms);
 
+            // Build user response with linked entity ID
+            $userResponse = [
+                'id' => $user['_id'],
+                'username' => $user['username'] ?? null,
+                'role_names' => $user['role_names'] ?? [],
+                'permissions' => $perms,
+                'status' => $user['status'] ?? null,
+            ];
+
+            // Add linked entity ID if exists
+            if (!empty($user['linked_patient_id'])) {
+                $userResponse['linked_patient_id'] = $user['linked_patient_id'];
+            }
+            if (!empty($user['linked_staff_id'])) {
+                $userResponse['linked_staff_id'] = $user['linked_staff_id'];
+            }
+            if (!empty($user['linked_doctor_id'])) {
+                $userResponse['linked_doctor_id'] = $user['linked_doctor_id'];
+            }
+
             return response()->json(array_merge([
-    'ok' => true,
-    'user' => [
-        'id' => $user['_id'],
-        'username' => $user['username'] ?? null,
-        'role_names' => $user['role_names'] ?? [],
-        'permissions' => $perms,
-        'status' => $user['status'] ?? null,
-    ],
-], $tokens), 200);
+                'ok' => true,
+                'user' => $userResponse,
+            ], $tokens), 200);
         } catch (Throwable $e) {
             return response()->json(['error'=>'server_error','message'=>$e->getMessage()], 500);
         }
@@ -159,6 +176,35 @@ class AuthController extends Controller
         } catch (Throwable $e) {
             return response()->json(['error'=>'unauthorized','message'=>$e->getMessage()], 401);
         }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/logout",
+     *     tags={"Auth"},
+     *     summary="Đăng xuất",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Đăng xuất thành công",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="ok", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Logged out successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function logout(Request $req)
+    {
+        // For JWT tokens, we typically don't maintain server-side sessions
+        // The token will naturally expire based on its TTL
+        // Client should discard the token on their side
+        
+        return response()->json([
+            'ok' => true,
+            'message' => 'Logged out successfully'
+        ], 200);
     }
 
     /**

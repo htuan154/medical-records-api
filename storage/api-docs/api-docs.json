@@ -823,6 +823,18 @@
                                                 },
                                                 "status": {
                                                     "type": "string"
+                                                },
+                                                "linked_patient_id": {
+                                                    "description": "ID bệnh nhân liên kết (nếu có)",
+                                                    "type": "string"
+                                                },
+                                                "linked_staff_id": {
+                                                    "description": "ID nhân viên liên kết (nếu có)",
+                                                    "type": "string"
+                                                },
+                                                "linked_doctor_id": {
+                                                    "description": "ID bác sĩ liên kết (nếu có)",
+                                                    "type": "string"
                                                 }
                                             },
                                             "type": "object"
@@ -904,6 +916,45 @@
                         "description": "User không tồn tại"
                     }
                 }
+            }
+        },
+        "/api/v1/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Đăng xuất",
+                "operationId": "123b6a1d11c0b146b02d569fe51da5a8",
+                "responses": {
+                    "200": {
+                        "description": "Đăng xuất thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "ok": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/me": {
@@ -1511,7 +1562,8 @@
                     {
                         "name": "rev",
                         "in": "query",
-                        "required": true,
+                        "description": "Optional; server will auto-resolve latest rev if omitted",
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
@@ -1520,9 +1572,6 @@
                 "responses": {
                     "200": {
                         "description": "Xóa thành công"
-                    },
-                    "400": {
-                        "description": "Thiếu rev parameter"
                     },
                     "404": {
                         "description": "Không tìm thấy"
