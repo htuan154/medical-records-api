@@ -14,7 +14,8 @@ class CouchClient
     public function __construct()
     {
         $cfg = config('couchdb');
-        $this->baseUrl  = sprintf('http://%s:%s', $cfg['host'], $cfg['port']);
+        $scheme = $cfg['scheme'] ?? 'http';
+        $this->baseUrl  = sprintf('%s://%s:%s', $scheme, $cfg['host'], $cfg['port']);
         $this->username = (string) $cfg['username'];
         $this->password = (string) $cfg['password'];
     }
