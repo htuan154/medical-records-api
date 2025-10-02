@@ -8,7 +8,7 @@ class Kernel extends HttpKernel
 {
     protected $middleware = [
         \App\Http\Middleware\TrustProxies::class,
-        \Illuminate\Http\Middleware\HandleCors::class,
+        \App\Http\Middleware\CorsMiddleware::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
@@ -26,6 +26,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+            \Illuminate\Http\Middleware\HandleCors::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ],
@@ -43,5 +44,6 @@ class Kernel extends HttpKernel
         'verified'          => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'jwt'               => \App\Http\Middleware\JwtMiddleware::class,
         'log.request'       => \App\Http\Middleware\LogRequest::class,
+        'cors'              => \App\Http\Middleware\CorsMiddleware::class,
     ];
 }
