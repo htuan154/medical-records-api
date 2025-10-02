@@ -12,6 +12,11 @@ use OpenApi\Annotations as OA;
  * )
  *
  * @OA\Server(
+ *   url="/",
+ *   description="Current host"
+ * )
+ *
+ * @OA\Server(
  *   url="http://127.0.0.1:9000",
  *   description="Local dev"
  * )
