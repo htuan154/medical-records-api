@@ -129,8 +129,8 @@ JS
     public function create(array $data): array
     {
         $data['type']       = $data['type'] ?? 'treatment';
-        $data['created_at'] = $data['created_at'] ?? now()->toIso8601String();
-        $data['updated_at'] = $data['updated_at'] ?? now()->toIso8601String();
+        $data['created_at'] = $data['created_at'] ?? date('c'); // ISO 8601 format
+        $data['updated_at'] = $data['updated_at'] ?? date('c'); // ISO 8601 format
         return $this->repo->create($data);
     }
 
@@ -154,7 +154,7 @@ JS
     $merged['_id']        = $id;
     $merged['_rev']       = $rev;
     $merged['type']       = $current['type'] ?? 'treatment';
-    $merged['updated_at'] = now()->toIso8601String();
+    $merged['updated_at'] = date('c'); // ISO 8601 format
 
     // Thử cập nhật lần 1
     $res = $this->repo->update($id, $merged);
@@ -169,7 +169,7 @@ JS
           return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Cannot resolve latest _rev to retry']];
         }
         $merged['type']       = $latest['type'] ?? 'treatment';
-        $merged['updated_at'] = now()->toIso8601String();
+        $merged['updated_at'] = date('c'); // ISO 8601 format
         $res = $this->repo->update($id, $merged);
       }
     }
@@ -227,11 +227,18 @@ JS
     return ['status' => (!empty($res['ok']) ? 200 : (isset($res['error']) && $res['error'] === 'not_found' ? 404 : 400)), 'data' => $res];
     }
 
-  /** Đệ quy merge mảng (không ghi đè _id) */
+  /** Đệ quy merge mảng (không ghi đè _id) và xử lý dot notation */
   private function mergeDocs(array $base, array $changes): array
   {
     foreach ($changes as $k => $v) {
-      if ($k === '_id') continue;
+      if ($k === '_id') continue; // không ghi đè _id
+      
+      // Xử lý dot notation như "treatment_info.treatment_name"
+      if (strpos($k, '.') !== false) {
+        $this->setNestedValue($base, $k, $v);
+        continue;
+      }
+      
       if (is_array($v) && isset($base[$k]) && is_array($base[$k])) {
         $base[$k] = $this->mergeDocs($base[$k], $v);
       } else {
@@ -239,5 +246,23 @@ JS
       }
     }
     return $base;
+  }
+
+  /** Helper để set giá trị theo dot notation */
+  private function setNestedValue(array &$array, string $key, $value): void
+  {
+    $keys = explode('.', $key);
+    $current = &$array;
+    
+    foreach ($keys as $index => $k) {
+      if ($index === count($keys) - 1) {
+        $current[$k] = $value;
+      } else {
+        if (!isset($current[$k]) || !is_array($current[$k])) {
+          $current[$k] = [];
+        }
+        $current = &$current[$k];
+      }
+    }
   }
 }

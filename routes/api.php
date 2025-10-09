@@ -49,7 +49,10 @@ Route::prefix('v1')->group(function () {
         Route::put('/patients/{id}',  [PatientController::class, 'update']);
         Route::delete('/patients/{id}', [PatientController::class, 'destroy']);
 
-        // USERS
+        // USERS - ✅ Đặt specific routes TRƯỚC dynamic routes
+        Route::get('/users/available-patients', [UserController::class, 'availablePatients']);
+        Route::get('/users/available-doctors', [UserController::class, 'availableDoctors']);
+        Route::get('/users/available-staffs', [UserController::class, 'availableStaffs']);
         Route::get('/users',        [UserController::class, 'index']);
         Route::post('/users',       [UserController::class, 'store']);
         Route::get('/users/{id}',   [UserController::class, 'show']);

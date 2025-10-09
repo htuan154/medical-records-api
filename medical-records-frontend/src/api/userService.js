@@ -37,6 +37,20 @@ const UserService = {
   },
   assignRoles (id, roles = []) {
     return api.post(`/users/${id}/roles`, { roles }).then((r) => r.data)
+  },
+
+  // ✅ NEW: Get available entities for linking
+  getAvailablePatients (params = {}) {
+    const qs = buildQuery(params)
+    return api.get(`/users/available-patients${qs ? `?${qs}` : ''}`).then((r) => r.data)
+  },
+  getAvailableDoctors (params = {}) {
+    const qs = buildQuery(params)
+    return api.get(`/users/available-doctors${qs ? `?${qs}` : ''}`).then((r) => r.data)
+  },
+  getAvailableStaffs (params = {}) {
+    const qs = buildQuery(params)
+    return api.get(`/users/available-staffs${qs ? `?${qs}` : ''}`).then((r) => r.data)
   }
 }
 

@@ -3,12 +3,14 @@
 namespace App\Services\CouchDB;
 
 use App\Repositories\CouchDB\UsersRepository;
+use App\Repositories\CouchDB\PatientRepository;
 
 class UserService
 {
     public function __construct(
         private CouchClient $client,
-        private UsersRepository $repo
+        private UsersRepository $repo,
+        private PatientRepository $patientRepo
     ) {}
 
     /** Đảm bảo _design/users tồn tại */
@@ -219,5 +221,51 @@ JS
             }
         }
         return $base;
+    }
+
+    /** Lấy danh sách patients chưa được liên kết với user nào */
+    public function getAvailablePatients(int $limit = 50, int $skip = 0): array
+    {
+        try {
+            // 1. Lấy tất cả users có linked_patient_id
+            $linkedPatients = [];
+            $users = $this->repo->allFull(1000, 0); // Lấy nhiều để đảm bảo có hết
+            
+            if (isset($users['rows'])) {
+                foreach ($users['rows'] as $row) {
+                    $userDoc = $row['doc'] ?? [];
+                    if (!empty($userDoc['linked_patient_id'])) {
+                        $linkedPatients[] = $userDoc['linked_patient_id'];
+                    }
+                }
+            }
+
+            // 2. Lấy tất cả patients
+            $allPatients = $this->patientRepo->allFull($limit + count($linkedPatients), $skip);
+            
+            // 3. Filter out những patients đã được liên kết
+            $availablePatients = [];
+            if (isset($allPatients['rows'])) {
+                foreach ($allPatients['rows'] as $row) {
+                    $patientDoc = $row['doc'] ?? [];
+                    if (!empty($patientDoc['_id']) && !in_array($patientDoc['_id'], $linkedPatients)) {
+                        $availablePatients[] = $row;
+                    }
+                }
+            }
+
+            return [
+                'total_rows' => count($availablePatients),
+                'offset' => $skip,
+                'rows' => array_slice($availablePatients, 0, $limit)
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'error' => 'fetch_failed',
+                'message' => $e->getMessage(),
+                'rows' => []
+            ];
+        }
     }
 }

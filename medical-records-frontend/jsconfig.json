@@ -3,12 +3,13 @@
     "target": "es5",
     "module": "esnext",
     "baseUrl": "./",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "paths": { "@/*": ["src/*"] },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
     "types": [],
     "skipLibCheck": true,
-    "allowJs": true
+    "allowJs": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": [
     "src/**/*.ts",
