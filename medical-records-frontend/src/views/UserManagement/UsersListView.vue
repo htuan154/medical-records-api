@@ -45,8 +45,8 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="(u, idx) in items" :key="u._id || u.id || u.username || idx">
-            <tr>
+          <template v-for="(u, idx) in items">
+            <tr :key="`user-${u._id || u.id || u.username || idx}`">
               <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
               <td>{{ u.username }}</td>
               <td>{{ u.email }}</td>
@@ -70,7 +70,7 @@
             </tr>
 
             <!-- Row details -->
-            <tr v-if="isExpanded(u)" class="row-detail">
+            <tr v-if="isExpanded(u)" :key="`detail-${u._id || u.id || u.username || idx}`" class="row-detail">
               <td :colspan="10">
                 <div class="detail-sections">
                   <div class="detail-title">Thông tin tài khoản</div>
@@ -333,38 +333,37 @@ export default {
       }))
     },
 
-    // ======== NẠP COMBOBOX (KHÔNG GỬI QUERY) ========
+    // ======== NẠP COMBOBOX - SỬ DỤNG ENDPOINTS MỚI ========
     async _loadUnlinkedStaffs () {
       try {
-        // Không gửi tham số -> tránh 401 do rule BE
-        const res = await StaffService.list()
+        // ✅ Sử dụng endpoint mới từ UserService
+        const res = await UserService.getAvailableStaffs({ limit: 1000 })
         const rawAll = this.arrFromResponse(res)
-        const raw = rawAll.filter(this._isUnlinked)
-        this.unlinked.staffs = this._toItems(raw, ['id', 'staffId', '_id'], ['code', 'staffCode'], ['fullName', 'name', 'displayName'])
+        this.unlinked.staffs = this._toItems(rawAll, ['id', 'staffId', '_id'], ['code', 'staffCode'], ['fullName', 'name', 'displayName'])
       } catch (e) {
-        console.error('Load staffs failed', e)
+        console.error('Load available staffs failed', e)
         this.unlinked.staffs = []
       }
     },
     async _loadUnlinkedDoctors () {
       try {
-        const res = await DoctorService.list()
+        // ✅ Sử dụng endpoint mới từ UserService
+        const res = await UserService.getAvailableDoctors({ limit: 1000 })
         const rawAll = this.arrFromResponse(res)
-        const raw = rawAll.filter(this._isUnlinked)
-        this.unlinked.doctors = this._toItems(raw, ['id', 'doctorId', '_id'], ['licenseNumber', 'code'], ['fullName', 'name', 'displayName'])
+        this.unlinked.doctors = this._toItems(rawAll, ['id', 'doctorId', '_id'], ['licenseNumber', 'code'], ['fullName', 'name', 'displayName'])
       } catch (e) {
-        console.error('Load doctors failed', e)
+        console.error('Load available doctors failed', e)
         this.unlinked.doctors = []
       }
     },
     async _loadUnlinkedPatients () {
       try {
-        const res = await PatientService.list() // <— KHÔNG GỬI ?limit=1 nữa
+        // ✅ Sử dụng endpoint mới từ UserService thay vì PatientService
+        const res = await UserService.getAvailablePatients({ limit: 1000 })
         const rawAll = this.arrFromResponse(res)
-        const raw = rawAll.filter(this._isUnlinked)
-        this.unlinked.patients = this._toItems(raw, ['id', 'patientId', '_id'], ['patientCode', 'code'], ['fullName', 'name', 'displayName'])
+        this.unlinked.patients = this._toItems(rawAll, ['id', 'patientId', '_id'], ['patientCode', 'code'], ['fullName', 'name', 'displayName'])
       } catch (e) {
-        console.error('Load patients failed', e)
+        console.error('Load available patients failed', e)
         this.unlinked.patients = []
       }
     },

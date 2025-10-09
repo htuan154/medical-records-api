@@ -3,10 +3,9 @@ import axios from 'axios'
 
 // Auto-detect environment: production or local
 const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
-const API_BASE = isProduction 
+const API_BASE = isProduction
   ? 'https://medical-records-api-izzn.onrender.com/api/v1'
   : 'http://127.0.0.1:9000/api/v1'
-  
 // Nếu BE là /api/v1/auth/refresh thì đổi thành '/auth/refresh'
 const REFRESH_PATH = '/refresh'
 

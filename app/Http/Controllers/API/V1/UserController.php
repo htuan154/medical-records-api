@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
-use App\Services\CouchDB\UserService;
+use App\Services\CouchDB\UserService as CouchDBUserService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -16,7 +17,10 @@ use Throwable;
  */
 class UserController extends Controller
 {
-    public function __construct(private UserService $svc) {}
+    public function __construct(
+        private CouchDBUserService $svc,
+        private UserService $userService
+    ) {}
 
     private function error(Throwable $e, int $code = 500)
     {
@@ -306,6 +310,78 @@ class UserController extends Controller
                 'error' => 'server_error',
                 'message' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/users/available-patients",
+     *     tags={"Users"},
+     *     summary="Danh sách bệnh nhân chưa có tài khoản",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
+     *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
+     *     @OA\Response(response=200, description="Danh sách bệnh nhân chưa có tài khoản"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
+    public function availablePatients(Request $req)
+    {
+        try {
+            $limit = (int) $req->query('limit', 50);
+            $skip  = (int) $req->query('skip', 0);
+
+            return response()->json($this->userService->getAvailablePatients($limit, $skip), 200);
+        } catch (Throwable $e) {
+            return $this->error($e);
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/users/available-doctors",
+     *     tags={"Users"},
+     *     summary="Danh sách bác sĩ chưa có tài khoản",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
+     *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
+     *     @OA\Response(response=200, description="Danh sách bác sĩ chưa có tài khoản"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
+    public function availableDoctors(Request $req)
+    {
+        try {
+            $limit = (int) $req->query('limit', 50);
+            $skip  = (int) $req->query('skip', 0);
+
+            return response()->json($this->userService->getAvailableDoctors($limit, $skip), 200);
+        } catch (Throwable $e) {
+            return $this->error($e);
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/users/available-staffs",
+     *     tags={"Users"},
+     *     summary="Danh sách nhân viên chưa có tài khoản",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", example=50)),
+     *     @OA\Parameter(name="skip", in="query", @OA\Schema(type="integer", example=0)),
+     *     @OA\Response(response=200, description="Danh sách nhân viên chưa có tài khoản"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
+    public function availableStaffs(Request $req)
+    {
+        try {
+            $limit = (int) $req->query('limit', 50);
+            $skip  = (int) $req->query('skip', 0);
+
+            return response()->json($this->userService->getAvailableStaffs($limit, $skip), 200);
+        } catch (Throwable $e) {
+            return $this->error($e);
         }
     }
 }

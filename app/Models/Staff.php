@@ -2,6 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
+/**
+ * @property string|null $couch_id
+ * @property string $full_name
+ * @property string $staff_type
+ * @property string|null $gender
+ * @property string|null $phone
+ * @property string|null $email
+ * @property string|null $department
+ * @property array|null $shift
+ * @property string $status
+ */
 class Staff extends BaseModel
 {
     protected $table = 'staffs';
@@ -38,7 +51,7 @@ class Staff extends BaseModel
     public function scopeOfType($q, string $type) { return $q->where('staff_type', $type); }
 
     /* (Tùy chọn) Khai báo quan hệ Eloquent tới User theo linked_staff_id (nếu bạn giữ users trong SQL) */
-    public function user()
+    public function user(): HasOne
     {
         // users.linked_staff_id trỏ tới staffs.couch_id (nếu bạn dùng CouchDB _id để liên kết)
         return $this->hasOne(User::class, 'linked_staff_id', 'couch_id');

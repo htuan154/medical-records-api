@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class Patient extends BaseModel
 {
     protected $table = 'patients';
@@ -22,9 +24,9 @@ class Patient extends BaseModel
     ];
 
     // Quan hệ
-    public function medicalRecords() { return $this->hasMany(MedicalRecord::class); }
-    public function appointments()   { return $this->hasMany(Appointment::class); }
-    public function invoices()       { return $this->hasMany(Invoice::class); }
-    public function treatments()     { return $this->hasMany(Treatment::class); }
-    public function medicalTests()   { return $this->hasMany(MedicalTest::class); }
+    public function medicalRecords(): HasMany { return $this->hasMany(MedicalRecord::class); }
+    public function appointments(): HasMany   { return $this->hasMany(Appointment::class); }
+    public function invoices(): HasMany       { return $this->hasMany(Invoice::class); }
+    public function treatments(): HasMany     { return $this->hasMany(Treatment::class); }
+    public function medicalTests(): HasMany   { return $this->hasMany(MedicalTest::class); }
 }

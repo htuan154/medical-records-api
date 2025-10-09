@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 class Treatment extends BaseModel
 {
     protected $table = 'treatments';
@@ -20,11 +23,11 @@ class Treatment extends BaseModel
         'monitor_next_check' => 'datetime',
     ];
 
-    public function patient()       { return $this->belongsTo(Patient::class); }
-    public function doctor()        { return $this->belongsTo(Doctor::class); }
-    public function medicalRecord() { return $this->belongsTo(MedicalRecord::class); }
+    public function patient(): BelongsTo       { return $this->belongsTo(Patient::class); }
+    public function doctor(): BelongsTo        { return $this->belongsTo(Doctor::class); }
+    public function medicalRecord(): BelongsTo { return $this->belongsTo(MedicalRecord::class); }
 
-    public function medications()
+    public function medications(): BelongsToMany
     {
         return $this->belongsToMany(Medication::class, 'treatment_medication')
             ->withPivot(['dosage','frequency','route','instructions','quantity_prescribed'])

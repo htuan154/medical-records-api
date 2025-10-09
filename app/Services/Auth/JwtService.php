@@ -12,7 +12,7 @@ class JwtService
     public function __construct()
     {
         $this->secret     = env('JWT_SECRET', 'change_me');
-        $this->ttl        = (int) env('JWT_TTL', 3600);          // 1h
+        $this->ttl        = (int) env('JWT_TTL', 86400);          // 1d
         $this->refreshTtl = (int) env('JWT_REFRESH_TTL', 1209600); // 14d
     }
 

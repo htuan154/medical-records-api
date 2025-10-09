@@ -106,20 +106,53 @@ JS
     public function create(array $data): array
     {
         $data['type']       = $data['type'] ?? 'staff';
-        $data['created_at'] = $data['created_at'] ?? now()->toIso8601String();
-        $data['updated_at'] = $data['updated_at'] ?? now()->toIso8601String();
+        $data['created_at'] = $data['created_at'] ?? date('c'); // ISO 8601 format
+        $data['updated_at'] = $data['updated_at'] ?? date('c'); // ISO 8601 format
         return $this->repo->create($data);
     }
 
     public function update(string $id, array $data): array
     {
-        $data['_id'] = $id;
-        if (empty($data['_rev'])) {
-            return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Missing _rev']];
+        // Lấy document hiện tại
+        $current = $this->repo->get($id);
+        if (isset($current['error']) && $current['error'] === 'not_found') {
+            return ['status' => 404, 'data' => $current];
         }
-        $data['updated_at'] = now()->toIso8601String();
 
-        $res = $this->repo->update($id, $data);
+        // Lấy _rev: ưu tiên từ client, nếu thiếu dùng _rev hiện tại
+        $rev = $data['_rev'] ?? ($current['_rev'] ?? null);
+        if (!$rev) {
+            return [
+                'status' => 409,
+                'data' => ['error' => 'conflict', 'reason' => 'Missing _rev and cannot resolve latest revision']
+            ];
+        }
+
+        // Merge doc theo kiểu patch (giữ nguyên _id, type, created_at)
+        $merged = $this->mergeDocs($current, $data);
+        $merged['_id']       = $id;
+        $merged['_rev']      = $rev;
+        $merged['type']      = $current['type'] ?? 'staff';
+        $merged['updated_at']= date('c'); // ISO 8601 format
+
+        // Thử cập nhật lần 1
+        $res = $this->repo->update($id, $merged);
+        if (isset($res['error']) && $res['error'] === 'conflict') {
+            // Lấy _rev mới nhất và thử lại 1 lần
+            $latest = $this->repo->get($id);
+            if (!isset($latest['error'])) {
+                $merged = $this->mergeDocs($latest, $data);
+                $merged['_id']  = $id;
+                $merged['_rev'] = $latest['_rev'] ?? null;
+                if (!$merged['_rev']) {
+                    return ['status' => 409, 'data' => ['error' => 'conflict', 'reason' => 'Cannot resolve latest _rev to retry']];
+                }
+                $merged['type']       = $latest['type'] ?? 'staff';
+                $merged['updated_at'] = date('c'); // ISO 8601 format
+                $res = $this->repo->update($id, $merged);
+            }
+        }
+
         return ['status' => (!empty($res['ok']) ? 200 : 400), 'data' => $res];
     }
 
@@ -205,6 +238,45 @@ JS
                     'message' => $e->getMessage()
                 ]
             ];
+        }
+    }
+
+    /** Đệ quy merge mảng (giữ _id hiện tại) và xử lý dot notation */
+    private function mergeDocs(array $base, array $changes): array
+    {
+        foreach ($changes as $k => $v) {
+            if ($k === '_id') continue; // không ghi đè _id
+            
+            // Xử lý dot notation như "personal_info.full_name"
+            if (strpos($k, '.') !== false) {
+                $this->setNestedValue($base, $k, $v);
+                continue;
+            }
+            
+            if (is_array($v) && isset($base[$k]) && is_array($base[$k])) {
+                $base[$k] = $this->mergeDocs($base[$k], $v);
+            } else {
+                $base[$k] = $v;
+            }
+        }
+        return $base;
+    }
+
+    /** Helper để set giá trị theo dot notation */
+    private function setNestedValue(array &$array, string $key, $value): void
+    {
+        $keys = explode('.', $key);
+        $current = &$array;
+        
+        foreach ($keys as $index => $k) {
+            if ($index === count($keys) - 1) {
+                $current[$k] = $value;
+            } else {
+                if (!isset($current[$k]) || !is_array($current[$k])) {
+                    $current[$k] = [];
+                }
+                $current = &$current[$k];
+            }
         }
     }
 }
