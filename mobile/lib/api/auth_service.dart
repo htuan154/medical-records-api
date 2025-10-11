@@ -199,4 +199,50 @@ class AuthService {
       return {'success': false, 'message': 'Lỗi kết nối: $e'};
     }
   }
+
+  // Tạo user mới
+  static Future<Map<String, dynamic>> createUser(
+    Map<String, dynamic> userData,
+  ) async {
+    try {
+      final url = Uri.parse('${ApiConfig.baseUrl}/users');
+      final response = await http
+          .post(
+            url,
+            headers: ApiConfig.defaultHeaders,
+            body: jsonEncode(userData),
+          )
+          .timeout(Duration(seconds: ApiConfig.timeoutDuration));
+
+      final responseData = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        return {'success': true, 'data': responseData};
+      } else {
+        return {
+          'success': false,
+          'message': responseData['message'] ?? 'Không thể tạo user',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Lỗi kết nối: $e'};
+    }
+  }
+
+  // Hash password (simple hash - thực tế nên dùng bcrypt)
+  static String hashPassword(String password) {
+    // Sử dụng simple hash, server sẽ hash lại với bcrypt
+    return password; // Tạm thời gửi plain text, server sẽ hash
+  }
+
+  // Tạo ID với timestamp
+  static String generateUserId() {
+    final now = DateTime.now();
+    return 'user_patient_${now.second}${now.minute}${now.hour}${now.day}${now.month}${now.year}';
+  }
+
+  static String generatePatientId() {
+    final now = DateTime.now();
+    return 'patient_${now.second}${now.minute}${now.hour}${now.day}${now.month}${now.year}';
+  }
 }
