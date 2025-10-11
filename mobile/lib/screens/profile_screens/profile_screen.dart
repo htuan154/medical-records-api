@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../api/patient_service.dart';
 import '../../api/user_service.dart';
+import '../../api/token_service.dart';
+import '../login_screens/login_screen.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -327,10 +330,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       'Đăng xuất',
                       style: TextStyle(fontSize: 16),
                     ),
-                    onPressed: () {
-                      // TODO: Thêm logic đăng xuất
-                      // Ví dụ: await AuthService.logout();
-                      // Navigator.pushReplacementNamed(context, '/login');
+                    onPressed: () async {
+                      // Xóa token, user, chuyển về LoginScreen
+                      await Future.wait([
+                        TokenService.clearTokens(),
+                        UserService.clearUser(),
+                      ]);
+                      if (mounted) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      }
                     },
                   ),
                 ),
@@ -351,8 +364,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: TextStyle(fontSize: 16),
                     ),
                     onPressed: () {
-                      // TODO: Chuyển sang màn hình chỉnh sửa thông tin
-                      // Navigator.pushNamed(context, '/edit_profile', arguments: patient);
+                      // Chuyển sang màn hình chỉnh sửa thông tin
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              EditProfileScreen(patient: patient!),
+                        ),
+                      );
                     },
                   ),
                 ),

@@ -87,10 +87,9 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/users",
-     *     tags={"Users"},
-     *     summary="Tạo người dùng mới",
-     *     security={{"bearerAuth":{}}},
+    *     path="/api/v1/users",
+    *     tags={"Users"},
+    *     summary="Tạo người dùng mới",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
