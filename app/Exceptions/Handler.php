@@ -67,16 +67,23 @@ class Handler extends ExceptionHandler
     {
         // API requests nên trả về JSON với chi tiết lỗi (trong development)
         if ($request->is('api/*') || $request->wantsJson()) {
-            $status = method_exists($exception, 'getStatusCode') 
-                ? $exception->getStatusCode() 
-                : 500;
+            // Determine status code
+            $status = 500;
+            if (method_exists($exception, 'getStatusCode')) {
+                /** @var \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $exception */
+                $status = $exception->getStatusCode();
+            } elseif (method_exists($exception, 'getCode') && $exception->getCode() > 0) {
+                $code = $exception->getCode();
+                $status = ($code >= 400 && $code < 600) ? $code : 500;
+            }
                 
             $response = [
                 'message' => $exception->getMessage() ?: 'Server Error',
             ];
             
             // Show details only in debug mode
-            if (config('app.debug')) {
+            $debugMode = env('APP_DEBUG', false);
+            if ($debugMode) {
                 $response['exception'] = get_class($exception);
                 $response['file'] = $exception->getFile();
                 $response['line'] = $exception->getLine();
