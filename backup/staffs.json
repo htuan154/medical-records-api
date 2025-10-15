@@ -1,0 +1,92 @@
+{
+  "total_rows": 3,
+  "offset": 0,
+  "rows": [
+    {
+      "id": "_design/_design/staffs",
+      "key": "_design/_design/staffs",
+      "value": {
+        "rev": "3-7dbff66b44973db97802cb8c5aab6edf"
+      },
+      "doc": {
+        "_id": "_design/_design/staffs",
+        "_rev": "3-7dbff66b44973db97802cb8c5aab6edf",
+        "views": {
+          "by_name": {
+            "map": "function (doc) {\r\n  if (doc.type === 'staff' && doc.full_name) {\r\n    emit(\r\n      doc.full_name.toLowerCase(),\r\n      {\r\n        id: doc._id,\r\n        name: doc.full_name,\r\n        type: doc.staff_type,\r\n        status: doc.status\r\n      }\r\n    );\r\n  }\r\n}\r\n"
+          },
+          "by_type": {
+            "map": "function (doc) {\r\n  if (doc.type === 'staff' && doc.staff_type) {\r\n    emit(\r\n      doc.staff_type,\r\n      {\r\n        id: doc._id,\r\n        name: doc.full_name,\r\n        status: doc.status\r\n      }\r\n    );\r\n  }\r\n}\r\n"
+          },
+          "active": {
+            "map": "function (doc) {\r\n  if (doc.type === 'staff' && doc.status === 'active') {\r\n    emit(\r\n      doc.full_name,\r\n      {\r\n        id: doc._id,\r\n        type: doc.staff_type\r\n      }\r\n    );\r\n  }\r\n}\r\n"
+          }
+        },
+        "language": "javascript"
+      }
+    },
+    {
+      "id": "staff_2025_001",
+      "key": "staff_2025_001",
+      "value": {
+        "rev": "3-b2f5fb28b7806692cfaceb8a4b1a88c0"
+      },
+      "doc": {
+        "_id": "staff_2025_001",
+        "_rev": "3-b2f5fb28b7806692cfaceb8a4b1a88c0",
+        "type": "staff",
+        "full_name": "Nguyễn Thị Hoa",
+        "staff_type": "nurse",
+        "gender": "female",
+        "phone": "0901234567",
+        "email": "hoa.nurse@clinic.com",
+        "department": "Outpatient",
+        "shift": {
+          "days": [
+            "mon",
+            "tue",
+            "wed",
+            "fri"
+          ],
+          "start": "08:00",
+          "end": "17:00"
+        },
+        "status": "active",
+        "created_at": "2025-08-19T10:00:00Z",
+        "updated_at": "2025-08-19T10:00:00Z"
+      }
+    },
+    {
+      "id": "staff_2025_002",
+      "key": "staff_2025_002",
+      "value": {
+        "rev": "1-30f1482983b16cb2884208b33c1e69c8"
+      },
+      "doc": {
+        "_id": "staff_2025_002",
+        "_rev": "1-30f1482983b16cb2884208b33c1e69c8",
+        "type": "staff",
+        "full_name": "Trần Minh Anh",
+        "staff_type": "receptionist",
+        "gender": "female",
+        "phone": "0907654321",
+        "email": "anh.rec@clinic.com",
+        "department": "Front Desk",
+        "shift": {
+          "days": [
+            "mon",
+            "tue",
+            "wed",
+            "thu",
+            "fri"
+          ],
+          "start": "07:30",
+          "end": "16:30"
+        },
+        "status": "active",
+        "created_at": "2025-08-19T10:00:00Z",
+        "updated_at": "2025-08-19T10:00:00Z"
+      }
+    }
+  ]
+}
