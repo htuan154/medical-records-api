@@ -64,13 +64,16 @@ JS
             ],
         ];
 
-        $doc = ['_id' => '_design/appointments', 'language' => 'javascript', 'views' => $views];
+        $doc = ['language' => 'javascript', 'views' => $views];
 
         if (!isset($current['error'])) {
+            $doc['_id'] = '_design/appointments';
             $doc['_rev'] = $current['_rev'];
-            return $db->put('_design/appointments', $doc);
+            return $db->putDesign('_design/appointments', $doc);
         }
-        return $db->create($doc);
+        
+        $doc['_id'] = '_design/appointments';
+        return $db->putDesign('_design/appointments', $doc);
     }
 
     /** List + các filter cơ bản */
