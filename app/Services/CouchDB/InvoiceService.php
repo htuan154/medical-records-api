@@ -74,13 +74,16 @@ JS
             ],
         ];
 
-        $doc = ['_id' => '_design/invoices', 'language' => 'javascript', 'views' => $views];
+        $doc = ['language' => 'javascript', 'views' => $views];
 
         if (!isset($current['error'])) {
+            $doc['_id'] = '_design/invoices';
             $doc['_rev'] = $current['_rev'];
-            return $db->put('_design/invoices', $doc);
+            return $db->putDesign('_design/invoices', $doc);
         }
-        return $db->create($doc);
+        
+        $doc['_id'] = '_design/invoices';
+        return $db->putDesign('_design/invoices', $doc);
     }
 
     // List with filters

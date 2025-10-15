@@ -56,13 +56,16 @@ JS
             ],
         ];
 
-        $doc = ['_id' => '_design/roles', 'language' => 'javascript', 'views' => $views];
+        $doc = ['language' => 'javascript', 'views' => $views];
 
         if (!isset($current['error'])) {
+            $doc['_id'] = '_design/roles';
             $doc['_rev'] = $current['_rev'];
-            return $db->put('_design/roles', $doc);
+            return $db->putDesign('_design/roles', $doc);
         }
-        return $db->create($doc);
+        
+        $doc['_id'] = '_design/roles';
+        return $db->putDesign('_design/roles', $doc);
     }
 
     /** List + filter (name/status/permission) */

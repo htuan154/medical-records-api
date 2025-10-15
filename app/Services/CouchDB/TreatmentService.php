@@ -93,13 +93,16 @@ JS
             ],
         ];
 
-        $doc = ['_id' => '_design/treatments', 'language' => 'javascript', 'views' => $views];
+        $doc = ['language' => 'javascript', 'views' => $views];
 
         if (!isset($current['error'])) {
+            $doc['_id'] = '_design/treatments';
             $doc['_rev'] = $current['_rev'];
-            return $db->put('_design/treatments', $doc);
+            return $db->putDesign('_design/treatments', $doc);
         }
-        return $db->create($doc);
+        
+        $doc['_id'] = '_design/treatments';
+        return $db->putDesign('_design/treatments', $doc);
     }
 
     /** List + filter */
