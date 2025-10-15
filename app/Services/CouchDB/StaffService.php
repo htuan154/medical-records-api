@@ -76,13 +76,16 @@ JS
             ],
         ];
 
-        $doc = ['_id' => '_design/staffs', 'language' => 'javascript', 'views' => $views];
+        $doc = ['language' => 'javascript', 'views' => $views];
 
         if (!isset($current['error'])) {
+            $doc['_id'] = '_design/staffs';
             $doc['_rev'] = $current['_rev'];
-            return $db->put('_design/staffs', $doc);
+            return $db->putDesign('_design/staffs', $doc);
         }
-        return $db->create($doc);
+        
+        $doc['_id'] = '_design/staffs';
+        return $db->putDesign('_design/staffs', $doc);
     }
 
     public function list(int $limit = 50, int $skip = 0, array $filters = []): array

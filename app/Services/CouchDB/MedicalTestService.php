@@ -81,13 +81,16 @@ JS
             ],
         ];
 
-        $doc = ['_id' => '_design/medical_tests', 'language' => 'javascript', 'views' => $views];
+        $doc = ['language' => 'javascript', 'views' => $views];
 
         if (!isset($current['error'])) {
+            $doc['_id'] = '_design/medical_tests';
             $doc['_rev'] = $current['_rev'];
-            return $db->put('_design/medical_tests', $doc);
+            return $db->putDesign('_design/medical_tests', $doc);
         }
-        return $db->create($doc);
+        
+        $doc['_id'] = '_design/medical_tests';
+        return $db->putDesign('_design/medical_tests', $doc);
     }
 
     /** List + filter: patient_id | doctor_id | record | test_type | ordered range | status */
