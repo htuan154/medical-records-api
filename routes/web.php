@@ -4,6 +4,38 @@ use App\Services\CouchDB\CouchClient;
 
 Route::get('/', fn() => 'OK');
 
+// 🔍 Simple CouchDB test
+Route::get('/test-couchdb', function () {
+    try {
+        $client = new CouchClient();
+        
+        // Test 1: Ping CouchDB
+        $up = $client->up();
+        
+        // Test 2: Check appointments DB
+        $db = $client->db('appointments');
+        $allDocs = $db->allDocs(['limit' => 1]);
+        
+        // Test 3: Get design doc
+        $designDoc = $db->get('_design/appointments');
+        
+        return response()->json([
+            'status' => 'success',
+            'couchdb_up' => $up,
+            'appointments_total' => $allDocs['total_rows'] ?? 0,
+            'design_doc_exists' => !isset($designDoc['error']),
+            'views' => array_keys($designDoc['views'] ?? [])
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'failed',
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+});
+
 // ✅ Health check với CouchDB connection test
 Route::get('/health-detailed', function () {
     $health = [

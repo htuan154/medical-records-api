@@ -116,7 +116,8 @@ class AppointmentController extends Controller
     public function index(Request $req)
     {
         try {
-            $this->svc->ensureDesignDoc();
+            // ✅ REMOVED: ensureDesignDoc() - design docs should be created via /setup/all once
+            // $this->svc->ensureDesignDoc();
 
             $limit = (int) $req->query('limit', 50);
             $skip  = (int) $req->query('skip', 0);
