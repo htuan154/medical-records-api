@@ -35,6 +35,14 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+            
+            // Setup routes for CouchDB design documents
+            Route::middleware('web')
+                ->group(base_path('routes/setup.php'));
+            
+            // Cleanup routes for fixing design documents
+            Route::middleware('web')
+                ->group(base_path('routes/cleanup.php'));
         });
     }
 
