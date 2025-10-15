@@ -5,6 +5,7 @@ namespace App\Services\CouchDB;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 class CouchClient
@@ -112,8 +113,26 @@ class CouchClient
 
         try {
             $res = $this->http()->get("/{$this->db}/_all_docs", $params);
+            
+            // ✅ Log error response for debugging on production
+            if ($res->failed()) {
+                Log::error('CouchDB allDocs failed', [
+                    'status' => $res->status(),
+                    'body' => $res->body(),
+                    'db' => $this->db,
+                    'baseUrl' => $this->baseUrl
+                ]);
+            }
+            
             return $this->parseJson($res);
         } catch (ConnectionException|RequestException $e) {
+            // ✅ Enhanced error logging
+            Log::error('CouchDB connection error', [
+                'message' => $e->getMessage(),
+                'db' => $this->db,
+                'baseUrl' => $this->baseUrl,
+                'username' => $this->username ? '***' : 'empty'
+            ]);
             throw new RuntimeException('CouchDB allDocs error: '.$e->getMessage(), 0, $e);
         }
     }
@@ -202,8 +221,28 @@ class CouchClient
 
         try {
             $res = $this->http()->get("/{$this->db}/_design/{$design}/_view/{$view}", $params);
+            
+            // ✅ Log error response
+            if ($res->failed()) {
+                Log::error('CouchDB view failed', [
+                    'status' => $res->status(),
+                    'body' => $res->body(),
+                    'db' => $this->db,
+                    'design' => $design,
+                    'view' => $view,
+                    'baseUrl' => $this->baseUrl
+                ]);
+            }
+            
             return $this->parseJson($res);
         } catch (ConnectionException|RequestException $e) {
+            Log::error('CouchDB view connection error', [
+                'message' => $e->getMessage(),
+                'db' => $this->db,
+                'design' => $design,
+                'view' => $view,
+                'baseUrl' => $this->baseUrl
+            ]);
             throw new RuntimeException('CouchDB view error: '.$e->getMessage(), 0, $e);
         }
     }
