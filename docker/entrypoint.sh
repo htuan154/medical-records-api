@@ -30,4 +30,8 @@ php artisan l5-swagger:generate || true
 php artisan route:cache || true
 php artisan view:cache || true
 
+# ✅ Auto-setup CouchDB databases and design documents on first deploy
+echo "🚀 Setting up CouchDB..."
+php artisan couchdb:setup || echo "⚠️  CouchDB setup failed (may need manual /setup/all)"
+
 exec /usr/bin/supervisord -c /etc/supervisord.conf
