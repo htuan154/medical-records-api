@@ -33,6 +33,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/users-public/{id}',  [UserController::class, 'show']);
         Route::put('/users-public/{id}',  [UserController::class, 'update']);
         Route::delete('/users-public/{id}', [UserController::class, 'destroy']);
+        
+        // 🔍 PUBLIC APPOINTMENTS route for debugging
+        Route::get('/appointments-public', [AppointmentController::class, 'index']);
     });
 
     // TẤT CẢ ROUTES KHÁC PHẢI CÓ JWT AUTHENTICATION

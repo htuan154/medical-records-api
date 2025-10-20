@@ -1,0 +1,100 @@
+{
+  "total_rows": 2,
+  "offset": 0,
+  "rows": [
+    {
+      "id": "_design/_design/doctors",
+      "key": "_design/_design/doctors",
+      "value": {
+        "rev": "5-b26c1da38eaca95104d93631c15c24ec"
+      },
+      "doc": {
+        "_id": "_design/_design/doctors",
+        "_rev": "5-b26c1da38eaca95104d93631c15c24ec",
+        "views": {
+          "by_name": {
+            "map": "function (doc) {\r\n  if (doc.type === 'doctor' && doc.personal_info && doc.personal_info.full_name) {\r\n    emit(doc.personal_info.full_name.toLowerCase(), {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      specialty: doc.professional_info ? doc.professional_info.specialty : null,\r\n      phone: doc.personal_info.phone,\r\n      experience: doc.professional_info ? doc.professional_info.experience_years : null,\r\n      status: doc.status\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "by_specialty": {
+            "map": "function (doc) {\r\n  if (doc.type === 'doctor' && doc.professional_info && doc.professional_info.specialty) {\r\n    emit(doc.professional_info.specialty, {\r\n      id: doc._id,\r\n      name: doc.personal_info ? doc.personal_info.full_name : null,\r\n      experience: doc.professional_info.experience_years,\r\n      phone: doc.personal_info ? doc.personal_info.phone : null\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "active": {
+            "map": "function (doc) {\r\n  if (doc.type === 'doctor' && doc.status === 'active') {\r\n    emit(doc.personal_info ? doc.personal_info.full_name : null, {\r\n      id: doc._id,\r\n      name: doc.personal_info ? doc.personal_info.full_name : null,\r\n      specialty: doc.professional_info ? doc.professional_info.specialty : null,\r\n      phone: doc.personal_info ? doc.personal_info.phone : null\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "by_working_day": {
+            "map": "function (doc) {\r\n  if (doc.type === 'doctor' && doc.schedule && doc.schedule.working_days) {\r\n    for (var i = 0; i < doc.schedule.working_days.length; i++) {\r\n      var day = doc.schedule.working_days[i];\r\n      emit(day, {\r\n        id: doc._id,\r\n        name: doc.personal_info ? doc.personal_info.full_name : null,\r\n        specialty: doc.professional_info ? doc.professional_info.specialty : null,\r\n        hours: doc.schedule.working_hours || null\r\n      });\r\n    }\r\n  }\r\n}\r\n"
+          },
+          "by_experience": {
+            "map": "function (doc) {\r\n  if (doc.type === 'doctor' && doc.professional_info && typeof doc.professional_info.experience_years === 'number') {\r\n    var e = doc.professional_info.experience_years;\r\n    var level = e < 5 ? 'junior' : (e < 15 ? 'senior' : 'expert');\r\n    emit(level, {\r\n      id: doc._id,\r\n      name: doc.personal_info ? doc.personal_info.full_name : null,\r\n      specialty: doc.professional_info.specialty,\r\n      experience: e\r\n    });\r\n  }\r\n}\r\n"
+          }
+        },
+        "language": "javascript"
+      }
+    },
+    {
+      "id": "doctor_2024_001",
+      "key": "doctor_2024_001",
+      "value": {
+        "rev": "1-a820b1c0fa68be7e02b4253467394a37"
+      },
+      "doc": {
+        "_id": "doctor_2024_001",
+        "_rev": "1-a820b1c0fa68be7e02b4253467394a37",
+        "type": "doctor",
+        "personal_info": {
+          "full_name": "BS. Trần Thị Bình",
+          "birth_date": "1978-07-22",
+          "gender": "female",
+          "phone": "0987654321",
+          "email": "bs.tranthibinh@clinic.com"
+        },
+        "professional_info": {
+          "license_number": "MD567890",
+          "specialty": "cardiology",
+          "sub_specialties": [
+            "interventional_cardiology"
+          ],
+          "experience_years": 15,
+          "education": [
+            {
+              "degree": "Doctor of Medicine",
+              "university": "Đại học Y Dược TP.HCM",
+              "year": 2005
+            },
+            {
+              "degree": "Specialist Level 2",
+              "institution": "Bệnh viện Chợ Rẫy",
+              "year": 2010
+            }
+          ],
+          "certifications": [
+            {
+              "name": "Cardiac Intervention Certification",
+              "issuer": "Vietnam Heart Association",
+              "valid_until": "2025-12-31"
+            }
+          ]
+        },
+        "schedule": {
+          "working_days": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "friday"
+          ],
+          "working_hours": {
+            "start": "08:00",
+            "end": "17:00"
+          },
+          "break_time": {
+            "start": "12:00",
+            "end": "13:00"
+          }
+        },
+        "status": "active",
+        "created_at": "2024-01-01T08:00:00Z",
+        "updated_at": "2024-01-15T10:30:00Z"
+      }
+    }
+  ]
+}

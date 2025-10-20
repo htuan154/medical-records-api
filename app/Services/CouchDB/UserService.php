@@ -56,13 +56,16 @@ JS
             ],
         ];
 
-        $doc = ['_id' => '_design/users', 'language' => 'javascript', 'views' => $views];
+        $doc = ['language' => 'javascript', 'views' => $views];
 
         if (!isset($current['error'])) {
+            $doc['_id'] = '_design/users';
             $doc['_rev'] = $current['_rev'];
-            return $db->put('_design/users', $doc);
+            return $db->putDesign('_design/users', $doc);
         }
-        return $db->create($doc);
+        
+        $doc['_id'] = '_design/users';
+        return $db->putDesign('_design/users', $doc);
     }
 
     /** List + filter đơn giản: q=username, staff_id/patient_id */

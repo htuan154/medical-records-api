@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
-use App\Services\CouchDB\appointmentService;
+use App\Services\CouchDB\AppointmentService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -16,7 +16,7 @@ use Throwable;
  */
 class AppointmentController extends Controller
 {
-    public function __construct(private appointmentService $svc) {}
+    public function __construct(private AppointmentService $svc) {}
 
     private function error(Throwable $e, int $code = 500)
     {
@@ -116,7 +116,8 @@ class AppointmentController extends Controller
     public function index(Request $req)
     {
         try {
-            $this->svc->ensureDesignDoc();
+            // ✅ REMOVED: ensureDesignDoc() - design docs should be created via /setup/all once
+            // $this->svc->ensureDesignDoc();
 
             $limit = (int) $req->query('limit', 50);
             $skip  = (int) $req->query('skip', 0);

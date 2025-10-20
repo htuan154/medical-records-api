@@ -3,6 +3,7 @@
 namespace App\Services\CouchDB;
 
 use App\Repositories\CouchDB\AppointmentRepository;
+use Illuminate\Support\Facades\Log;
 
 class AppointmentService
 {
@@ -63,31 +64,45 @@ JS
             ],
         ];
 
-        $doc = ['_id' => '_design/appointments', 'language' => 'javascript', 'views' => $views];
+        $doc = ['language' => 'javascript', 'views' => $views];
 
         if (!isset($current['error'])) {
+            $doc['_id'] = '_design/appointments';
             $doc['_rev'] = $current['_rev'];
-            return $db->put('_design/appointments', $doc);
+            return $db->putDesign('_design/appointments', $doc);
         }
-        return $db->create($doc);
+        
+        $doc['_id'] = '_design/appointments';
+        return $db->putDesign('_design/appointments', $doc);
     }
 
     /** List + các filter cơ bản */
     public function list(int $limit = 50, int $skip = 0, array $filters = []): array
     {
-        if (!empty($filters['patient_id'])) {
-            return $this->repo->byPatient($filters['patient_id'], $limit, $skip);
+        try {
+            if (!empty($filters['patient_id'])) {
+                return $this->repo->byPatient($filters['patient_id'], $limit, $skip);
+            }
+            if (!empty($filters['doctor_id'])) {
+                return $this->repo->byDoctor($filters['doctor_id'], $limit, $skip);
+            }
+            if (!empty($filters['start']) && !empty($filters['end'])) {
+                return $this->repo->byDateRange($filters['start'], $filters['end'], $limit, $skip);
+            }
+            if (!empty($filters['status'])) {
+                return $this->repo->byStatus($filters['status'], $limit, $skip);
+            }
+            return $this->repo->allFull($limit, $skip);
+        } catch (\Throwable $e) {
+            Log::error('AppointmentService::list failed', [
+                'error' => $e->getMessage(),
+                'filters' => $filters,
+                'limit' => $limit,
+                'skip' => $skip,
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
         }
-        if (!empty($filters['doctor_id'])) {
-            return $this->repo->byDoctor($filters['doctor_id'], $limit, $skip);
-        }
-        if (!empty($filters['start']) && !empty($filters['end'])) {
-            return $this->repo->byDateRange($filters['start'], $filters['end'], $limit, $skip);
-        }
-        if (!empty($filters['status'])) {
-            return $this->repo->byStatus($filters['status'], $limit, $skip);
-        }
-        return $this->repo->allFull($limit, $skip);
     }
 
     public function find(string $id): array

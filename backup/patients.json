@@ -1,0 +1,109 @@
+{
+  "total_rows": 3,
+  "offset": 0,
+  "rows": [
+    {
+      "id": "_design/_design/patients",
+      "key": "_design/_design/patients",
+      "value": {
+        "rev": "8-cd013b950c79cab7db581e68958c38a7"
+      },
+      "doc": {
+        "_id": "_design/_design/patients",
+        "_rev": "8-cd013b950c79cab7db581e68958c38a7",
+        "views": {
+          "by_name": {
+            "map": "function (doc) {\r\n  if (doc.type === 'patient') {\r\n    emit(doc.personal_info.full_name.toLowerCase(), {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      phone: doc.personal_info.phone,\r\n      birth_date: doc.personal_info.birth_date,\r\n      status: doc.status\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "by_phone": {
+            "map": "function (doc) {\r\n  if (doc.type === 'patient') {\r\n    emit(doc.personal_info.phone, {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      birth_date: doc.personal_info.birth_date\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "by_id_number": {
+            "map": "function (doc) {\r\n  if (doc.type === 'patient') {\r\n    emit(doc.personal_info.id_number, {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      phone: doc.personal_info.phone\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "by_blood_type": {
+            "map": "function (doc) {\r\n  if (doc.type === 'patient' && doc.medical_info.blood_type) {\r\n    emit(doc.medical_info.blood_type, {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      phone: doc.personal_info.phone\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "active_patients": {
+            "map": "function (doc) {\r\n  if (doc.type === 'patient' && doc.status === 'active') {\r\n    emit(doc.personal_info.full_name, {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      phone: doc.personal_info.phone,\r\n      created_at: doc.created_at\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "by_age_group": {
+            "map": "function (doc) {\r\n  if (doc.type === 'patient' && doc.personal_info.birth_date) {\r\n    var birthYear = new Date(doc.personal_info.birth_date).getFullYear();\r\n    var currentYear = new Date().getFullYear();\r\n    var age = currentYear - birthYear;\r\n    var ageGroup = '';\r\n    if (age < 18) ageGroup = 'pediatric';\r\n    else if (age < 65) ageGroup = 'adult';\r\n    else ageGroup = 'elderly';\r\n\r\n    emit(ageGroup, {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      age: age\r\n    });\r\n  }\r\n}\r\n"
+          }
+        },
+        "language": "javascript"
+      }
+    },
+    {
+      "id": "_design/patients",
+      "key": "_design/patients",
+      "value": {
+        "rev": "11-415ca62100a323d4fbbf09096b77c683"
+      },
+      "doc": {
+        "_id": "_design/patients",
+        "_rev": "11-415ca62100a323d4fbbf09096b77c683",
+        "language": "javascript",
+        "views": {
+          "by_name": {
+            "map": "function (doc) {\n  if (doc.type === 'patient' && doc.personal_info && doc.personal_info.full_name) {\n    emit(doc.personal_info.full_name.toLowerCase(), {\n      id: doc._id,\n      name: doc.personal_info.full_name,\n      phone: doc.personal_info.phone,\n      birth_date: doc.personal_info.birth_date,\n      status: doc.status\n    });\n  }\n}"
+          },
+          "all": {
+            "map": "function (doc) {\n  if (doc.type === 'patient') emit(doc._id, null);\n}"
+          }
+        }
+      }
+    },
+    {
+      "id": "patient_2024_001",
+      "key": "patient_2024_001",
+      "value": {
+        "rev": "2-8620f885f0b1056b57a8b4eca1f6470f"
+      },
+      "doc": {
+        "_id": "patient_2024_001",
+        "_rev": "2-8620f885f0b1056b57a8b4eca1f6470f",
+        "type": "patient",
+        "personal_info": {
+          "full_name": "Nguyễn Văn An",
+          "birth_date": "1985-03-15",
+          "gender": "male",
+          "id_number": "123456789",
+          "phone": "0901234567",
+          "email": "nguyen.van.an@email.com",
+          "emergency_contact": {
+            "name": "Nguyễn Thị Bình",
+            "relationship": "spouse",
+            "phone": "0907654321"
+          }
+        },
+        "address": {
+          "street": "123 Đường Lê Lợi",
+          "ward": "Phường Bến Nghé",
+          "district": "Quận 1",
+          "city": "TP. Hồ Chí Minh",
+          "postal_code": "700000"
+        },
+        "medical_info": {
+          "blood_type": "A+",
+          "allergies": [
+            "Penicillin",
+            "Peanuts"
+          ],
+          "chronic_conditions": [
+            "Hypertension"
+          ],
+          "insurance": {
+            "provider": "BHYT",
+            "policy_number": "GD1234567890",
+            "valid_until": "2024-12-31"
+          }
+        },
+        "status": "active",
+        "created_at": "2024-01-15T08:30:00Z",
+        "updated_at": "2024-01-20T14:15:00Z",
+        "created_by": "user_admin_001"
+      }
+    }
+  ]
+}

@@ -46,7 +46,7 @@ class InvoiceController extends Controller
     public function index(Request $req)
     {
         try {
-            $this->svc->ensureDesignDoc();
+            // $this->svc->ensureDesignDoc(); // ✅ Moved to /setup/all
 
             $limit = (int) $req->query('limit', 50);
             $skip  = (int) $req->query('skip', 0);

@@ -47,13 +47,16 @@ JS
             ],
         ];
 
-        $doc = ['_id' => '_design/doctors', 'language' => 'javascript', 'views' => $views];
+        $doc = ['language' => 'javascript', 'views' => $views];
 
         if (!isset($current['error'])) {
+            $doc['_id'] = '_design/doctors';
             $doc['_rev'] = $current['_rev'];
-            return $db->put('_design/doctors', $doc);
+            return $db->putDesign('_design/doctors', $doc);
         }
-        return $db->create($doc);
+        
+        $doc['_id'] = '_design/doctors';
+        return $db->putDesign('_design/doctors', $doc);
     }
 
     public function list(int $limit = 50, int $skip = 0, array $filters = []): array

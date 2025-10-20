@@ -82,13 +82,16 @@ JS
             ],
         ];
 
-        $doc = ['_id' => '_design/medications', 'language' => 'javascript', 'views' => $views];
+        $doc = ['language' => 'javascript', 'views' => $views];
 
         if (!isset($current['error'])) {
+            $doc['_id'] = '_design/medications';
             $doc['_rev'] = $current['_rev'];
-            return $db->put('_design/medications', $doc);
+            return $db->putDesign('_design/medications', $doc);
         }
-        return $db->create($doc);
+        
+        $doc['_id'] = '_design/medications';
+        return $db->putDesign('_design/medications', $doc);
     }
 
     /** List + filters: q (name), barcode, class, expiry range, status, low_stock */

@@ -45,16 +45,18 @@ JS
         ];
 
         $doc = [
-            '_id'      => '_design/patients',
             'language' => 'javascript',
             'views'    => $views,
         ];
 
         if (!isset($current['error'])) {
+            $doc['_id'] = '_design/patients';
             $doc['_rev'] = $current['_rev'];
-            return $db->put('_design/patients', $doc);
+            return $db->putDesign('_design/patients', $doc);
         }
-        return $db->create($doc);
+        
+        $doc['_id'] = '_design/patients';
+        return $db->putDesign('_design/patients', $doc);
     }
 
     /** Danh sách + search theo tên (view by_name + include_docs=true) */
