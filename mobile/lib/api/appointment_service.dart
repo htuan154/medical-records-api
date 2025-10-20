@@ -4,14 +4,26 @@ import 'apiconfig.dart';
 import 'token_service.dart';
 
 class AppointmentService {
-  // Lấy danh sách tất cả cuộc hẹn
-  static Future<Map<String, dynamic>> getAppointments() async {
+  // Lấy danh sách tất cả cuộc hẹn (có thể truyền params để filter)
+  static Future<Map<String, dynamic>> getAppointments({
+    Map<String, dynamic>? params,
+  }) async {
     final token = await TokenService.getToken();
     if (token == null || token.isEmpty) {
       return {'success': false, 'message': 'Chưa đăng nhập'};
     }
     try {
-      final url = Uri.parse('${ApiConfig.baseUrl}/appointments');
+      String query = '';
+      if (params != null && params.isNotEmpty) {
+        query =
+            '?' +
+            params.entries
+                .map(
+                  (e) => '${e.key}=${Uri.encodeComponent(e.value.toString())}',
+                )
+                .join('&');
+      }
+      final url = Uri.parse('${ApiConfig.baseUrl}/appointments$query');
       final response = await http
           .get(url, headers: ApiConfig.getAuthHeaders(token))
           .timeout(Duration(seconds: ApiConfig.timeoutDuration));

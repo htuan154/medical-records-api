@@ -45,8 +45,8 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="(u, idx) in items">
-            <tr :key="`user-${u._id || u.id || u.username || idx}`">
+          <template v-for="(u, idx) in items" :key="`user-${u._id || u.id || u.username || idx}`">
+            <tr>
               <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
               <td>{{ u.username }}</td>
               <td>{{ u.email }}</td>
@@ -242,9 +242,9 @@
 
 <script>
 import UserService from '@/api/userService'
-import StaffService from '@/api/staffService'
-import DoctorService from '@/api/doctorService'
-import PatientService from '@/api/patientService'
+// import StaffService from '@/api/staffService'
+// import DoctorService from '@/api/doctorService'
+// import PatientService from '@/api/patientService'
 
 export default {
   name: 'UsersListView',

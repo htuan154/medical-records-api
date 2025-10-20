@@ -4,14 +4,26 @@ import 'apiconfig.dart';
 import 'token_service.dart';
 
 class MedicalTestService {
-  // Lấy danh sách tất cả xét nghiệm
-  static Future<Map<String, dynamic>> getMedicalTests() async {
+  // Lấy danh sách tất cả xét nghiệm (có thể truyền params để filter)
+  static Future<Map<String, dynamic>> getMedicalTests({
+    Map<String, dynamic>? params,
+  }) async {
     final token = await TokenService.getToken();
     if (token == null || token.isEmpty) {
       return {'success': false, 'message': 'Chưa đăng nhập'};
     }
     try {
-      final url = Uri.parse('${ApiConfig.baseUrl}/medical-tests');
+      String query = '';
+      if (params != null && params.isNotEmpty) {
+        query =
+            '?' +
+            params.entries
+                .map(
+                  (e) => '${e.key}=${Uri.encodeComponent(e.value.toString())}',
+                )
+                .join('&');
+      }
+      final url = Uri.parse('${ApiConfig.baseUrl}/medical-tests$query');
       final response = await http
           .get(url, headers: ApiConfig.getAuthHeaders(token))
           .timeout(Duration(seconds: ApiConfig.timeoutDuration));

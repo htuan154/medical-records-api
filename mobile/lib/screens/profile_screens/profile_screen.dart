@@ -29,9 +29,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final user = await UserService.getUser();
       if (user != null) {
         // Giả sử có trường linked_patient_id hoặc dùng linked_staff_id để tìm patient
-        String patientId =
-            user['linked_patient_id'] ??
-            'patient_2024_001'; // ID mặc định cho demo
+        // String patientId =
+        //     user['linked_patient_id'] ??
+        //     'patient_2024_001'; // ID mặc định cho demo
+
+        String patientId = user['linked_patient_id'];
 
         final result = await PatientService.getPatientById(patientId);
         if (result['success'] == true) {
@@ -363,14 +365,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       'Chỉnh sửa',
                       style: TextStyle(fontSize: 16),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       // Chuyển sang màn hình chỉnh sửa thông tin
-                      Navigator.of(context).push(
+                      final updated = await Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) =>
                               EditProfileScreen(patient: patient!),
                         ),
                       );
+                      if (updated == true) {
+                        // Nếu cập nhật thành công, reload lại dữ liệu
+                        setState(() {
+                          isLoading = true;
+                        });
+                        await _loadPatientData();
+                      }
                     },
                   ),
                 ),
