@@ -92,9 +92,11 @@ class _HistoryScreenContentState extends State<HistoryScreenContent> {
           [];
 
       setState(() {
-        doctors = doctorsResult['data']['data'] ?? [];
-        appointments = filteredAppointments;
-        isLoading = false;
+        doctors = (doctorsResult['data']['rows'] as List<dynamic>?)
+      ?.map((row) => row['doc'])
+      .toList() ?? [];
+  appointments = filteredAppointments;
+  isLoading = false;
       });
     } catch (e) {
       setState(() {
