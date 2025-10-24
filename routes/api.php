@@ -19,6 +19,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/login',   [AuthController::class, 'login']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     
+    // PUBLIC REGISTRATION routes (không cần token cho đăng ký)
+    Route::post('/users',      [UserController::class, 'store']);
+    Route::post('/patients',   [PatientController::class, 'store']);
+    
     // PUBLIC STAFF routes for testing
     Route::middleware('log.request')->group(function () {
         Route::get('/staffs-public',       [StaffController::class, 'index']);
@@ -44,20 +48,18 @@ Route::prefix('v1')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/logout', [AuthController::class, 'logout']);
 
-        // PATIENTS - giữ nguyên routes gốc + report
+        // PATIENTS - giữ nguyên routes gốc + report (POST đã chuyển ra ngoài để public)
         Route::get('/patients-report', [PatientController::class, 'report']);
         Route::get('/patients',       [PatientController::class, 'index']);
-        Route::post('/patients',      [PatientController::class, 'store']);
         Route::get('/patients/{id}',  [PatientController::class, 'show']);
         Route::put('/patients/{id}',  [PatientController::class, 'update']);
         Route::delete('/patients/{id}', [PatientController::class, 'destroy']);
 
-        // USERS - ✅ Đặt specific routes TRƯỚC dynamic routes
+        // USERS - ✅ Đặt specific routes TRƯỚC dynamic routes (POST đã chuyển ra ngoài để public)
         Route::get('/users/available-patients', [UserController::class, 'availablePatients']);
         Route::get('/users/available-doctors', [UserController::class, 'availableDoctors']);
         Route::get('/users/available-staffs', [UserController::class, 'availableStaffs']);
         Route::get('/users',        [UserController::class, 'index']);
-        Route::post('/users',       [UserController::class, 'store']);
         Route::get('/users/{id}',   [UserController::class, 'show']);
         Route::put('/users/{id}',   [UserController::class, 'update']);
         Route::delete('/users/{id}', [UserController::class, 'destroy']);

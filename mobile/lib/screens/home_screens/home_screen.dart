@@ -23,6 +23,7 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
   TimeOfDay? _selectedTime; // Sẽ chọn từ khung giờ trống
   int _duration = 30;
   String _appointmentType = 'consultation';
+  List<int> _availableDurations = [15, 30, 45, 60, 90, 120]; // Duration khả dụng dựa trên giờ chọn
   
   // Data lists
   Map<String, dynamic>? _currentPatient;
@@ -54,21 +55,33 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
     try {
       // 1. Lấy thông tin user đang đăng nhập
       final user = await UserService.getUser();
-      if (user == null || user['linked_patient_id'] == null) {
-        _showError('Không tìm thấy thông tin bệnh nhân liên kết với tài khoản này');
-        setState(() {
-          _isLoading = false;
-        });
+      print('🟢 [DEBUG] UserService.getUser() = $user');
+      if (user == null) {
+        _showError('Không tìm thấy thông tin user trong local storage');
+        setState(() { _isLoading = false; });
+        return;
+      }
+      if (!user.containsKey('linked_patient_id') || user['linked_patient_id'] == null) {
+        _showError('User không có trường linked_patient_id hoặc giá trị null');
+        setState(() { _isLoading = false; });
+        return;
+      }
+      if (!user.containsKey('id') || user['id'] == null) {
+        _showError('User không có trường id hoặc giá trị null');
+        setState(() { _isLoading = false; });
         return;
       }
 
-      _currentPatientId = user['linked_patient_id'];
+      _currentPatientId = user['linked_patient_id'] is String ? user['linked_patient_id'] : user['linked_patient_id']?.toString();
       print('🔍 Current patient ID: $_currentPatientId');
+      print('🟢 [DEBUG] user id: ${user['id']} (type: ${user['id']?.runtimeType})');
 
       // 2. Lấy thông tin chi tiết bệnh nhân
-      final userResult = await UserService.getUserById(user['_id']);
+      final userResult = await UserService.getUserById(user['id'].toString());
+      print('🟢 [DEBUG] UserService.getUserById(${user['id']}) = $userResult');
       if (userResult['success'] == true) {
         final userData = userResult['data'];
+        print('🟢 [DEBUG] userResult["data"] = $userData');
         if (userData != null && userData['linked_patient_id'] != null) {
           _currentPatient = {
             '_id': userData['linked_patient_id'],
@@ -76,7 +89,11 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
               'full_name': userData['username'] ?? 'Bệnh nhân',
             }
           };
+        } else {
+          print('🟡 [DEBUG] userData null hoặc không có linked_patient_id');
         }
+      } else {
+        print('🟡 [DEBUG] userResult không success: $userResult');
       }
 
       // 3. Lấy danh sách bác sĩ
@@ -101,8 +118,9 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
       } else {
         print('❌ Failed to load doctors: ${doctorsResult['message']}');
       }
-    } catch (e) {
+    } catch (e, stack) {
       print('❌ Error loading data: $e');
+      print('❌ STACKTRACE: $stack');
       _showError('Lỗi khi tải dữ liệu: $e');
     } finally {
       setState(() {
@@ -182,8 +200,17 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
     for (var appointment in _doctorAppointments) {
       try {
         final appointmentInfo = appointment['appointment_info'];
-        final scheduledDate = DateTime.parse(appointmentInfo['scheduled_date']);
+        final scheduledDateStr = appointmentInfo['scheduled_date'];
+        
+        // Backend lưu giờ địa phương nhưng ghi 'Z', cần bỏ 'Z' để parse đúng
+        final localDateStr = scheduledDateStr.replaceAll('Z', '');
+        final scheduledDate = DateTime.parse(localDateStr);
         final duration = appointmentInfo['duration'] ?? 30;
+        
+        print('🕐 Appointment: ${appointment['_id']}');
+        print('   Raw: $scheduledDateStr');
+        print('   Parsed as Local: $scheduledDate');
+        print('   Duration: $duration minutes');
         
         busySlots.add({
           'start': scheduledDate,
@@ -197,7 +224,9 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
     // Sắp xếp theo thời gian bắt đầu
     busySlots.sort((a, b) => a['start']!.compareTo(b['start']!));
     
-    // Tạo khung giờ trống
+    print('🔍 Busy slots: ${busySlots.map((s) => '${DateFormat('HH:mm').format(s['start']!)} - ${DateFormat('HH:mm').format(s['end']!)}')}');
+    
+    // Tạo tất cả các khung giờ từ 7h-17h, mỗi khung 15 phút
     DateTime currentTime = DateTime(
       _selectedDate.year,
       _selectedDate.month,
@@ -226,73 +255,150 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
       breakEnd,
     );
     
-    for (var busySlot in busySlots) {
-      final busyStart = busySlot['start']!;
-      final busyEnd = busySlot['end']!;
+    // Tạo các khung giờ 15 phút
+    while (currentTime.isBefore(endTime)) {
+      // Bỏ qua giờ nghỉ trưa (CHỈ KIỂM TRA GIỜ BẮT ĐẦU)
+      if (currentTime.hour >= breakStart && currentTime.hour < breakEnd) {
+        currentTime = currentTime.add(const Duration(minutes: 15));
+        continue;
+      }
       
-      // Thêm khoảng trống trước lịch hẹn này
-      if (currentTime.isBefore(busyStart)) {
-        // Kiểm tra không trùng giờ nghỉ
-        DateTime slotEnd = busyStart;
+      // Kiểm tra xung đột với các lịch hẹn đã có
+      // CHỈ kiểm tra xem GIỜ BẮT ĐẦU có nằm trong khoảng bận không
+      bool hasConflict = false;
+      for (var busySlot in busySlots) {
+        final busyStart = busySlot['start']!;
+        final busyEnd = busySlot['end']!;
         
-        // Nếu khoảng trống chứa giờ nghỉ, chia thành 2 phần
-        if (currentTime.isBefore(breakStartTime) && slotEnd.isAfter(breakStartTime)) {
-          // Phần trước giờ nghỉ
-          _availableTimeSlots.add({
-            'start': currentTime,
-            'end': breakStartTime,
-          });
-          // Phần sau giờ nghỉ
-          if (breakEndTime.isBefore(slotEnd)) {
-            currentTime = breakEndTime;
-            continue;
-          }
-        } else if (currentTime.isBefore(breakStartTime) && slotEnd.isBefore(breakEndTime)) {
-          // Khoảng trống hoàn toàn trước giờ nghỉ
-          _availableTimeSlots.add({
-            'start': currentTime,
-            'end': slotEnd,
-          });
-        } else if (currentTime.isAfter(breakEndTime)) {
-          // Khoảng trống sau giờ nghỉ
-          _availableTimeSlots.add({
-            'start': currentTime,
-            'end': slotEnd,
-          });
+        // Chỉ kiểm tra: giờ bắt đầu có nằm trong khoảng bận không
+        if (currentTime.isAtSameMomentAs(busyStart) || 
+            (currentTime.isAfter(busyStart) && currentTime.isBefore(busyEnd))) {
+          hasConflict = true;
+          break;
         }
       }
       
-      currentTime = busyEnd;
-    }
-    
-    // Thêm khoảng trống cuối cùng
-    if (currentTime.isBefore(endTime)) {
-      // Kiểm tra giờ nghỉ
-      if (currentTime.isBefore(breakStartTime) && endTime.isAfter(breakStartTime)) {
-        // Phần trước giờ nghỉ
+      if (!hasConflict) {
         _availableTimeSlots.add({
           'start': currentTime,
-          'end': breakStartTime,
-        });
-        // Phần sau giờ nghỉ
-        _availableTimeSlots.add({
-          'start': breakEndTime,
-          'end': endTime,
-        });
-      } else if (currentTime.isAfter(breakEndTime)) {
-        _availableTimeSlots.add({
-          'start': currentTime,
-          'end': endTime,
-        });
-      } else if (currentTime.isBefore(breakStartTime) && endTime.isBefore(breakStartTime)) {
-        _availableTimeSlots.add({
-          'start': currentTime,
-          'end': endTime,
+          'end': currentTime.add(Duration(minutes: _duration)),
         });
       }
+      
+      currentTime = currentTime.add(const Duration(minutes: 15));
     }
     
-    print('✅ Available time slots: $_availableTimeSlots');
+    print('✅ Available time slots (${_availableTimeSlots.length}): ${_availableTimeSlots.map((s) => DateFormat('HH:mm').format(s['start']!))}');
+  }
+
+  // Tính toán các duration khả dụng dựa trên giờ đã chọn
+  void _calculateAvailableDurations() {
+    if (_selectedTime == null) {
+      setState(() {
+        _availableDurations = [15, 30, 45, 60, 90, 120];
+      });
+      return;
+    }
+
+    final selectedDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedTime!.hour,
+      _selectedTime!.minute,
+    );
+
+    // Các giới hạn thời gian
+    final lunchStart = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 12, 0);
+    final lunchEnd = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 13, 0);
+    final endOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, 17, 0);
+
+    // Tìm giới hạn gần nhất (giờ nghỉ, giờ tan, hoặc appointment)
+    DateTime? nearestLimit;
+
+    // 1. Kiểm tra giờ nghỉ trưa
+    if (selectedDateTime.isBefore(lunchStart)) {
+      nearestLimit = lunchStart;
+    }
+
+    // 2. Kiểm tra giờ tan làm
+    if (nearestLimit == null || endOfDay.isBefore(nearestLimit)) {
+      nearestLimit = endOfDay;
+    }
+
+    // 3. Kiểm tra appointment tiếp theo
+    for (var appointment in _doctorAppointments) {
+      try {
+        final appointmentInfo = appointment['appointment_info'];
+        final scheduledDateStr = appointmentInfo['scheduled_date'];
+        final localDateStr = scheduledDateStr.replaceAll('Z', '');
+        final appointmentStart = DateTime.parse(localDateStr);
+
+        // Chỉ quan tâm appointment SAU giờ đã chọn
+        if (appointmentStart.isAfter(selectedDateTime)) {
+          if (nearestLimit == null || appointmentStart.isBefore(nearestLimit)) {
+            nearestLimit = appointmentStart;
+          }
+        }
+      } catch (e) {
+        print('❌ Error checking appointment limit: $e');
+      }
+    }
+
+    // Tính khoảng thời gian tối đa (phút)
+    final maxMinutes = nearestLimit != null 
+        ? nearestLimit.difference(selectedDateTime).inMinutes 
+        : 120;
+
+    print('🕐 Selected time: ${DateFormat('HH:mm').format(selectedDateTime)}');
+    print('⏰ Nearest limit: ${nearestLimit != null ? DateFormat('HH:mm').format(nearestLimit) : "none"}');
+    print('⏱️  Max duration: $maxMinutes minutes');
+
+    // Lọc các duration hợp lệ
+    final validDurations = [15, 30, 45, 60, 90, 120]
+        .where((duration) => duration <= maxMinutes)
+        .toList();
+
+    // Đảm bảo luôn có ít nhất 1 duration
+    if (validDurations.isEmpty) {
+      validDurations.add(15);
+    }
+
+    setState(() {
+      _availableDurations = validDurations;
+      
+      // Nếu duration hiện tại không hợp lệ, chọn duration lớn nhất khả dụng
+      if (!_availableDurations.contains(_duration)) {
+        _duration = _availableDurations.last;
+      }
+    });
+
+    print('✅ Available durations: $_availableDurations, selected: $_duration');
+  }
+
+  // Helper: Lấy duration hợp lệ cho dropdown
+  int _getValidDuration() {
+    if (_availableDurations.contains(_duration)) {
+      return _duration;
+    }
+    if (_availableDurations.isNotEmpty) {
+      return _availableDurations.first;
+    }
+    return 15;
+  }
+
+  // Helper: Lấy danh sách duration items cho dropdown
+  List<DropdownMenuItem<int>> _getDurationItems() {
+    final durations = _availableDurations.isEmpty 
+        ? [15, 30, 45, 60, 90, 120] 
+        : _availableDurations;
+    
+    return durations.map((duration) {
+      return DropdownMenuItem<int>(
+        value: duration,
+        child: Text('$duration phút'),
+      );
+    }).toList();
   }
 
   Future<void> _selectDate() async {
@@ -334,7 +440,8 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
     });
 
     try {
-      final scheduledDateTime = DateTime(
+      // Tạo DateTime UTC nhưng giữ nguyên giờ người dùng chọn
+      final scheduledDateTime = DateTime.utc(
         _selectedDate.year,
         _selectedDate.month,
         _selectedDate.day,
@@ -344,19 +451,20 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
 
       final appointmentEndTime = scheduledDateTime.add(Duration(minutes: _duration));
 
-      // Kiểm tra xung đột với các lịch hẹn khác
+      // Kiểm tra xung đột với các lịch hẹn khác (CHỈ KIỂM TRA GIỜ BẮT ĐẦU)
       bool hasConflict = false;
       for (var appointment in _doctorAppointments) {
         try {
           final appointmentInfo = appointment['appointment_info'];
-          final existingStart = DateTime.parse(appointmentInfo['scheduled_date']);
+          final existingStartStr = appointmentInfo['scheduled_date'];
+          final localStartStr = existingStartStr.replaceAll('Z', '');
+          final existingStart = DateTime.parse(localStartStr);
           final existingDuration = appointmentInfo['duration'] ?? 30;
           final existingEnd = existingStart.add(Duration(minutes: existingDuration));
 
-          // Kiểm tra xung đột: lịch mới bắt đầu trước khi lịch cũ kết thúc
-          // và lịch mới kết thúc sau khi lịch cũ bắt đầu
-          if (scheduledDateTime.isBefore(existingEnd) && 
-              appointmentEndTime.isAfter(existingStart)) {
+          // CHỈ kiểm tra: giờ bắt đầu mới có nằm trong khoảng appointment cũ không
+          if (scheduledDateTime.isAtSameMomentAs(existingStart) ||
+              (scheduledDateTime.isAfter(existingStart) && scheduledDateTime.isBefore(existingEnd))) {
             hasConflict = true;
             _showError('Khung giờ này bị trùng với lịch hẹn khác!\n'
                 'Lịch hẹn hiện có: ${DateFormat('HH:mm').format(existingStart)} - '
@@ -375,38 +483,58 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
         return;
       }
 
-      // Kiểm tra thời gian kết thúc không vượt quá giờ làm việc (17h)
-      final endOfDay = DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        17,
-        0,
-      );
+      // Lấy user đang đăng nhập để lấy id cho created_by
+      final user = await UserService.getUser();
+      final createdBy = user != null && user['id'] != null ? user['id'].toString() : '';
 
-      if (appointmentEndTime.isAfter(endOfDay)) {
-        _showError('Thời gian khám vượt quá giờ làm việc (17:00)!\n'
-            'Vui lòng chọn khung giờ sớm hơn hoặc giảm thời gian khám.');
-        setState(() {
-          _isSubmitting = false;
-        });
-        return;
+      // Sinh _id: appointment + yyyyMMddHHmmss
+    final now = DateTime.now().toUtc();
+      String twoDigits(int n) => n.toString().padLeft(2, '0');
+      final idStr = 'appointment'
+        + now.year.toString()
+        + twoDigits(now.month)
+        + twoDigits(now.day)
+        + twoDigits(now.hour)
+        + twoDigits(now.minute)
+        + twoDigits(now.second);
+
+      // Reminder gửi trước 1 tiếng
+      final reminderTime = scheduledDateTime.subtract(const Duration(hours: 1));
+      // Hàm xuất ISO8601 UTC luôn có hậu tố Z
+      String toIso8601Z(DateTime dt) {
+        // Đảm bảo luôn trả về dạng ...Z, không có +00:00
+        String s = dt.toUtc().toIso8601String();
+        if (s.endsWith('Z')) return s;
+        if (s.contains('+00:00')) return s.replaceAll('+00:00', 'Z');
+        return s + 'Z';
       }
 
+      final reminders = [
+        {
+          'type': 'sms',
+          'sent_at': toIso8601Z(reminderTime),
+          'status': 'pending',
+        }
+      ];
+
       final appointmentData = {
+        '_id': idStr,
         'type': 'appointment',
         'patient_id': _currentPatientId,
         'doctor_id': _selectedDoctorId,
         'appointment_info': {
-          'scheduled_date': scheduledDateTime.toIso8601String(),
+          'scheduled_date': toIso8601Z(scheduledDateTime),
           'duration': _duration,
           'type': _appointmentType,
-          'priority': 'normal', // Mặc định bình thường
+          'priority': 'normal',
         },
         'reason': _reasonController.text,
-        'status': 'scheduled', // Mặc định đã đặt
+        'status': 'scheduled',
         'notes': _notesController.text,
-        'reminders': [],
+        'reminders': reminders,
+        'created_by': createdBy,
+    'created_at': toIso8601Z(now),
+    'updated_at': toIso8601Z(now),
       };
 
       final result = await AppointmentService.createAppointment(appointmentData);
@@ -438,6 +566,7 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
       _appointmentType = 'consultation';
       _availableTimeSlots = [];
       _doctorAppointments = [];
+      _availableDurations = [15, 30, 45, 60, 90, 120];
     });
   }
 
@@ -466,7 +595,7 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
       child: Form(
         key: _formKey,
         child: Column(
@@ -520,6 +649,8 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
               ),
             ),
             const SizedBox(height: 16),
+            // Thêm khoảng trống phía dưới để tránh bị che bởi navbar
+            const SizedBox(height: 40),
 
             // Chọn bác sĩ
             _buildSectionTitle('Chọn bác sĩ'),
@@ -527,41 +658,64 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
               elevation: 2,
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                    labelText: 'Chọn bác sĩ *',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.medical_services),
-                    helperText: 'Chọn bác sĩ để xem khung giờ trống',
-                  ),
-                  value: _selectedDoctorId,
-                  items: _doctors.isEmpty
-                      ? []
-                      : _doctors.map((doctor) {
-                          final personalInfo = doctor['personal_info'] ?? {};
-                          final professionalInfo = doctor['professional_info'] ?? {};
-                          final name = personalInfo['full_name'] ?? doctor['_id'];
-                          final specialty = professionalInfo['specialty'] ?? '';
-                          return DropdownMenuItem<String>(
-                            value: doctor['_id'],
-                            child: Text('$name${specialty.isNotEmpty ? " - $specialty" : ""}'),
-                          );
-                        }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedDoctorId = value;
-                    });
-                    // Load lịch của bác sĩ
-                    if (value != null) {
-                      _loadDoctorAppointments();
-                    }
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng chọn bác sĩ';
-                    }
-                    return null;
-                  },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Chọn bác sĩ *',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.medical_services),
+                        ),
+                        value: _selectedDoctorId,
+                        items: _doctors.isEmpty
+                            ? []
+                            : _doctors.map((doctor) {
+                                final personalInfo = doctor['personal_info'] ?? {};
+                                final professionalInfo = doctor['professional_info'] ?? {};
+                                final name = personalInfo['full_name'] ?? doctor['_id'];
+                                final specialty = professionalInfo['specialty'] ?? '';
+                                return DropdownMenuItem<String>(
+                                  value: doctor['_id'],
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          '$name${specialty.isNotEmpty ? " - $specialty" : ""}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedDoctorId = value;
+                          });
+                          // Load lịch của bác sĩ
+                          if (value != null) {
+                            _loadDoctorAppointments();
+                          }
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Vui lòng chọn bác sĩ';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Chọn bác sĩ để xem khung giờ trống',
+                      style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -652,20 +806,21 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                           runSpacing: 8,
                           children: _availableTimeSlots.map((slot) {
                             final start = slot['start'] as DateTime;
-                            final end = slot['end'] as DateTime;
                             final startTime = TimeOfDay.fromDateTime(start);
                             final isSelected = _selectedTime?.hour == startTime.hour &&
                                 _selectedTime?.minute == startTime.minute;
 
                             return ChoiceChip(
                               label: Text(
-                                '${DateFormat('HH:mm').format(start)} - ${DateFormat('HH:mm').format(end)}',
+                                DateFormat('HH:mm').format(start),
                               ),
                               selected: isSelected,
                               onSelected: (selected) {
                                 if (selected) {
                                   setState(() {
                                     _selectedTime = startTime;
+                                    // Tính toán lại duration khả dụng khi chọn giờ mới
+                                    _calculateAvailableDurations();
                                   });
                                 }
                               },
@@ -692,19 +847,14 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.timer),
                     ),
-                    value: _duration,
-                    items: const [
-                      DropdownMenuItem(value: 15, child: Text('15 phút')),
-                      DropdownMenuItem(value: 30, child: Text('30 phút')),
-                      DropdownMenuItem(value: 45, child: Text('45 phút')),
-                      DropdownMenuItem(value: 60, child: Text('60 phút')),
-                      DropdownMenuItem(value: 90, child: Text('90 phút')),
-                      DropdownMenuItem(value: 120, child: Text('120 phút')),
-                    ],
+                    value: _getValidDuration(),
+                    items: _getDurationItems(),
                     onChanged: (value) {
-                      setState(() {
-                        _duration = value!;
-                      });
+                      if (value != null) {
+                        setState(() {
+                          _duration = value;
+                        });
+                      }
                     },
                   ),
                 ),
