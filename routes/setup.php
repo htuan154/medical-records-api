@@ -10,6 +10,8 @@ use App\Services\CouchDB\TreatmentService;
 use App\Services\CouchDB\MedicalRecordService;
 use App\Services\CouchDB\InvoiceService;
 use App\Services\CouchDB\MedicationService;
+use App\Services\CouchDB\MedicalTestService;
+use App\Services\CouchDB\RoleService;
 
 /**
  * Setup/Migration Routes
@@ -32,7 +34,8 @@ Route::prefix('setup')->group(function () {
         // ✅ STEP 1: Tạo tất cả databases trước
         $databases = [
             'appointments', 'patients', 'doctors', 'staff', 'users',
-            'treatments', 'medical_records', 'invoices', 'medications'
+            'treatments', 'medical_records', 'invoices', 'medications',
+            'medical_tests', 'roles'
         ];
         
         foreach ($databases as $dbName) {
@@ -127,6 +130,22 @@ Route::prefix('setup')->group(function () {
                 $results['services']['medications'] = $medicationService->ensureDesignDoc();
             } catch (\Throwable $e) {
                 $results['services']['medications'] = ['error' => $e->getMessage()];
+            }
+            
+            // Medical Tests
+            try {
+                $medicalTestService = app(MedicalTestService::class);
+                $results['services']['medical_tests'] = $medicalTestService->ensureDesignDoc();
+            } catch (\Throwable $e) {
+                $results['services']['medical_tests'] = ['error' => $e->getMessage()];
+            }
+            
+            // Roles
+            try {
+                $roleService = app(RoleService::class);
+                $results['services']['roles'] = $roleService->ensureDesignDoc();
+            } catch (\Throwable $e) {
+                $results['services']['roles'] = ['error' => $e->getMessage()];
             }
             
             return response()->json($results, 200);
