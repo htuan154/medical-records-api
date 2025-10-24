@@ -4,14 +4,26 @@ import 'apiconfig.dart';
 import 'token_service.dart';
 
 class TreatmentService {
-  // Lấy danh sách tất cả điều trị
-  static Future<Map<String, dynamic>> getTreatments() async {
+  // Lấy danh sách tất cả điều trị (có thể truyền params để filter)
+  static Future<Map<String, dynamic>> getTreatments({
+    Map<String, dynamic>? params,
+  }) async {
     final token = await TokenService.getToken();
     if (token == null || token.isEmpty) {
       return {'success': false, 'message': 'Chưa đăng nhập'};
     }
     try {
-      final url = Uri.parse('${ApiConfig.baseUrl}/treatments');
+      String query = '';
+      if (params != null && params.isNotEmpty) {
+        query =
+            '?' +
+            params.entries
+                .map(
+                  (e) => '${e.key}=${Uri.encodeComponent(e.value.toString())}',
+                )
+                .join('&');
+      }
+      final url = Uri.parse('${ApiConfig.baseUrl}/treatments$query');
       final response = await http
           .get(url, headers: ApiConfig.getAuthHeaders(token))
           .timeout(Duration(seconds: ApiConfig.timeoutDuration));

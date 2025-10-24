@@ -1,168 +1,201 @@
 {
-  "total_rows": 7,
-  "offset": 0,
-  "rows": [
+  "docs": [
     {
-      "id": "_design/_design/users",
-      "key": "_design/_design/users",
-      "value": {
-        "rev": "4-c1d3bb1a72135592d384594ee2243908"
-      },
-      "doc": {
-        "_id": "_design/_design/users",
-        "_rev": "4-c1d3bb1a72135592d384594ee2243908",
-        "views": {
-          "users_by_link": {
-            "map": "function (doc) {\r\n  if (doc.type === 'user') {\r\n    // Nếu là user liên kết với bệnh nhân\r\n    if (doc.linked_patient_id) {\r\n      emit(['patient', doc.linked_patient_id], doc._id);\r\n    }\r\n    // Nếu là user liên kết với bác sĩ\r\n    if (doc.linked_doctor_id) {\r\n      emit(['doctor', doc.linked_doctor_id], doc._id);\r\n    }\r\n  }\r\n}\r\n"
-          },
-          "by_staff": {
-            "map": "function (doc) {\r\n  if (doc.type === 'user' && doc.linked_staff_id) {\r\n    emit(doc.linked_staff_id, doc._id);\r\n  }\r\n}\r\n"
-          },
-          "by_username": {
-            "map": "function (doc) {\r\n  if (doc.type === 'user') {\r\n    emit(\r\n      doc.username,\r\n      {\r\n        id: doc._id,\r\n        roles: doc.role_names,\r\n        account_type: doc.account_type,\r\n        staff_id: doc.linked_staff_id\r\n      }\r\n    );\r\n  }\r\n}\r\n"
-          }
+      "_id": "_design/_design/users",
+      "views": {
+        "users_by_link": {
+          "map": "function (doc) {\r\n  if (doc.type === 'user') {\r\n    // Nếu là user liên kết với bệnh nhân\r\n    if (doc.linked_patient_id) {\r\n      emit(['patient', doc.linked_patient_id], doc._id);\r\n    }\r\n    // Nếu là user liên kết với bác sĩ\r\n    if (doc.linked_doctor_id) {\r\n      emit(['doctor', doc.linked_doctor_id], doc._id);\r\n    }\r\n  }\r\n}\r\n"
         },
-        "language": "javascript"
-      }
+        "by_staff": {
+          "map": "function (doc) {\r\n  if (doc.type === 'user' && doc.linked_staff_id) {\r\n    emit(doc.linked_staff_id, doc._id);\r\n  }\r\n}\r\n"
+        },
+        "by_username": {
+          "map": "function (doc) {\r\n  if (doc.type === 'user') {\r\n    emit(\r\n      doc.username,\r\n      {\r\n        id: doc._id,\r\n        roles: doc.role_names,\r\n        account_type: doc.account_type,\r\n        staff_id: doc.linked_staff_id\r\n      }\r\n    );\r\n  }\r\n}\r\n"
+        }
+      },
+      "language": "javascript"
     },
     {
-      "id": "_design/users",
-      "key": "_design/users",
-      "value": {
-        "rev": "1-aa3fac14f02ee8f898149b092ece1835"
-      },
-      "doc": {
-        "_id": "_design/users",
-        "_rev": "1-aa3fac14f02ee8f898149b092ece1835",
-        "language": "javascript",
-        "views": {
-          "by_username": {
-            "map": "function (doc) {\n  if (doc.type === 'user' && doc.username) {\n    emit(doc.username.toLowerCase(), null);\n  }\n}"
-          },
-          "by_staff": {
-            "map": "function (doc) {\n  if (doc.type === 'user' && doc.account_type === 'staff' && doc.linked_staff_id) {\n    emit(doc.linked_staff_id, null);\n  }\n}"
-          },
-          "by_patient": {
-            "map": "function (doc) {\n  if (doc.type === 'user' && doc.account_type === 'patient' && doc.linked_patient_id) {\n    emit(doc.linked_patient_id, null);\n  }\n}"
-          },
-          "all": {
-            "map": "function (doc) {\n  if (doc.type === 'user') emit(doc._id, null);\n}"
-          }
+      "_id": "_design/users",
+      "language": "javascript",
+      "views": {
+        "by_username": {
+          "map": "function (doc) {\n  if (doc.type === 'user' && doc.username) {\n    emit(doc.username.toLowerCase(), null);\n  }\n}"
+        },
+        "by_staff": {
+          "map": "function (doc) {\n  if (doc.type === 'user' && doc.account_type === 'staff' && doc.linked_staff_id) {\n    emit(doc.linked_staff_id, null);\n  }\n}"
+        },
+        "by_patient": {
+          "map": "function (doc) {\n  if (doc.type === 'user' && doc.account_type === 'patient' && doc.linked_patient_id) {\n    emit(doc.linked_patient_id, null);\n  }\n}"
+        },
+        "all": {
+          "map": "function (doc) {\n  if (doc.type === 'user') emit(doc._id, null);\n}"
         }
       }
     },
     {
-      "id": "user_admin_001",
-      "key": "user_admin_001",
-      "value": {
-        "rev": "1-e8a660cb546aaa9df540620bcce85464"
-      },
-      "doc": {
-        "_id": "user_admin_001",
-        "_rev": "1-e8a660cb546aaa9df540620bcce85464",
-        "type": "user",
-        "username": "admin",
-        "email": "admin@clinic.com",
-        "password_hash": "$2a$12$rEzaYpcqN6.ZL.ZXFbiaF.RXoOZvu4vvl/Lv7oBgQrhR6wyYTQi/e",
-        "role_names": [
-          "admin"
-        ],
-        "account_type": "staff",
-        "linked_staff_id": "staff_2025_admin",
-        "status": "active",
-        "created_at": "2025-08-19T10:00:00Z",
-        "updated_at": "2025-08-19T10:00:00Z"
-      }
+      "_id": "user_admin_001",
+      "type": "user",
+      "username": "admin",
+      "email": "admin@clinic.com",
+      "password_hash": "$2a$12$rEzaYpcqN6.ZL.ZXFbiaF.RXoOZvu4vvl/Lv7oBgQrhR6wyYTQi/e",
+      "role_names": [
+        "admin"
+      ],
+      "account_type": "staff",
+      "linked_staff_id": "staff_2025_admin",
+      "status": "active",
+      "created_at": "2025-08-19T10:00:00Z",
+      "updated_at": "2025-08-19T10:00:00Z"
     },
     {
-      "id": "user_doctor_001",
-      "key": "user_doctor_001",
-      "value": {
-        "rev": "1-cd8b73d2bde9a184b5dd776742dab9b1"
-      },
-      "doc": {
-        "_id": "user_doctor_001",
-        "_rev": "1-cd8b73d2bde9a184b5dd776742dab9b1",
-        "type": "user",
-        "username": "dr.binh",
-        "email": "bs.tranthibinh@clinic.com",
-        "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
-        "role_names": [
-          "doctor"
-        ],
-        "account_type": "doctor",
-        "linked_doctor_id": "doctor_2024_001",
-        "status": "active"
-      }
+      "_id": "user_doctor_001",
+      "type": "user",
+      "username": "dr.binh",
+      "email": "bs.tranthibinh@clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "doctor"
+      ],
+      "account_type": "doctor",
+      "linked_doctor_id": "doctor_2024_001",
+      "status": "active"
     },
     {
-      "id": "user_nurse_hoa",
-      "key": "user_nurse_hoa",
-      "value": {
-        "rev": "1-590f7ce83881369cd85f30f2696aab2c"
-      },
-      "doc": {
-        "_id": "user_nurse_hoa",
-        "_rev": "1-590f7ce83881369cd85f30f2696aab2c",
-        "type": "user",
-        "username": "nurse.hoa",
-        "email": "hoa.nurse@clinic.com",
-        "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
-        "role_names": [
-          "nurse"
-        ],
-        "account_type": "staff",
-        "linked_staff_id": "staff_2025_001",
-        "status": "active",
-        "created_at": "2025-08-19T10:00:00Z",
-        "updated_at": "2025-08-19T10:00:00Z"
-      }
+      "_id": "user_nurse_hoa",
+      "type": "user",
+      "username": "nurse.hoa",
+      "email": "hoa.nurse@clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "nurse"
+      ],
+      "account_type": "staff",
+      "linked_staff_id": "staff_2025_001",
+      "status": "active",
+      "created_at": "2025-08-19T10:00:00Z",
+      "updated_at": "2025-08-19T10:00:00Z"
     },
     {
-      "id": "user_patient_001",
-      "key": "user_patient_001",
-      "value": {
-        "rev": "1-71ed69d9d83df7762624565541b602e3"
-      },
-      "doc": {
-        "_id": "user_patient_001",
-        "_rev": "1-71ed69d9d83df7762624565541b602e3",
-        "type": "user",
-        "username": "patient.an",
-        "email": "an@email.com",
-        "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
-        "role_names": [
-          "patient"
-        ],
-        "account_type": "patient",
-        "linked_patient_id": "patient_2024_001",
-        "status": "active",
-        "created_at": "2025-08-19T10:00:00Z",
-        "updated_at": "2025-08-19T10:00:00Z"
-      }
+      "_id": "user_patient_001",
+      "type": "user",
+      "username": "patient.an",
+      "email": "an@email.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2024_001",
+      "status": "active",
+      "created_at": "2025-08-19T10:00:00Z",
+      "updated_at": "2025-08-19T10:00:00Z"
     },
     {
-      "id": "user_rec_anh",
-      "key": "user_rec_anh",
-      "value": {
-        "rev": "1-10be951566d405905f8b17129f860a8a"
-      },
-      "doc": {
-        "_id": "user_rec_anh",
-        "_rev": "1-10be951566d405905f8b17129f860a8a",
-        "type": "user",
-        "username": "rec.anh",
-        "email": "anh.rec@clinic.com",
-        "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
-        "role_names": [
-          "receptionist"
-        ],
-        "account_type": "staff",
-        "linked_staff_id": "staff_2025_002",
-        "status": "active",
-        "created_at": "2025-08-19T10:00:00Z",
-        "updated_at": "2025-08-19T10:00:00Z"
-      }
+      "_id": "user_rec_anh",
+      "type": "user",
+      "username": "rec.anh",
+      "email": "anh.rec@clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "receptionist"
+      ],
+      "account_type": "staff",
+      "linked_staff_id": "staff_2025_002",
+      "status": "active",
+      "created_at": "2025-08-19T10:00:00Z",
+      "updated_at": "2025-08-19T10:00:00Z"
+    },
+    {
+      "_id": "user_dr_2024_002",
+      "type": "user",
+      "username": "dr.2024_002",
+      "email": "dr2024_002@clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "doctor"
+      ],
+      "account_type": "doctor",
+      "linked_doctor_id": "doctor_2024_002",
+      "status": "active"
+    },
+    {
+      "_id": "user_dr_2024_003",
+      "type": "user",
+      "username": "dr.2024_003",
+      "email": "dr2024_003@clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "doctor"
+      ],
+      "account_type": "doctor",
+      "linked_doctor_id": "doctor_2024_003",
+      "status": "active"
+    },
+    {
+      "_id": "user_patient_2024_002",
+      "type": "user",
+      "username": "patient.2024_002",
+      "email": "patient2024_002@example.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2024_002",
+      "status": "active"
+    },
+    {
+      "_id": "user_patient_2024_003",
+      "type": "user",
+      "username": "patient.2024_003",
+      "email": "patient2024_003@example.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2024_003",
+      "status": "active"
+    },
+    {
+      "_id": "user_patient_2024_004",
+      "type": "user",
+      "username": "patient.2024_004",
+      "email": "patient2024_004@example.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2024_004",
+      "status": "active"
+    },
+    {
+      "_id": "user_patient_2024_005",
+      "type": "user",
+      "username": "patient.2024_005",
+      "email": "patient2024_005@example.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2024_005",
+      "status": "active"
+    },
+    {
+      "_id": "user_patient_2024_006",
+      "type": "user",
+      "username": "patient.2024_006",
+      "email": "patient2024_006@example.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2024_006",
+      "status": "active"
     }
   ]
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'navbar_item.dart';
 import '../screens/profile_screens/profile_screen.dart';
 import '../screens/home_screens/home_screen.dart';
+import '../screens/history/history_screen.dart';
 
 class NavbarController extends ChangeNotifier {
   int _selectedIndex = 0;
@@ -10,6 +11,11 @@ class NavbarController extends ChangeNotifier {
   NavbarController()
     : items = [
         NavbarItem(label: 'Home', icon: Icons.home, page: HomeScreenContent()),
+        NavbarItem(
+          label: 'History',
+          icon: Icons.history,
+          page: HistoryScreenContent(),
+        ),
         NavbarItem(label: 'Profile', icon: Icons.person, page: ProfileScreen()),
       ];
 

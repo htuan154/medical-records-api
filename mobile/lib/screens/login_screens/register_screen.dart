@@ -156,14 +156,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       // Gọi API tạo user trước
       final userResult = await _createUser(userData);
+      print('[REGISTER] User API response: $userResult');
       if (!userResult['success']) {
-        throw Exception(userResult['message']);
+        print('[REGISTER] User API error: ${userResult['message']}');
+        throw Exception('Tạo user thất bại: ${userResult['message']}');
       }
 
       // Sau đó tạo patient
       final patientResult = await _createPatient(patientData);
+      print('[REGISTER] Patient API response: $patientResult');
       if (!patientResult['success']) {
-        throw Exception(patientResult['message']);
+        print('[REGISTER] Patient API error: ${patientResult['message']}');
+        throw Exception('Tạo patient thất bại: ${patientResult['message']}');
       }
 
       setState(() => _isLoading = false);
@@ -188,6 +192,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } catch (e) {
       setState(() => _isLoading = false);
       if (!mounted) return;
+
+      // Log rõ lỗi tạo user hay patient thiếu token
+      final errorMsg = e.toString();
+      if (errorMsg.contains('user') && errorMsg.contains('token')) {
+        print('[REGISTER] Exception: Lỗi tạo user: $errorMsg');
+      } else if (errorMsg.contains('patient') && errorMsg.contains('token')) {
+        print('[REGISTER] Exception: Lỗi tạo patient: $errorMsg');
+      } else {
+        print('[REGISTER] Exception: $errorMsg');
+      }
 
       showDialog(
         context: context,
