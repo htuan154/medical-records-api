@@ -20,7 +20,7 @@ class MedicalTestsRepository extends BaseCouchRepository implements MedicalTests
 
     public function byType(string $type, int $limit = 50, int $skip = 0): array
     {
-        return $this->view('medical_tests', 'by_type', [
+        return $this->view('medical_tests', 'by_test_type', [
             'key' => json_encode($type),
             'include_docs' => true, 'limit' => $limit, 'skip' => $skip,
         ]);
@@ -64,7 +64,7 @@ public function byDoctor(string $doctorId, int $limit = 50, int $skip = 0): arra
     /** 🔥 mới */
     public function byTestType(string $type, int $limit = 50, int $skip = 0): array
     {
-        return $this->view('medical_tests', 'by_type', [
+        return $this->view('medical_tests', 'by_test_type', [
             'key' => json_encode($type),
             'include_docs' => true, 'limit' => $limit, 'skip' => $skip,
         ]);

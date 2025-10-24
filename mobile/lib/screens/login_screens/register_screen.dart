@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../api/auth_service.dart';
 import '../../api/patient_service.dart';
+import 'dart:convert';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -126,7 +127,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'type': 'user',
         'username': _usernameController.text,
         'email': _emailController.text,
-        'password_hash': _passwordController.text, // Server sẽ hash
+        'password': _passwordController.text, // Server sẽ tự hash thành password_hash
         'role_names': ['patient'],
         'account_type': 'patient',
         'linked_patient_id': patientId,
@@ -153,6 +154,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           },
         },
       };
+
+      print('[REGISTER] User JSON: ${jsonEncode(userData)}');
+      print('[REGISTER] Patient JSON: ${jsonEncode(patientData)}');
 
       // Gọi API tạo user trước
       final userResult = await _createUser(userData);

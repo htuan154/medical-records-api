@@ -38,7 +38,7 @@
       "type": "user",
       "username": "admin",
       "email": "admin@clinic.com",
-      "password_hash": "$2a$12$rEzaYpcqN6.ZL.ZXFbiaF.RXoOZvu4vvl/Lv7oBgQrhR6wyYTQi/e",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
       "role_names": [
         "admin"
       ],

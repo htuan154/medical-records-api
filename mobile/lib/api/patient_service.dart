@@ -85,16 +85,12 @@ class PatientService {
   static Future<Map<String, dynamic>> createPatient(
     Map<String, dynamic> patientData,
   ) async {
-    final token = await TokenService.getToken();
-    if (token == null || token.isEmpty) {
-      return {'success': false, 'message': 'Chưa đăng nhập'};
-    }
     try {
       final url = Uri.parse('${ApiConfig.baseUrl}/patients');
       final response = await http
           .post(
             url,
-            headers: ApiConfig.getAuthHeaders(token),
+            headers: { 'Content-Type': 'application/json' },
             body: jsonEncode(patientData),
           )
           .timeout(Duration(seconds: ApiConfig.timeoutDuration));
