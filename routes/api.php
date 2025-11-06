@@ -13,6 +13,8 @@ use App\Http\Controllers\API\V1\MedicationController;
 use App\Http\Controllers\API\V1\RoleController;
 use App\Http\Controllers\API\V1\TreatmentController;
 use App\Http\Controllers\API\V1\StaffController;
+use App\Http\Controllers\API\V1\ConsultationController;
+use App\Http\Controllers\API\V1\MessageController;
 
 Route::prefix('v1')->group(function () {
     // PUBLIC AUTH routes (không cần authentication)
@@ -128,6 +130,24 @@ Route::prefix('v1')->group(function () {
         Route::get('/staffs/{id}',  [StaffController::class, 'show']);
         Route::put('/staffs/{id}',  [StaffController::class, 'update']);
         Route::delete('/staffs/{id}', [StaffController::class, 'destroy']);
+
+        // CONSULTATIONS (Customer Support Chat)
+        Route::get('/consultations',              [ConsultationController::class, 'index']);
+        Route::post('/consultations',             [ConsultationController::class, 'store']);
+        Route::get('/consultations/{id}',         [ConsultationController::class, 'show']);
+        Route::put('/consultations/{id}',         [ConsultationController::class, 'update']);
+        Route::delete('/consultations/{id}',      [ConsultationController::class, 'destroy']);
+        Route::post('/consultations/{id}/assign', [ConsultationController::class, 'assign']);
+        Route::post('/consultations/{id}/close',  [ConsultationController::class, 'close']);
+
+        // MESSAGES (Chat Messages)
+        Route::get('/messages',                              [MessageController::class, 'index']);
+        Route::post('/messages',                             [MessageController::class, 'store']);
+        Route::get('/messages/{id}',                         [MessageController::class, 'show']);
+        Route::put('/messages/{id}',                         [MessageController::class, 'update']);
+        Route::delete('/messages/{id}',                      [MessageController::class, 'destroy']);
+        Route::post('/messages/mark-read',                   [MessageController::class, 'markAsRead']);
+        Route::get('/consultations/{consultationId}/messages', [MessageController::class, 'byConsultation']);
     });
     Route::get('/docs', fn () => redirect('/api/documentation'));
 });

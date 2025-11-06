@@ -1,0 +1,282 @@
+{
+  "docs": [
+    {
+      "_id": "_design/consultations",
+      "language": "javascript",
+      "views": {
+        "all": {
+          "map": "function (doc) { if (doc.type === 'consultation') { emit(doc._id, null); } }"
+        },
+        "by_patient": {
+          "map": "function (doc) { if (doc.type === 'consultation' && doc.patient_id) { emit(doc.patient_id, null); } }"
+        },
+        "by_staff": {
+          "map": "function (doc) { if (doc.type === 'consultation' && doc.staff_id) { emit(doc.staff_id, null); } }"
+        },
+        "by_status": {
+          "map": "function (doc) { if (doc.type === 'consultation' && doc.status) { emit(doc.status, null); } }"
+        },
+        "active": {
+          "map": "function (doc) { if (doc.type === 'consultation' && doc.status === 'active') { emit(doc.updated_at, null); } }"
+        }
+      }
+    },
+    {
+      "_id": "_design/messages",
+      "language": "javascript",
+      "views": {
+        "all": {
+          "map": "function (doc) { if (doc.type === 'message') { emit(doc._id, null); } }"
+        },
+        "by_consultation": {
+          "map": "function (doc) { if (doc.type === 'message' && doc.consultation_id) { emit([doc.consultation_id, doc.created_at], null); } }"
+        },
+        "by_sender": {
+          "map": "function (doc) { if (doc.type === 'message' && doc.sender_id) { emit(doc.sender_id, null); } }"
+        }
+      }
+    },
+    {
+      "_id": "consultation_2025_001",
+      "type": "consultation",
+      "patient_id": "patient_2024_001",
+      "patient_info": {
+        "name": "Nguyễn Văn An",
+        "phone": "0901234567",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_002",
+      "staff_info": {
+        "name": "Trần Minh Anh",
+        "staff_type": "receptionist",
+        "avatar": null
+      },
+      "status": "closed",
+      "last_message": "Cảm ơn anh nhiều ạ!",
+      "last_message_at": "2025-11-05T09:30:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-05T08:30:00Z",
+      "updated_at": "2025-11-05T09:30:00Z"
+    },
+    {
+      "_id": "consultation_2025_002",
+      "type": "consultation",
+      "patient_id": "patient_2024_002",
+      "patient_info": {
+        "name": "Trần Thị Lan",
+        "phone": "0908888002",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_001",
+      "staff_info": {
+        "name": "Nguyễn Thị Hoa",
+        "staff_type": "nurse",
+        "avatar": null
+      },
+      "status": "closed",
+      "last_message": "Dạ em cảm ơn chị ạ!",
+      "last_message_at": "2025-11-05T14:40:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-05T14:20:00Z",
+      "updated_at": "2025-11-05T14:40:00Z"
+    },
+    {
+      "_id": "consultation_2025_003",
+      "type": "consultation",
+      "patient_id": "patient_2024_004",
+      "patient_info": {
+        "name": "Phạm Thu Hà",
+        "phone": "0908888004",
+        "avatar": null
+      },
+      "staff_id": null,
+      "staff_info": null,
+      "status": "waiting",
+      "last_message": "Em đang uống thuốc dạ dày do bác sĩ kê. Nhưng em thấy bị buồn ngủ nhiều. Có sao không ạ?",
+      "last_message_at": "2025-11-07T08:45:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 1,
+      "created_at": "2025-11-07T08:45:00Z",
+      "updated_at": "2025-11-07T08:45:00Z"
+    },
+    {
+      "_id": "consultation_2025_004",
+      "type": "consultation",
+      "patient_id": "patient_2024_005",
+      "patient_info": {
+        "name": "Đỗ Quang Huy",
+        "phone": "0908888005",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_002",
+      "staff_info": {
+        "name": "Trần Minh Anh",
+        "staff_type": "receptionist",
+        "avatar": null
+      },
+      "status": "active",
+      "last_message": "Anh muốn đổi sang thứ 6 được không ạ?",
+      "last_message_at": "2025-11-07T09:15:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 1,
+      "created_at": "2025-11-07T09:00:00Z",
+      "updated_at": "2025-11-07T09:15:00Z"
+    },
+    {
+      "_id": "message_001",
+      "type": "message",
+      "consultation_id": "consultation_2025_001",
+      "sender_id": "patient_2024_001",
+      "sender_type": "patient",
+      "sender_name": "Nguyễn Văn An",
+      "message": "Chào bệnh viện. Cho em hỏi có gói khám sức khỏe tổng quát không ạ?",
+      "is_read": true,
+      "created_at": "2025-11-05T08:30:00Z"
+    },
+    {
+      "_id": "message_002",
+      "type": "message",
+      "consultation_id": "consultation_2025_001",
+      "sender_id": "staff_2025_002",
+      "sender_type": "staff",
+      "sender_name": "Trần Minh Anh",
+      "message": "Chao anh Nguyen Van An. Benh vien co 3 goi kham:\n\n- Goi Co ban: 1.500.000d\n- Goi Nang cao: 3.500.000d\n- Goi Cao cap: 6.500.000d\n\nAnh muon biet chi tiet goi nao a?",
+      "is_read": true,
+      "created_at": "2025-11-05T08:35:00Z"
+    },
+    {
+      "_id": "message_003",
+      "type": "message",
+      "consultation_id": "consultation_2025_001",
+      "sender_id": "patient_2024_001",
+      "sender_type": "patient",
+      "sender_name": "Nguyễn Văn An",
+      "message": "Gói nâng cao bao gồm những gì ạ?",
+      "is_read": true,
+      "created_at": "2025-11-05T09:00:00Z"
+    },
+    {
+      "_id": "message_004",
+      "type": "message",
+      "consultation_id": "consultation_2025_001",
+      "sender_id": "staff_2025_002",
+      "sender_type": "staff",
+      "sender_name": "Trần Minh Anh",
+      "message": "Goi Nang cao - 3.500.000d bao gom:\n\n- Kham lam sang tong quat\n- Xet nghiem mau co ban (CBC, duong huyet, mo mau)\n- Do dien tim\n- X-quang phoi\n- Sieu am bung tong quat\n- Xet nghiem chuc nang gan, than\n- Xet nghiem tieu\n\nAnh co muon dat lich khong a?",
+      "is_read": true,
+      "created_at": "2025-11-05T09:10:00Z"
+    },
+    {
+      "_id": "message_005",
+      "type": "message",
+      "consultation_id": "consultation_2025_001",
+      "sender_id": "patient_2024_001",
+      "sender_type": "patient",
+      "sender_name": "Nguyễn Văn An",
+      "message": "Vâng em muốn đặt ạ. Tuần sau có được không?",
+      "is_read": true,
+      "created_at": "2025-11-05T09:25:00Z"
+    },
+    {
+      "_id": "message_006",
+      "type": "message",
+      "consultation_id": "consultation_2025_001",
+      "sender_id": "staff_2025_002",
+      "sender_type": "staff",
+      "sender_name": "Trần Minh Anh",
+      "message": "Da duoc a. Em da tao lich hen cho anh:\n\nNgay: Thu 2, 11/11/2025\nGio: 8h30 sang\nChi phi: 3.500.000d\n\nAnh nho den truoc 15 phut nhe!",
+      "is_read": true,
+      "created_at": "2025-11-05T09:28:00Z"
+    },
+    {
+      "_id": "message_007",
+      "type": "message",
+      "consultation_id": "consultation_2025_001",
+      "sender_id": "patient_2024_001",
+      "sender_type": "patient",
+      "sender_name": "Nguyễn Văn An",
+      "message": "Cảm ơn anh nhiều ạ!",
+      "is_read": true,
+      "created_at": "2025-11-05T09:30:00Z"
+    },
+    {
+      "_id": "message_008",
+      "type": "message",
+      "consultation_id": "consultation_2025_002",
+      "sender_id": "patient_2024_002",
+      "sender_type": "patient",
+      "sender_name": "Trần Thị Lan",
+      "message": "Chị ơi, em khám hôm qua và bác sĩ cho làm xét nghiệm máu. Khi nào có kết quả ạ?",
+      "is_read": true,
+      "created_at": "2025-11-05T14:20:00Z"
+    },
+    {
+      "_id": "message_009",
+      "type": "message",
+      "consultation_id": "consultation_2025_002",
+      "sender_id": "staff_2025_001",
+      "sender_type": "staff",
+      "sender_name": "Nguyễn Thị Hoa",
+      "message": "Chào em Trần Thị Lan. Kết quả xét nghiệm máu thường có trong vòng 24-48h làm việc.\n\nEm đã khám ngày 04/11, dự kiến kết quả sẽ có vào chiều ngày 06/11.\n\nEm có thể:\n- Xem kết quả trực tuyến qua app\n- Đến quầy lễ tân lấy kết quả giấy\n- Nhận qua email",
+      "is_read": true,
+      "created_at": "2025-11-05T14:25:00Z"
+    },
+    {
+      "_id": "message_010",
+      "type": "message",
+      "consultation_id": "consultation_2025_002",
+      "sender_id": "patient_2024_002",
+      "sender_type": "patient",
+      "sender_name": "Trần Thị Lan",
+      "message": "Dạ em cảm ơn chị ạ!",
+      "is_read": true,
+      "created_at": "2025-11-05T14:40:00Z"
+    },
+    {
+      "_id": "message_011",
+      "type": "message",
+      "consultation_id": "consultation_2025_003",
+      "sender_id": "patient_2024_004",
+      "sender_type": "patient",
+      "sender_name": "Phạm Thu Hà",
+      "message": "Em đang uống thuốc dạ dày do bác sĩ kê. Nhưng em thấy bị buồn ngủ nhiều. Có sao không ạ?",
+      "is_read": false,
+      "created_at": "2025-11-07T08:45:00Z"
+    },
+    {
+      "_id": "message_012",
+      "type": "message",
+      "consultation_id": "consultation_2025_004",
+      "sender_id": "patient_2024_005",
+      "sender_type": "patient",
+      "sender_name": "Đỗ Quang Huy",
+      "message": "Chào bệnh viện. Em có lịch hẹn sáng mai nhưng bận việc đột xuất ạ.",
+      "is_read": true,
+      "created_at": "2025-11-07T09:00:00Z"
+    },
+    {
+      "_id": "message_013",
+      "type": "message",
+      "consultation_id": "consultation_2025_004",
+      "sender_id": "staff_2025_002",
+      "sender_type": "staff",
+      "sender_name": "Trần Minh Anh",
+      "message": "Chao anh Do Quang Huy. Em kiem tra thay anh co lich hen:\n\nNgay: 08/11/2025, 9h sang\nBac si: BS. Nguyen Van Dung\n\nAnh muon doi sang ngay nao a?",
+      "is_read": true,
+      "created_at": "2025-11-07T09:05:00Z"
+    },
+    {
+      "_id": "message_014",
+      "type": "message",
+      "consultation_id": "consultation_2025_004",
+      "sender_id": "patient_2024_005",
+      "sender_type": "patient",
+      "sender_name": "Đỗ Quang Huy",
+      "message": "Anh muốn đổi sang thứ 6 được không ạ?",
+      "is_read": false,
+      "created_at": "2025-11-07T09:15:00Z"
+    }
+  ]
+}
