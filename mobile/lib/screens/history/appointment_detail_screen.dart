@@ -5,9 +5,11 @@ import '../../api/doctor_service.dart';
 import '../../api/token_service.dart';
 import '../../api/treatment_service.dart';
 import '../../api/medication_service.dart';
+import '../../api/medical_test_service.dart';
 import 'invoice_detail_screen.dart';
 import 'treatment_detail_screen.dart';
 import 'medication_detail_screen.dart';
+import 'medical_test_detail_screen.dart';
 
 class AppointmentDetailScreen extends StatefulWidget {
   final Map<String, dynamic> appointment;
@@ -27,9 +29,11 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen>
   List<dynamic> allInvoices = [];
   List<dynamic> allTreatments = [];
   List<dynamic> allMedications = [];
+  List<dynamic> allMedicalTests = [];
   bool invoicesLoaded = false;
   bool treatmentsLoaded = false;
   bool medicationsLoaded = false;
+  bool medicalTestsLoaded = false;
   Map<String, dynamic>? doctor;
   bool isLoading = true;
   String? errorMessage;
@@ -92,9 +96,11 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen>
       allInvoices = [];
       allTreatments = [];
       allMedications = [];
+      allMedicalTests = [];
       invoicesLoaded = false;
       treatmentsLoaded = false;
       medicationsLoaded = false;
+      medicalTestsLoaded = false;
 
       setState(() {
         isLoading = false;
@@ -218,7 +224,15 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen>
                     return _buildInvoiceTab();
                   },
                 ),
-                _buildMedicalTestTab(),
+                Builder(
+                  builder: (context) {
+                    // Khi tab 5 được build, load medical tests nếu chưa load
+                    if (!medicalTestsLoaded) {
+                      _loadMedicalTestsForMedicalRecords();
+                    }
+                    return _buildMedicalTestTab();
+                  },
+                ),
               ],
             ),
     );
@@ -320,6 +334,50 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen>
     setState(() {
       allMedications = medications;
     });
+  }
+
+  Future<void> _loadMedicalTestsForMedicalRecords() async {
+    if (medicalTestsLoaded) return;
+    medicalTestsLoaded = true;
+    
+    // Lấy danh sách medical_record_id từ allMedicalRecords
+    final ids = allMedicalRecords.map((r) => r['_id']).toList();
+    if (ids.isEmpty) {
+      setState(() {
+        allMedicalTests = [];
+      });
+      return;
+    }
+    
+    final token = await TokenService.getToken();
+    print('[DEBUG] medical_test API token: $token');
+    // Gọi API lấy tất cả medical tests
+    final testsResult = await MedicalTestService.getMedicalTests();
+    print('[DEBUG] medical_test API response: ${testsResult.toString()}');
+    List<dynamic> tests = [];
+    if (testsResult['success'] == true) {
+      final rows = testsResult['data']['rows'] as List<dynamic>?;
+      if (rows != null) {
+        tests = rows.map((row) => row['doc']).where((doc) => ids.contains(doc['medical_record_id'])).toList();
+      }
+    }
+    setState(() {
+      allMedicalTests = tests;
+    });
+  }
+
+  // Lấy danh sách medical tests của medical record
+  List<Map<String, dynamic>> _getMedicalTests(String? medicalRecordId) {
+    if (medicalRecordId == null) return [];
+    try {
+      return allMedicalTests
+          .where((test) => test['medical_record_id'] == medicalRecordId)
+          .cast<Map<String, dynamic>>()
+          .toList();
+    } catch (e) {
+      print('[DEBUG] error in _getMedicalTests: $e');
+      return [];
+    }
   }
 
   // Tab 1: Thông tin appointment
@@ -1046,23 +1104,185 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen>
 
   // Tab 5: Xét nghiệm
   Widget _buildMedicalTestTab() {
-    return Center(
+    final medicalRecord = _getMedicalRecord();
+    print('[DEBUG] _buildMedicalTestTab: allMedicalTests =');
+    for (var test in allMedicalTests) {
+      print(test);
+    }
+    print('[DEBUG] _buildMedicalTestTab: medicalRecord = $medicalRecord');
+    final tests = _getMedicalTests(medicalRecord?['_id']);
+    print('[DEBUG] _buildMedicalTestTab: selected tests count = ${tests.length}');
+
+    if (tests.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.science_outlined,
+              size: 64,
+              color: Colors.grey.shade400,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Chưa có xét nghiệm cho cuộc hẹn này',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.science_outlined,
-            size: 64,
-            color: Colors.grey.shade400,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Chức năng xét nghiệm đang được phát triển',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
+          _buildSectionTitle('Danh sách xét nghiệm'),
+          ...tests.map((test) {
+            final testInfo = test['test_info'] ?? {};
+            final status = test['status'] ?? '';
+            final testName = testInfo['test_name'] ?? 'Xét nghiệm';
+            final testType = testInfo['test_type'] ?? '';
+            final orderedDate = testInfo['ordered_date'] ?? '';
+            final resultDate = testInfo['result_date'] ?? '';
+
+            String statusText;
+            Color statusColor;
+            switch (status.toLowerCase()) {
+              case 'pending':
+                statusText = 'Đang chờ';
+                statusColor = Colors.orange;
+                break;
+              case 'in_progress':
+                statusText = 'Đang xử lý';
+                statusColor = Colors.blue;
+                break;
+              case 'completed':
+                statusText = 'Hoàn thành';
+                statusColor = Colors.green;
+                break;
+              case 'cancelled':
+                statusText = 'Đã hủy';
+                statusColor = Colors.red;
+                break;
+              default:
+                statusText = 'Không rõ';
+                statusColor = Colors.grey;
+            }
+
+            return Card(
+              elevation: 2,
+              margin: const EdgeInsets.only(bottom: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MedicalTestDetailScreen(test: test),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              testName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: statusColor.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              statusText,
+                              style: TextStyle(
+                                color: statusColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.biotech, size: 16, color: Colors.grey.shade600),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Loại: $testType',
+                            style: TextStyle(color: Colors.grey.shade600),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today, size: 16, color: Colors.grey.shade600),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Chỉ định: ${_formatDateShort(orderedDate)}',
+                            style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      if (resultDate.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Row(
+                            children: [
+                              Icon(Icons.done_all, size: 16, color: Colors.green.shade400),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Kết quả: ${_formatDateShort(resultDate)}',
+                                style: TextStyle(
+                                  color: Colors.green.shade700,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
         ],
       ),
     );
+  }
+
+  String _formatDateShort(String? date) {
+    if (date == null || date.isEmpty) return 'N/A';
+    try {
+      final dt = DateTime.parse(date);
+      return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
+    } catch (e) {
+      return date;
+    }
   }
 
   Widget _buildSectionTitle(String title) {
