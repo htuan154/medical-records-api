@@ -1,0 +1,84 @@
+{
+  "total_rows": 2,
+  "offset": 0,
+  "rows": [
+    {
+      "id": "_design/_design/invoices",
+      "key": "_design/_design/invoices",
+      "value": {
+        "rev": "5-8acfba0e01ce9916bbfd3739006ef63d"
+      },
+      "doc": {
+        "_id": "_design/_design/invoices",
+        "_rev": "5-8acfba0e01ce9916bbfd3739006ef63d",
+        "views": {
+          "by_patient": {
+            "map": "function (doc) {\r\n  if (doc.type === 'invoice') {\r\n    emit(doc.patient_id, {\r\n      id: doc._id,\r\n      invoice_number: doc.invoice_info.invoice_number,\r\n      total_amount: doc.payment_info.total_amount,\r\n      payment_status: doc.payment_status,\r\n      invoice_date: doc.invoice_info.invoice_date\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "by_date": {
+            "map": "function (doc) {\r\n  if (doc.type === 'invoice') {\r\n    var date = doc.invoice_info.invoice_date.split('T')[0];\r\n    emit(date, {\r\n      id: doc._id,\r\n      patient_id: doc.patient_id,\r\n      total_amount: doc.payment_info.total_amount,\r\n      payment_status: doc.payment_status\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "by_status": {
+            "map": "function (doc) {\r\n  if (doc.type === 'invoice') {\r\n    emit(doc.payment_status, {\r\n      id: doc._id,\r\n      patient_id: doc.patient_id,\r\n      invoice_number: doc.invoice_info.invoice_number,\r\n      total_amount: doc.payment_info.total_amount,\r\n      due_date: doc.invoice_info.due_date\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "unpaid_invoices": {
+            "map": "function (doc) {\r\n  if (doc.type === 'invoice' && doc.payment_status !== 'paid') {\r\n    emit(doc.invoice_info.due_date, {\r\n      id: doc._id,\r\n      patient_id: doc.patient_id,\r\n      invoice_number: doc.invoice_info.invoice_number,\r\n      total_amount: doc.payment_info.total_amount,\r\n      days_overdue: Math.floor(\r\n        (new Date() - new Date(doc.invoice_info.due_date)) /\r\n        (1000 * 60 * 60 * 24)\r\n      )\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "revenue_by_month": {
+            "map": "function (doc) {\r\n  if (doc.type === 'invoice' && doc.payment_status === 'paid') {\r\n    var month = doc.invoice_info.invoice_date.substring(0, 7);\r\n    emit(month, doc.payment_info.total_amount);\r\n  }\r\n}\r\n"
+          }
+        },
+        "language": "javascript"
+      }
+    },
+    {
+      "id": "invoice_2024_001",
+      "key": "invoice_2024_001",
+      "value": {
+        "rev": "1-df53283c10901af9795094fec95ede37"
+      },
+      "doc": {
+        "_id": "invoice_2024_001",
+        "_rev": "1-df53283c10901af9795094fec95ede37",
+        "type": "invoice",
+        "patient_id": "patient_2024_001",
+        "medical_record_id": "record_2024_001",
+        "invoice_info": {
+          "invoice_number": "INV-2024-001",
+          "invoice_date": "2024-01-20T00:00:00Z",
+          "due_date": "2024-02-20T00:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa tim mạch",
+            "quantity": 1,
+            "unit_price": 200000,
+            "total_price": 200000
+          },
+          {
+            "service_type": "medication",
+            "description": "Amlodipine 5mg x 30 viên",
+            "quantity": 30,
+            "unit_price": 1200,
+            "total_price": 36000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 236000,
+          "tax_rate": 0.1,
+          "tax_amount": 23600,
+          "total_amount": 259600,
+          "insurance_coverage": 0.8,
+          "insurance_amount": 207680,
+          "patient_payment": 51920
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2024-01-20T11:00:00Z",
+        "created_at": "2024-01-20T10:45:00Z",
+        "updated_at": "2024-01-20T11:00:00Z"
+      }
+    }
+  ]
+}

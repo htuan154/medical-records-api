@@ -1,0 +1,257 @@
+{
+  "docs": [
+    {
+      "_id": "_design/_design/patients",
+      "views": {
+        "by_name": {
+          "map": "function (doc) {\r\n  if (doc.type === 'patient') {\r\n    emit(doc.personal_info.full_name.toLowerCase(), {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      phone: doc.personal_info.phone,\r\n      birth_date: doc.personal_info.birth_date,\r\n      status: doc.status\r\n    });\r\n  }\r\n}\r\n"
+        },
+        "by_phone": {
+          "map": "function (doc) {\r\n  if (doc.type === 'patient') {\r\n    emit(doc.personal_info.phone, {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      birth_date: doc.personal_info.birth_date\r\n    });\r\n  }\r\n}\r\n"
+        },
+        "by_id_number": {
+          "map": "function (doc) {\r\n  if (doc.type === 'patient') {\r\n    emit(doc.personal_info.id_number, {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      phone: doc.personal_info.phone\r\n    });\r\n  }\r\n}\r\n"
+        },
+        "by_blood_type": {
+          "map": "function (doc) {\r\n  if (doc.type === 'patient' && doc.medical_info.blood_type) {\r\n    emit(doc.medical_info.blood_type, {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      phone: doc.personal_info.phone\r\n    });\r\n  }\r\n}\r\n"
+        },
+        "active_patients": {
+          "map": "function (doc) {\r\n  if (doc.type === 'patient' && doc.status === 'active') {\r\n    emit(doc.personal_info.full_name, {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      phone: doc.personal_info.phone,\r\n      created_at: doc.created_at\r\n    });\r\n  }\r\n}\r\n"
+        },
+        "by_age_group": {
+          "map": "function (doc) {\r\n  if (doc.type === 'patient' && doc.personal_info.birth_date) {\r\n    var birthYear = new Date(doc.personal_info.birth_date).getFullYear();\r\n    var currentYear = new Date().getFullYear();\r\n    var age = currentYear - birthYear;\r\n    var ageGroup = '';\r\n    if (age < 18) ageGroup = 'pediatric';\r\n    else if (age < 65) ageGroup = 'adult';\r\n    else ageGroup = 'elderly';\r\n\r\n    emit(ageGroup, {\r\n      id: doc._id,\r\n      name: doc.personal_info.full_name,\r\n      age: age\r\n    });\r\n  }\r\n}\r\n"
+        }
+      },
+      "language": "javascript"
+    },
+    {
+      "_id": "_design/patients",
+      "language": "javascript",
+      "views": {
+        "by_name": {
+          "map": "function (doc) {\n  if (doc.type === 'patient' && doc.personal_info && doc.personal_info.full_name) {\n    emit(doc.personal_info.full_name.toLowerCase(), {\n      id: doc._id,\n      name: doc.personal_info.full_name,\n      phone: doc.personal_info.phone,\n      birth_date: doc.personal_info.birth_date,\n      status: doc.status\n    });\n  }\n}"
+        },
+        "all": {
+          "map": "function (doc) {\n  if (doc.type === 'patient') emit(doc._id, null);\n}"
+        }
+      }
+    },
+    {
+      "_id": "patient_2024_001",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Nguyễn Văn An",
+        "birth_date": "1985-03-15",
+        "gender": "male",
+        "id_number": "123456789",
+        "phone": "0901234567",
+        "email": "nguyen.van.an@email.com",
+        "emergency_contact": {
+          "name": "Nguyễn Thị Bình",
+          "relationship": "spouse",
+          "phone": "0907654321"
+        }
+      },
+      "address": {
+        "street": "123 Đường Lê Lợi",
+        "ward": "Phường Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "A+",
+        "allergies": [
+          "Penicillin",
+          "Peanuts"
+        ],
+        "chronic_conditions": [
+          "Hypertension"
+        ],
+        "insurance": {
+          "provider": "BHYT",
+          "policy_number": "GD1234567890",
+          "valid_until": "2024-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2024-01-15T08:30:00Z",
+      "updated_at": "2024-01-20T14:15:00Z",
+      "created_by": "user_admin_001"
+    },
+    {
+      "_id": "patient_2024_002",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Trần Thị Lan",
+        "birth_date": "1990-08-12",
+        "gender": "female",
+        "id_number": "987654321",
+        "phone": "0908888002",
+        "email": "tran.lan@example.com",
+        "emergency_contact": {
+          "name": "Trần Văn Hoàng",
+          "relationship": "spouse",
+          "phone": "0907000002"
+        }
+      },
+      "address": {
+        "street": "45 Lý Tự Trọng",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "B+",
+        "allergies": [],
+        "chronic_conditions": [
+          "Asthma"
+        ]
+      },
+      "status": "active",
+      "created_at": "2024-01-18T08:00:00Z",
+      "updated_at": "2024-01-18T08:00:00Z"
+    },
+    {
+      "_id": "patient_2024_003",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Lê Minh Khôi",
+        "birth_date": "1972-02-01",
+        "gender": "male",
+        "id_number": "246813579",
+        "phone": "0908888003",
+        "email": "le.khoi@example.com",
+        "emergency_contact": {
+          "name": "Lê Ngọc Bích",
+          "relationship": "daughter",
+          "phone": "0907000003"
+        }
+      },
+      "address": {
+        "street": "12 Nguyễn Thị Minh Khai",
+        "ward": "Đa Kao",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "O-",
+        "allergies": [
+          "Seafood"
+        ],
+        "chronic_conditions": []
+      },
+      "status": "active",
+      "created_at": "2024-01-18T08:10:00Z",
+      "updated_at": "2024-01-18T08:10:00Z"
+    },
+    {
+      "_id": "patient_2024_004",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Phạm Thu Hà",
+        "birth_date": "1988-04-20",
+        "gender": "female",
+        "id_number": "135792468",
+        "phone": "0908888004",
+        "email": "pham.ha@example.com",
+        "emergency_contact": {
+          "name": "Phạm Văn Tín",
+          "relationship": "brother",
+          "phone": "0907000004"
+        }
+      },
+      "address": {
+        "street": "99 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "A-",
+        "allergies": [
+          "Penicillin"
+        ],
+        "chronic_conditions": [
+          "Gastritis"
+        ]
+      },
+      "status": "active",
+      "created_at": "2024-01-18T08:20:00Z",
+      "updated_at": "2024-01-18T08:20:00Z"
+    },
+    {
+      "_id": "patient_2024_005",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Đỗ Quang Huy",
+        "birth_date": "1995-12-10",
+        "gender": "male",
+        "id_number": "159753486",
+        "phone": "0908888005",
+        "email": "do.huy@example.com",
+        "emergency_contact": {
+          "name": "Đỗ Quang Lâm",
+          "relationship": "father",
+          "phone": "0907000005"
+        }
+      },
+      "address": {
+        "street": "18 Cách Mạng Tháng 8",
+        "ward": "Bến Thành",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "AB+",
+        "allergies": [],
+        "chronic_conditions": [
+          "Migraine"
+        ]
+      },
+      "status": "active",
+      "created_at": "2024-01-18T08:30:00Z",
+      "updated_at": "2024-01-18T08:30:00Z"
+    },
+    {
+      "_id": "patient_2024_006",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Võ Mỹ Duyên",
+        "birth_date": "2001-09-09",
+        "gender": "female",
+        "id_number": "112233445",
+        "phone": "0908888006",
+        "email": "vo.duyen@example.com",
+        "emergency_contact": {
+          "name": "Võ Mỹ Linh",
+          "relationship": "mother",
+          "phone": "0907000006"
+        }
+      },
+      "address": {
+        "street": "7 Phạm Ngọc Thạch",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "O+",
+        "allergies": [
+          "Shrimp"
+        ],
+        "chronic_conditions": [
+          "Type 2 Diabetes"
+        ]
+      },
+      "status": "active",
+      "created_at": "2024-01-18T08:40:00Z",
+      "updated_at": "2024-01-18T08:40:00Z"
+    }
+  ]
+}

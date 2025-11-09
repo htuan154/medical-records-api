@@ -1,0 +1,16 @@
+# .dockerignore gợi ý
+.git
+.github
+node_modules
+storage/logs/*
+storage/framework/*
+tests
+.env
+docker-compose.yml
+vendor
+*.md
+
+!Dockerfile
+!composer.json
+!composer.lock
+!docker/**

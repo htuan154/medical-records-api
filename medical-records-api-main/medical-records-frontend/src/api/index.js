@@ -1,0 +1,15 @@
+// src/api/index.js
+export { default as api } from './axios'
+
+export { default as AuthService } from './authService'
+export { default as AppointmentService } from './appointmentService'
+export { default as DoctorService } from './doctorService'
+export { default as InvoiceService } from './invoiceService'
+export { default as MedicalRecordService } from './medicalRecordService'
+export { default as MedicalTestService } from './medicalTestService'
+export { default as MedicationService } from './medicationService'
+export { default as PatientService } from './patientService'
+export { default as RoleService } from './roleService'
+export { default as StaffService } from './staffService'
+export { default as TreatmentService } from './treatmentService'
+export { default as UserService } from './userService'
