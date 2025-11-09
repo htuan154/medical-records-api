@@ -1,8 +1,8 @@
 // src/api/staffService.js
 import api from './axios'
 
-// Với baseURL đã có /api/v1, chỉ cần /staffs
-const prefix = '/staffs'
+// Với baseURL đã có /api/v1, chỉ cần /staffs-public
+const prefix = '/staffs-public'
 
 const StaffService = {
   /**

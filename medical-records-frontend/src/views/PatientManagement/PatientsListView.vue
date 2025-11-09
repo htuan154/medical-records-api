@@ -13,8 +13,15 @@
           @input="quickFilter"
           @keyup.enter="reload"
         />
-        <button class="btn btn-outline-secondary" @click="reload">Tìm</button>
-        <button class="btn btn-primary" @click="openCreate">Thêm mới</button>
+        <button class="btn btn-outline-secondary" @click="reload" :disabled="loading">
+          <i class="bi bi-search me-1"></i>Tìm
+        </button>
+        <button class="btn btn-outline-info" @click="refreshPage" :disabled="loading">
+          <i class="bi bi-arrow-clockwise me-1"></i>Tải lại
+        </button>
+        <button class="btn btn-primary" @click="openCreate">
+          <i class="bi bi-plus-circle me-1"></i>Thêm mới
+        </button>
       </div>
     </div>
 
@@ -149,7 +156,7 @@
                     </div>
                     <div class="col-lg-3">
                       <label class="form-label">Ngày sinh</label>
-                      <input v-model="form.ngaySinh" type="text" class="form-control" placeholder="MM/DD/YYYY" />
+                      <input v-model="form.ngaySinh" type="date" class="form-control" />
                     </div>
                     <div class="col-lg-3">
                       <label class="form-label">Giới tính</label>
@@ -166,7 +173,7 @@
                     </div>
                     <div class="col-lg-4">
                       <label class="form-label">Điện thoại</label>
-                      <input v-model="form.dienThoai" type="text" class="form-control" />
+                      <input v-model="form.dienThoai" type="text" class="form-control" maxlength="10" pattern="\d{10}" @input="onPhoneInput" />
                     </div>
                     <div class="col-lg-4">
                       <label class="form-label">Email</label>
@@ -212,7 +219,17 @@
                   <div class="row g-3">
                     <div class="col-md-3">
                       <label class="form-label">Nhóm máu</label>
-                      <input v-model="form.nhomMau" type="text" class="form-control" placeholder="O+, A+, B-, ..." />
+                      <select v-model="form.nhomMau" class="form-select">
+                        <option value="">-- Chọn nhóm máu --</option>
+                        <option>A+</option>
+                        <option>A-</option>
+                        <option>B+</option>
+                        <option>B-</option>
+                        <option>AB+</option>
+                        <option>AB-</option>
+                        <option>O+</option>
+                        <option>O-</option>
+                      </select>
                     </div>
                     <div class="col-md-3">
                       <label class="form-label">Trạng thái</label>
@@ -231,7 +248,7 @@
                     </div>
                     <div class="col-md-3">
                       <label class="form-label">Hạn bảo hiểm</label>
-                      <input v-model="form.hanBaoHiem" type="text" class="form-control" placeholder="MM/DD/YYYY" />
+                      <input v-model="form.hanBaoHiem" type="date" class="form-control" placeholder="dd/mm/yyyy" />
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">Dị ứng (phẩy hoặc xuống dòng)</label>
@@ -312,6 +329,19 @@ import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import PatientService from '@/api/patientService'
 
 /* Helpers */
+const toDateInputFormat = (iso) => {
+  if (!iso) return ''
+  try {
+    const d = new Date(iso)
+    if (isNaN(d)) return ''
+    const yyyy = d.getFullYear()
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    const dd = String(d.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+  } catch {
+    return ''
+  }
+}
 const toMMDDYYYY = (iso) => {
   if (!iso) return ''
   const d = new Date(iso)
@@ -323,11 +353,55 @@ const toMMDDYYYY = (iso) => {
 }
 const toYYYYMMDD = (s) => {
   if (!s) return null
-  const parts = String(s).split(/[/-]/).map(x => x.trim())
-  if (parts.length !== 3) return null
-  let mm, dd, yyyy
-  if (parseInt(parts[0], 10) > 12) { dd = parts[0]; mm = parts[1]; yyyy = parts[2] } else { mm = parts[0]; dd = parts[1]; yyyy = parts[2] }
-  return `${yyyy.padStart(4, '0')}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`
+  try {
+    // Xử lý nếu input là date object
+    if (s instanceof Date) {
+      const yyyy = s.getFullYear()
+      const mm = String(s.getMonth() + 1).padStart(2, '0')
+      const dd = String(s.getDate()).padStart(2, '0')
+      return `${yyyy}-${mm}-${dd}`
+    }
+
+    // Xử lý string với các format khác nhau
+    const str = String(s).trim()
+
+    // Format YYYY-MM-DD (ISO)
+    if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(str)) {
+      const [yyyy, mm, dd] = str.split('-')
+      return `${yyyy}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`
+    }
+
+    // Format MM/DD/YYYY hoặc DD/MM/YYYY
+    const parts = str.split(/[/-]/).map(x => x.trim())
+    if (parts.length !== 3) return null
+
+    let mm, dd, yyyy
+    // Nếu phần đầu > 12 thì có thể là DD/MM/YYYY
+    if (parseInt(parts[0], 10) > 12) {
+      dd = parts[0]
+      mm = parts[1]
+      yyyy = parts[2]
+    } else {
+      // Ngược lại là MM/DD/YYYY
+      mm = parts[0]
+      dd = parts[1]
+      yyyy = parts[2]
+    }
+
+    // Validate values
+    const mmNum = parseInt(mm, 10)
+    const ddNum = parseInt(dd, 10)
+    const yyyyNum = parseInt(yyyy, 10)
+
+    if (mmNum < 1 || mmNum > 12 || ddNum < 1 || ddNum > 31 || yyyyNum < 1900 || yyyyNum > 2100) {
+      return null
+    }
+
+    return `${String(yyyyNum).padStart(4, '0')}-${String(mmNum).padStart(2, '0')}-${String(ddNum).padStart(2, '0')}`
+  } catch (error) {
+    console.error('Date conversion error:', error)
+    return null
+  }
 }
 const toArray = (v) => (v ?? '').split(/\r?\n|,/).map(s => s.trim()).filter(Boolean)
 const fromArray = (arr) => (Array.isArray(arr) ? arr.join(', ') : '')
@@ -343,7 +417,7 @@ function toFormFn (doc) {
     _id: p._id || null,
     _rev: p._rev || null,
     hoTen: pi.full_name || '',
-    ngaySinh: toMMDDYYYY(pi.birth_date),
+    ngaySinh: toDateInputFormat(pi.birth_date),
     gioiTinh: pi.gender === 'male' ? 'Nam' : (pi.gender === 'female' ? 'Nữ' : ''),
     cmndCccd: pi.id_number || '',
     dienThoai: pi.phone || '',
@@ -365,11 +439,24 @@ function toFormFn (doc) {
 function toPayloadFn (f) {
   const g = (f.gioiTinh || '').toLowerCase()
   const gender = g.includes('nam') ? 'male' : (g.includes('nữ') || g.includes('nu') ? 'female' : 'other')
+
+  // Xử lý ngày sinh - nếu từ date input thì đã là YYYY-MM-DD
+  let birthDate = null
+  if (f.ngaySinh) {
+    // Nếu đã là format YYYY-MM-DD (từ date input)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(f.ngaySinh)) {
+      birthDate = f.ngaySinh
+    } else {
+      // Nếu là format khác thì convert
+      birthDate = toYYYYMMDD(f.ngaySinh)
+    }
+  }
+
   return {
     type: 'patient',
     personal_info: {
       full_name: f.hoTen?.trim(),
-      birth_date: toYYYYMMDD(f.ngaySinh),
+      birth_date: birthDate,
       gender,
       id_number: f.cmndCccd?.trim(),
       phone: f.dienThoai?.trim(),
@@ -396,9 +483,7 @@ function toPayloadFn (f) {
     },
     status: (f.trangThai || '').toLowerCase().includes('hoạt') ? 'active' : 'inactive'
   }
-}
-
-/* State */
+}/* State */
 const items = ref([])
 const filtered = ref([]) // filter tạm thời client-side khi nhập số ĐT
 const loading = ref(false)
@@ -443,14 +528,76 @@ function showToast (message, type = 'success') {
 async function reload () {
   loading.value = true
   try {
-    const res = await PatientService.list({ q: keyword.value || undefined })
+    const kw = keyword.value.trim().toLowerCase()
+    let res
+    if (!kw) {
+      // Không có từ khóa, lấy toàn bộ
+      res = await PatientService.list()
+    } else if (/^\d{3,}$/.test(kw.replace(/\D/g, ''))) {
+      // Tìm theo số điện thoại
+      res = await PatientService.list({ phone: kw })
+    } else if (kw.includes('@')) {
+      // Tìm theo email
+      res = await PatientService.list({ email: kw })
+    } else {
+      // Tìm theo tên (không phân biệt hoa thường, có thể tìm một phần)
+      res = await PatientService.list({ q: kw })
+      // Nếu backend chỉ trả về kết quả chính xác, lọc lại trên client
+      if (Array.isArray(res?.data)) {
+        res.data = res.data.filter(p => (p.personal_info?.full_name || '').toLowerCase().includes(kw))
+      } else if (Array.isArray(res?.rows)) {
+        res.rows = res.rows.filter(r => ((r.doc?.personal_info?.full_name || r.value?.personal_info?.full_name || '').toLowerCase().includes(kw)))
+      }
+    }
+    // Nếu là email, lọc lại trên client nếu backend chưa hỗ trợ
+    if (kw.includes('@')) {
+      if (Array.isArray(res?.data)) {
+        res.data = res.data.filter(p => (p.personal_info?.email || '').toLowerCase().includes(kw))
+      } else if (Array.isArray(res?.rows)) {
+        res.rows = res.rows.filter(r => ((r.doc?.personal_info?.email || r.value?.personal_info?.email || '').toLowerCase().includes(kw)))
+      }
+    }
     const arr = Array.isArray(res?.data)
       ? res.data
       : Array.isArray(res?.rows) ? res.rows.map(r => r.doc || r) : []
     items.value = arr
     filtered.value = [] // reset filter client
     expandedId.value = null
-  } finally { loading.value = false }
+  } catch (error) {
+    console.error('Search error:', error)
+    showToast('Lỗi tìm kiếm: ' + (error?.message || 'Không thể kết nối với server'), 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
+/* Refresh page - Reset all filters and reload */
+async function refreshPage () {
+  loading.value = true
+  try {
+    // Reset tất cả bộ lọc và trạng thái
+    keyword.value = ''
+    filtered.value = []
+    expandedId.value = null
+
+    // Hiển thị loading toast
+    showToast('Đang tải lại dữ liệu...', 'success')
+
+    // Lấy toàn bộ dữ liệu từ server
+    const res = await PatientService.list()
+    const arr = Array.isArray(res?.data)
+      ? res.data
+      : Array.isArray(res?.rows) ? res.rows.map(r => r.doc || r) : []
+
+    items.value = arr
+
+    showToast(`Đã tải lại ${arr.length} bệnh nhân`, 'success')
+  } catch (error) {
+    console.error('Refresh error:', error)
+    showToast('Lỗi tải lại: ' + (error?.message || 'Không thể kết nối với server'), 'error')
+  } finally {
+    loading.value = false
+  }
 }
 
 /* Quick filter: nếu keyword toàn số (>=3 ký tự) thì lọc local theo phone */
@@ -495,14 +642,45 @@ function openEdit (row) {
 function closeModal () { modal.hide() }
 
 async function save () {
+  // Validation cơ bản
   if (!form.hoTen?.trim()) {
     showToast('Vui lòng nhập họ tên', 'error')
+    return
+  }
+
+  // Validate ngày sinh
+  if (form.ngaySinh) {
+    // Kiểm tra format date input (YYYY-MM-DD)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(form.ngaySinh)) {
+      showToast('Ngày sinh không hợp lệ', 'error')
+      return
+    }
+
+    // Kiểm tra ngày có hợp lệ không
+    const date = new Date(form.ngaySinh)
+    if (isNaN(date) || date.getFullYear() < 1900 || date.getFullYear() > new Date().getFullYear()) {
+      showToast('Ngày sinh không hợp lệ', 'error')
+      return
+    }
+  }
+
+  // Validate email nếu có
+  if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    showToast('Email không hợp lệ', 'error')
+    return
+  }
+
+  // Validate số điện thoại nếu có
+  if (form.dienThoai && !/^\d{10}$/.test(form.dienThoai.replace(/\D/g, ''))) {
+    showToast('Số điện thoại phải có 10 chữ số', 'error')
     return
   }
 
   saving.value = true
   try {
     const payload = toPayloadFn(form)
+    console.log('Saving payload:', payload) // Debug log
+
     if (isEdit.value && form._id) {
       await PatientService.update(form._id, payload)
       showToast('Cập nhật bệnh nhân thành công!')
@@ -514,7 +692,26 @@ async function save () {
     closeModal()
   } catch (e) {
     console.error('Save error:', e)
-    showToast(e?.response?.data?.message || 'Lưu thất bại', 'error')
+    let errorMessage = 'Lưu thất bại'
+
+    if (e?.response?.data?.details) {
+      const details = e.response.data.details
+      const errors = []
+      for (const [field, messages] of Object.entries(details)) {
+        if (Array.isArray(messages)) {
+          errors.push(`${field}: ${messages.join(', ')}`)
+        }
+      }
+      if (errors.length > 0) {
+        errorMessage = errors.join('\n')
+      }
+    } else if (e?.response?.data?.message) {
+      errorMessage = e.response.data.message
+    } else if (e?.message) {
+      errorMessage = e.message
+    }
+
+    showToast(errorMessage, 'error')
   } finally {
     saving.value = false
   }
@@ -628,6 +825,12 @@ onMounted(() => {
   toast = new bootstrap.Toast(toastEl.value)
   reload()
 })
+
+function onPhoneInput (e) {
+  // Chỉ cho phép nhập số và tối đa 10 ký tự
+  const val = e.target.value.replace(/\D/g, '').slice(0, 10)
+  form.dienThoai = val
+}
 </script>
 
 <style scoped>

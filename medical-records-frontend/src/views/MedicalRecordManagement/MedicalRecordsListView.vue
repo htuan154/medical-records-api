@@ -31,7 +31,7 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="(r, idx) in items" :key="rowKey(r, idx)">
+          <template v-for="(r, idx) in filteredItems" :key="rowKey(r, idx)">
             <tr>
               <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
               <td>{{ fmtDateTime(r.visit_date) }}</td>
@@ -120,7 +120,7 @@
             </tr>
           </template>
 
-          <tr v-if="!items.length">
+          <tr v-if="!filteredItems.length">
             <td colspan="7" class="text-center text-muted">Không có dữ liệu</td>
           </tr>
         </tbody>
@@ -363,10 +363,19 @@ export default {
       patientOptions: [],
       doctorsMap: {},
       patientsMap: {},
-      optionsLoaded: false
+      optionsLoaded: false,
+      filteredItems: []
     }
   },
   created () { this.fetch() },
+  watch: {
+    items () {
+      this.applyFilter()
+    },
+    q () {
+      this.applyFilter()
+    }
+  },
   methods: {
     /* ===== helpers ===== */
     rowKey (r, idx) { return r._id || r.id || `${idx}` },
@@ -520,7 +529,27 @@ export default {
         this.error = e?.response?.data?.message || e?.message || 'Không tải được dữ liệu'
       } finally { this.loading = false }
     },
-    search () { this.page = 1; this.fetch() },
+    search () {
+      this.page = 1
+      this.applyFilter()
+    },
+    applyFilter () {
+      const q = (this.q || '').toLowerCase().trim()
+      if (!q) {
+        this.filteredItems = [...this.items]
+        return
+      }
+      this.filteredItems = this.items.filter(r => {
+        const patient = this.displayName(this.patientsMap[r.patient_id]) || r.patient_id || ''
+        const doctor = this.displayName(this.doctorsMap[r.doctor_id]) || r.doctor_id || ''
+        return (
+          (r.visit_type && r.visit_type.toLowerCase().includes(q)) ||
+          (r.chief_complaint && r.chief_complaint.toLowerCase().includes(q)) ||
+          (doctor && doctor.toLowerCase().includes(q)) ||
+          (patient && patient.toLowerCase().includes(q))
+        )
+      })
+    },
     reload () { this.fetch() },
     next () { if (this.hasMore) { this.page++; this.fetch() } },
     prev () { if (this.page > 1) { this.page--; this.fetch() } },

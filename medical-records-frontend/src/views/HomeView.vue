@@ -445,8 +445,21 @@ export default {
 
     async getStaffCount () {
       try {
-        const res = await StaffService.list({ limit: 1 })
-        return this.extractTotal(res)
+        // Lấy toàn bộ nhân viên, không giới hạn limit
+        const res = await StaffService.list({})
+        // Nếu trả về mảng, lấy length
+        if (Array.isArray(res)) return res.length
+        // Nếu trả về object có rows, lấy rows.length
+        if (res && Array.isArray(res.rows)) return res.rows.length
+        // Nếu trả về object có total, lấy total
+        if (res && typeof res.total === 'number') return res.total
+        // Nếu trả về object có items, lấy items.length
+        if (res && Array.isArray(res.items)) return res.items.length
+        // Nếu trả về object có data là mảng, lấy data.length
+        if (res && Array.isArray(res.data)) return res.data.length
+        // Nếu trả về object có total_rows, lấy total_rows
+        if (res && typeof res.total_rows === 'number') return res.total_rows
+        return 0
       } catch (error) {
         console.error('Lỗi khi lấy số lượng nhân viên:', error)
         return 0
@@ -455,8 +468,21 @@ export default {
 
     async getDoctorCount () {
       try {
-        const res = await DoctorService.list({ limit: 1 })
-        return this.extractTotal(res)
+        // Lấy toàn bộ bác sĩ, không giới hạn limit
+        const res = await DoctorService.list({})
+        // Nếu trả về mảng, lấy length
+        if (Array.isArray(res)) return res.length
+        // Nếu trả về object có rows, lấy rows.length
+        if (res && Array.isArray(res.rows)) return res.rows.length
+        // Nếu trả về object có total, lấy total
+        if (res && typeof res.total === 'number') return res.total
+        // Nếu trả về object có items, lấy items.length
+        if (res && Array.isArray(res.items)) return res.items.length
+        // Nếu trả về object có data là mảng, lấy data.length
+        if (res && Array.isArray(res.data)) return res.data.length
+        // Nếu trả về object có total_rows, lấy total_rows
+        if (res && typeof res.total_rows === 'number') return res.total_rows
+        return 0
       } catch (error) {
         console.error('Lỗi khi lấy số lượng bác sĩ:', error)
         return 0

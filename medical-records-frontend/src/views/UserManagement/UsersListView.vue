@@ -45,8 +45,8 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="(u, idx) in items">
-            <tr :key="`user-${u._id || u.id || u.username || idx}`">
+          <template v-for="(u, idx) in items" :key="`user-${u._id || u.id || u.username || idx}`">
+            <tr>
               <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
               <td>{{ u.username }}</td>
               <td>{{ u.email }}</td>
@@ -70,7 +70,7 @@
             </tr>
 
             <!-- Row details -->
-            <tr v-if="isExpanded(u)" :key="`detail-${u._id || u.id || u.username || idx}`" class="row-detail">
+            <tr v-if="isExpanded(u)" class="row-detail">
               <td :colspan="10">
                 <div class="detail-sections">
                   <div class="detail-title">Thông tin tài khoản</div>
@@ -242,9 +242,9 @@
 
 <script>
 import UserService from '@/api/userService'
-import StaffService from '@/api/staffService'
-import DoctorService from '@/api/doctorService'
-import PatientService from '@/api/patientService'
+// import StaffService from '@/api/staffService'
+// import DoctorService from '@/api/doctorService'
+// import PatientService from '@/api/patientService'
 
 export default {
   name: 'UsersListView',
@@ -425,7 +425,21 @@ export default {
         this.loading = false
       }
     },
-    search () { this.page = 1; this.fetch() },
+    search () {
+      this.page = 1
+      const kw = (this.q || '').trim().toLowerCase()
+      if (!kw) {
+        this.fetch()
+        return
+      }
+      // Filter client-side by username and email
+      this.items = this.items.filter(u => {
+        const username = (u.username || '').toLowerCase()
+        const email = (u.email || '').toLowerCase()
+        return username.includes(kw) || email.includes(kw)
+      })
+      this.total = this.items.length
+    },
     reload () { this.fetch() },
     changePageSize () { this.page = 1; this.fetch() },
     next () { if (this.hasMore) { this.page++; this.fetch() } },
@@ -464,7 +478,7 @@ export default {
     async save () {
       if (this.saving) return
 
-      // ✅ Validate required fields
+      // Validate required fields
       if (!this.form.username?.trim()) {
         alert('Username là bắt buộc')
         return
@@ -482,6 +496,20 @@ export default {
         return
       }
 
+      // Check for duplicate email or username (only when creating new)
+      if (!this.editingId) {
+        const username = this.form.username.trim().toLowerCase()
+        const email = this.form.email.trim().toLowerCase()
+        const duplicate = this.items.find(u =>
+          (u.username && u.username.trim().toLowerCase() === username) ||
+          (u.email && u.email.trim().toLowerCase() === email)
+        )
+        if (duplicate) {
+          alert('Không được trùng username hoặc email với tài khoản khác!')
+          return
+        }
+      }
+
       this.saving = true
       try {
         const payload = {
@@ -496,7 +524,7 @@ export default {
           status: this.form.status
         }
 
-        // ✅ Password handling
+        // Password handling
         if (!this.editingId && this.form.password?.trim()) {
           payload.password = this.form.password.trim()
         }
@@ -504,9 +532,12 @@ export default {
           payload.password = this.form.newPassword.trim()
         }
 
-        // ✅ CouchDB fields
+        // CouchDB fields
         if (this.form._id) payload._id = this.form._id
         if (this.form._rev) payload._rev = this.form._rev
+
+        // Debug: Log payload before sending
+        console.log('Payload being sent:', payload)
 
         if (this.editingId) {
           await UserService.update(this.editingId, payload)
@@ -517,7 +548,8 @@ export default {
         this.showModal = false
         await this.fetch()
       } catch (e) {
-        console.error(e)
+        console.error('Save error details:', e)
+        console.error('Response data:', e?.response?.data)
         alert(e?.response?.data?.message || e?.message || 'Lưu thất bại')
       } finally {
         this.saving = false

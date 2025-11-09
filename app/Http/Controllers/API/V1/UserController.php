@@ -208,8 +208,44 @@ class UserController extends Controller
      */
     public function update(Request $req, string $id)
     {
-        $res = $this->svc->update($id, $req->all());
-        return response()->json($res['data'], $res['status']);
+        try {
+            $data = $req->validate([
+                '_rev'           => 'sometimes|string',
+                'type'           => 'sometimes|in:user',
+                'username'       => 'sometimes|string|min:3|max:50',
+                'email'          => 'sometimes|email|max:255',
+                // password là trường tạm từ frontend - sẽ được hash thành password_hash
+                'password'       => 'sometimes|string|min:3|max:255',
+                'role_names'     => 'sometimes|array',
+                'role_names.*'   => 'sometimes|string|max:50',
+                'account_type'   => 'sometimes|string|max:50',
+                'linked_staff_id'=> 'nullable|string|max:255',
+                'linked_doctor_id'=> 'nullable|string|max:255',
+                'linked_patient_id'=> 'nullable|string|max:255',
+                'status'         => 'sometimes|string|max:50',
+                // Allow any other fields to pass through
+                '*' => 'sometimes'
+            ]);
+
+            // Hash password nếu được gửi từ frontend (plain text)
+            if (!empty($data['password'])) {
+                // Hash password và lưu vào password_hash (giữ cấu trúc database)
+                $data['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
+                // Xóa trường password tạm để không lưu vào database
+                unset($data['password']);
+            }
+
+            $res = $this->svc->update($id, $data);
+            return response()->json($res['data'], $res['status']);
+        } catch (ValidationException $ve) {
+            return response()->json([
+                'error' => 'validation_error',
+                'message' => 'Dữ liệu không hợp lệ',
+                'details' => $ve->errors()
+            ], 422);
+        } catch (Throwable $e) {
+            return $this->error($e);
+        }
     }
 
     /**

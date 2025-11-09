@@ -198,7 +198,7 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">Điện thoại</label>
-              <input v-model.trim="form.phone" class="form-control" />
+              <input v-model.trim="form.phone" class="form-control" maxlength="10" pattern="\d{10}" @input="onPhoneInput" />
             </div>
             <div class="col-md-6">
               <label class="form-label">Email</label>
@@ -237,31 +237,33 @@
           </div>
 
           <!-- Schedule -->
-          <div class="section-title">Lịch làm việc</div>
+          <div class="section-title">Lịch làm việc (Cố định)</div>
           <div class="row g-3">
             <div class="col-12">
-              <div class="d-flex flex-wrap gap-2">
-                <label v-for="d in dayOptions" :key="d.value" class="form-check form-check-inline m-0">
-                  <input class="form-check-input" type="checkbox" :value="d.value" v-model="form.working_days">
-                  <span class="form-check-label">{{ d.label }}</span>
-                </label>
+              <label class="form-label">Ngày làm việc</label>
+              <div class="alert alert-info py-2">
+                <strong>Cố định:</strong> Thứ 2, Thứ 3, Thứ 4, Thứ 5, Thứ 6
               </div>
             </div>
             <div class="col-md-3">
               <label class="form-label">Giờ bắt đầu</label>
-              <input v-model="form.working_start" type="time" class="form-control" />
+              <input type="text" class="form-control" value="08:00" readonly />
+              <small class="text-muted">Cố định: 08:00 (24 giờ)</small>
             </div>
             <div class="col-md-3">
               <label class="form-label">Giờ kết thúc</label>
-              <input v-model="form.working_end" type="time" class="form-control" />
+              <input type="text" class="form-control" value="17:00" readonly />
+              <small class="text-muted">Cố định: 17:00 (24 giờ)</small>
             </div>
             <div class="col-md-3">
               <label class="form-label">Nghỉ trưa từ</label>
-              <input v-model="form.break_start" type="time" class="form-control" />
+              <input type="text" class="form-control" value="12:00" readonly />
+              <small class="text-muted">Cố định: 12:00 (24 giờ)</small>
             </div>
             <div class="col-md-3">
               <label class="form-label">Nghỉ trưa đến</label>
-              <input v-model="form.break_end" type="time" class="form-control" />
+              <input type="text" class="form-control" value="13:00" readonly />
+              <small class="text-muted">Cố định: 13:00 (24 giờ)</small>
             </div>
           </div>
 
@@ -299,6 +301,7 @@ export default {
   data () {
     return {
       items: [],
+      allItems: [],
       total: 0,
       q: '',
       page: 1,
@@ -327,6 +330,11 @@ export default {
   },
   created () { this.fetch() },
   methods: {
+    onPhoneInput (e) {
+      // Chỉ cho phép nhập số và tối đa 10 ký tự
+      const val = e.target.value.replace(/\D/g, '').slice(0, 10)
+      this.form.phone = val
+    },
     emptyForm () {
       return {
         _id: null,
@@ -345,11 +353,11 @@ export default {
         education_text: '',
         certifications_text: '',
         // schedule
-        working_days: [],
-        working_start: '',
-        working_end: '',
-        break_start: '',
-        break_end: '',
+        working_days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'], // Cố định thứ 2-6
+        working_start: '08:00', // Cố định 8:00
+        working_end: '17:00', // Cố định 17:00
+        break_start: '12:00', // Cố định nghỉ trưa
+        break_end: '13:00', // Cố định nghỉ trưa
         // status
         status: 'active'
       }
@@ -369,6 +377,7 @@ export default {
     },
     renderHours (obj) {
       if (!obj || (!obj.start && !obj.end)) return '-'
+      if (obj.start === '12:00' && obj.end === '13:00') return '12g đến 13g'
       return `${obj.start || '--:--'} - ${obj.end || '--:--'}`
     },
     fmtDate (v) { if (!v) return '-'; try { return new Date(v).toLocaleDateString() } catch { return v } },
@@ -386,38 +395,32 @@ export default {
       this.loading = true
       this.error = ''
       try {
-        const skip = (this.page - 1) * this.pageSize
-        const res = await DoctorService.list({
-          q: this.q || undefined,
-          limit: this.pageSize,
-          offset: skip,
-          skip
-        })
-
-        let items = []; let total = 0; let offset = null
+        // Always fetch all data for robust search
+        const res = await DoctorService.list({})
+        let items = []
         if (res && Array.isArray(res.rows)) {
           items = (res.rows || []).map(r => r.doc || r.value || r)
-          total = res.total_rows ?? items.length
-          offset = res.offset ?? 0
         } else if (res && res.data && Array.isArray(res.data)) {
-          items = res.data; total = res.total ?? items.length
-        } else if (Array.isArray(res)) { items = res; total = res.length }
-
-        // đảm bảo có cấu trúc tối thiểu
-        this.items = items.map(d => ({
-          personal_info: d.personal_info || {},
-          professional_info: d.professional_info || {},
-          schedule: d.schedule || {},
-          status: d.status || 'active',
-          _id: d._id || d.id,
-          _rev: d._rev,
-          created_at: d.created_at,
-          updated_at: d.updated_at
-        }))
-        this.total = total
-        this.hasMore = (offset != null)
-          ? (offset + this.items.length) < (this.total || 0)
-          : (this.page * this.pageSize) < (this.total || 0)
+          items = res.data
+        } else if (Array.isArray(res)) { items = res }
+        // đảm bảo có cấu trúc tối thiểu và ràng buộc giờ nghỉ trưa 12:00-13:00
+        this.allItems = items.map(d => {
+          const schedule = d.schedule || {}
+          schedule.break_time = { start: '12:00', end: '13:00' }
+          return {
+            personal_info: d.personal_info || {},
+            professional_info: d.professional_info || {},
+            schedule,
+            status: d.status || 'active',
+            _id: d._id || d.id,
+            _rev: d._rev,
+            created_at: d.created_at,
+            updated_at: d.updated_at
+          }
+        })
+        this.items = [...this.allItems]
+        this.total = this.items.length
+        this.hasMore = false
       } catch (e) {
         console.error(e)
         this.error = e?.response?.data?.message || e?.message || 'Không tải được dữ liệu'
@@ -425,7 +428,35 @@ export default {
         this.loading = false
       }
     },
-    search () { this.page = 1; this.fetch() },
+    async search () {
+      this.page = 1
+      if (!this.allItems.length) await this.fetch()
+      const kw = (this.q || '').trim().toLowerCase()
+      if (!kw) {
+        this.items = [...this.allItems]
+        this.total = this.items.length
+        return
+      }
+      this.items = this.allItems.filter(d => {
+        const pi = d.personal_info || {}
+        const pro = d.professional_info || {}
+        let subSpecialties = ''
+        if (Array.isArray(pro.sub_specialties)) {
+          subSpecialties = pro.sub_specialties.join(', ')
+        } else if (typeof pro.sub_specialties === 'string') {
+          subSpecialties = pro.sub_specialties
+        }
+        const fields = [
+          pi.full_name,
+          pro.specialty,
+          subSpecialties,
+          pi.phone,
+          pi.email
+        ].map(f => (f || '').toString().toLowerCase())
+        return fields.some(field => field.includes(kw))
+      })
+      this.total = this.items.length
+    },
     reload () { this.fetch() },
     changePageSize () { this.page = 1; this.fetch() },
     next () { if (this.hasMore) { this.page++; this.fetch() } },
@@ -435,13 +466,18 @@ export default {
     openCreate () {
       this.editingId = null
       this.form = this.emptyForm()
+      // Force set giá trị cố định
+      this.form.working_days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+      this.form.working_start = '08:00'
+      this.form.working_end = '17:00'
+      this.form.break_start = '12:00'
+      this.form.break_end = '13:00'
       this.showModal = true
     },
     openEdit (row) {
       this.editingId = row._id || row.id || row.personal_info?.full_name
       const pi = row.personal_info || {}
       const pro = row.professional_info || {}
-      const sch = row.schedule || {}
 
       // education -> text lines
       const eduLines = Array.isArray(pro.education)
@@ -473,12 +509,12 @@ export default {
         experience_years: pro.experience_years ?? null,
         education_text: eduLines.join('\n'),
         certifications_text: certLines.join('\n'),
-        // schedule
-        working_days: Array.isArray(sch.working_days) ? [...sch.working_days] : [],
-        working_start: sch.working_hours?.start || '',
-        working_end: sch.working_hours?.end || '',
-        break_start: sch.break_time?.start || '',
-        break_end: sch.break_time?.end || '',
+        // schedule - Force set giá trị cố định
+        working_days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+        working_start: '08:00',
+        working_end: '17:00',
+        break_start: '12:00', // Luôn cố định nghỉ trưa
+        break_end: '13:00', // Luôn cố định nghỉ trưa
         // status
         status: row.status || 'active'
       }
@@ -520,6 +556,9 @@ export default {
       if (this.saving) return
       this.saving = true
       try {
+        // Ràng buộc giờ nghỉ trưa 12:00-13:00 cho tất cả bác sĩ
+        const breakStart = '12:00'
+        const breakEnd = '13:00'
         const payload = {
           type: 'doctor',
           personal_info: {
@@ -546,8 +585,8 @@ export default {
               end: this.form.working_end || undefined
             },
             break_time: {
-              start: this.form.break_start || undefined,
-              end: this.form.break_end || undefined
+              start: breakStart,
+              end: breakEnd
             }
           },
           status: this.form.status
@@ -575,11 +614,36 @@ export default {
       if (!confirm(`Xóa bác sĩ "${row.personal_info?.full_name || row._id}"?`)) return
       try {
         const id = row._id || row.id
-        await DoctorService.remove(id)
-        await this.fetch()
+        // Always fetch latest _rev before delete
+        const fresh = await DoctorService.get(id)
+        const rev = fresh?._rev
+        if (!rev) throw new Error('Không lấy được revision của document')
+        const result = await DoctorService.remove(id, rev)
+        if (result && (result.ok === true || result.status === 'success')) {
+          await this.fetch()
+        } else {
+          throw new Error(result?.message || 'Xóa thất bại')
+        }
       } catch (e) {
-        console.error(e)
-        alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
+        // Retry if conflict
+        if (e?.message?.includes('conflict') || e?.message?.includes('409')) {
+          try {
+            const newer = await DoctorService.get(row._id || row.id)
+            const newerRev = newer?._rev
+            if (newerRev) {
+              const retryResult = await DoctorService.remove(row._id || row.id, newerRev)
+              if (retryResult && (retryResult.ok === true || retryResult.status === 'success')) {
+                await this.fetch()
+                return
+              }
+            }
+            alert('Xóa thất bại: Document đã được thay đổi, vui lòng tải lại trang')
+          } catch (retryError) {
+            alert('Xóa thất bại sau khi thử lại')
+          }
+        } else {
+          alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
+        }
       }
     }
   }
@@ -587,6 +651,93 @@ export default {
 </script>
 
 <style scoped>
+/* Remove red border for all timepicker input states */
+.vue__time-picker input,
+.vue__time-picker input:focus,
+.vue__time-picker input:active,
+.vue__time-picker input:invalid {
+  border: 1px solid #ced4da !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+/* Ensure VueTimepicker is always clickable and editable */
+.vue__time-picker {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  user-select: auto !important;
+}
+.vue__time-picker input {
+  cursor: text !important;
+  pointer-events: auto !important;
+  user-select: auto !important;
+  background-color: #fff !important;
+}
+/* Remove red border for VueTimepicker error/invalid state */
+.vue__time-picker,
+.vue__time-picker.vue__time-picker--error,
+.vue__time-picker:invalid {
+  border-color: #ced4da !important;
+  box-shadow: none !important;
+}
+/* Icon wrap for timepicker */
+.input-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-icon-wrap .icon-clock {
+  position: absolute;
+  left: 10px;
+  z-index: 2;
+  color: #6c757d;
+}
+.input-icon-wrap .vue__time-picker {
+  padding-left: 32px !important;
+}
+/* Fix style for VueTimepicker to look like Bootstrap input, remove red border */
+.vue__time-picker {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ced4da !important;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #fff;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  outline: none !important;
+}
+.vue__time-picker:focus {
+  border-color: #86b7fe !important;
+  box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+}
+/* Fix style for VueTimepicker to look like Bootstrap input */
+.vue__time-picker {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #fff;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+/* Time input styling */
+.time-input {
+  border: 1px solid #ced4da !important;
+  box-shadow: none !important;
+}
+.time-input:focus {
+  border-color: #86b7fe !important;
+  box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25) !important;
+}
+.time-input:invalid {
+  border: 1px solid #ced4da !important;
+  box-shadow: none !important;
+}
 /* table */
 :deep(table.table) th, :deep(table.table) td { vertical-align: middle; }
 

@@ -344,6 +344,12 @@ export default {
     async fetch () {
       this.loading = true
       this.error = ''
+
+      // Debug logging
+      const token = localStorage.getItem('access_token')
+      console.log('🔍 DEBUG: Access token exists:', !!token)
+      console.log('🔍 DEBUG: API call starting to medical-tests endpoint')
+
       try {
         const skip = (this.page - 1) * this.pageSize
         const res = await MedicalTestService.list({
@@ -353,7 +359,7 @@ export default {
           skip
         })
 
-        console.log('API Response:', res) // Debug log
+        console.log('🔍 DEBUG: API Response received:', res) // Debug log
 
         let raw = []
         let total = 0
@@ -361,18 +367,23 @@ export default {
 
         // Xử lý response từ CouchDB
         if (res && Array.isArray(res.rows)) {
+          console.log('🔍 DEBUG: Using res.rows format')
           raw = res.rows.map(r => r.doc || r.value || r)
           total = res.total_rows ?? raw.length
           offset = res.offset ?? 0
         } else if (res && Array.isArray(res.data)) {
+          console.log('🔍 DEBUG: Using res.data format')
           raw = res.data
           total = res.total ?? raw.length
         } else if (Array.isArray(res)) {
+          console.log('🔍 DEBUG: Using direct array format')
           raw = res
           total = raw.length
+        } else {
+          console.log('🔍 DEBUG: Unknown response format:', res)
         }
 
-        console.log('Raw data:', raw) // Debug log
+        console.log('🔍 DEBUG: Raw data before flatten:', raw) // Debug log
 
         // Flatten các test records
         this.items = (raw || []).map(d => this.flattenTest(d))

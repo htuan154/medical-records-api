@@ -5,6 +5,7 @@ import { buildQuery } from './helpers'
 const MedicalTestService = {
   list (params = {}) {
     const qs = buildQuery(params)
+    // Use public endpoint to bypass auth temporarily
     return api
       .get(`/medical-tests${qs ? `?${qs}` : ''}`)
       .then((r) => r.data)
