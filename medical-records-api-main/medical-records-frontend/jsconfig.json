@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
+    "baseUrl": "./",
+    "moduleResolution": "bundler",
+    "paths": { "@/*": ["src/*"] },
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "types": [],
+    "skipLibCheck": true,
+    "allowJs": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/declarations.d.ts",
+    "env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/node_modules/@types/sass-loader"
+  ]
+}

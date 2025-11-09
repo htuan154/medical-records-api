@@ -1,0 +1,244 @@
+{
+  "docs": [
+    {
+      "_id": "appointment_2024_001",
+      "type": "appointment",
+      "patient_id": "patient_2024_001",
+      "doctor_id": "doctor_2024_001",
+      "appointment_info": {
+        "scheduled_date": "2024-01-25T14:00:00Z",
+        "duration": 30,
+        "type": "follow_up",
+        "priority": "normal"
+      },
+      "reason": "Tái khám tăng huyết áp",
+      "status": "scheduled",
+      "notes": "Bệnh nhân cần mang theo kết quả xét nghiệm máu",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2024-01-24T14:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2024-01-20T15:00:00Z",
+      "updated_at": "2024-01-24T14:00:00Z",
+      "created_by": "user_receptionist_001"
+    },
+    {
+      "_id": "appointment_2024_002",
+      "type": "appointment",
+      "patient_id": "patient_2024_002",
+      "doctor_id": "doctor_2024_002",
+      "appointment_info": {
+        "scheduled_date": "2024-01-26T09:30:00Z",
+        "duration": 45,
+        "type": "consultation",
+        "priority": "high"
+      },
+      "reason": "Đau ngực, khó thở",
+      "status": "scheduled",
+      "notes": "Bệnh nhân có tiền sử tim mạch, cần theo dõi kỹ",
+      "reminders": [
+        {
+          "type": "email",
+          "sent_at": "2024-01-25T09:30:00Z",
+          "status": "sent"
+        },
+        {
+          "type": "sms",
+          "sent_at": "2024-01-25T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2024-01-22T10:00:00Z",
+      "updated_at": "2024-01-25T09:30:00Z",
+      "created_by": "user_receptionist_002"
+    },
+    {
+      "_id": "appointment_2024_003",
+      "type": "appointment",
+      "patient_id": "patient_2024_003",
+      "doctor_id": "doctor_2024_001",
+      "appointment_info": {
+        "scheduled_date": "2024-01-27T15:00:00Z",
+        "duration": 30,
+        "type": "checkup",
+        "priority": "normal"
+      },
+      "reason": "Khám sức khỏe định kỳ",
+      "status": "completed",
+      "notes": "Khám tổng quát, đo huyết áp, xét nghiệm máu",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2024-01-26T15:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2024-01-20T11:00:00Z",
+      "updated_at": "2024-01-27T15:45:00Z",
+      "created_by": "user_receptionist_001",
+      "completed_at": "2024-01-27T15:45:00Z",
+      "completion_notes": "Khám hoàn tất, kết quả tốt"
+    },
+    {
+      "_id": "appointment_2024_004",
+      "type": "appointment",
+      "patient_id": "patient_2024_004",
+      "doctor_id": "doctor_2024_003",
+      "appointment_info": {
+        "scheduled_date": "2024-01-28T10:00:00Z",
+        "duration": 60,
+        "type": "surgery",
+        "priority": "urgent"
+      },
+      "reason": "Phẫu thuật nội soi dạ dày",
+      "status": "confirmed",
+      "notes": "Bệnh nhân cần nhịn đói từ 22h đêm trước, chuẩn bị hồ sơ tiền sử bệnh",
+      "reminders": [
+        {
+          "type": "phone",
+          "sent_at": "2024-01-26T10:00:00Z",
+          "status": "sent"
+        },
+        {
+          "type": "sms",
+          "sent_at": "2024-01-27T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2024-01-23T14:00:00Z",
+      "updated_at": "2024-01-27T10:00:00Z",
+      "created_by": "user_doctor_003",
+      "confirmed_by": "patient_2024_004",
+      "confirmed_at": "2024-01-27T10:00:00Z"
+    },
+    {
+      "_id": "appointment_2024_005",
+      "type": "appointment",
+      "patient_id": "patient_2024_001",
+      "doctor_id": "doctor_2024_002",
+      "appointment_info": {
+        "scheduled_date": "2024-01-29T11:00:00Z",
+        "duration": 30,
+        "type": "follow_up",
+        "priority": "normal"
+      },
+      "reason": "Tái khám sau điều trị",
+      "status": "cancelled",
+      "notes": "Bệnh nhân yêu cầu hủy do bận công việc",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2024-01-28T11:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2024-01-24T09:00:00Z",
+      "updated_at": "2024-01-28T16:00:00Z",
+      "created_by": "user_receptionist_002",
+      "cancelled_by": "patient_2024_001",
+      "cancelled_at": "2024-01-28T16:00:00Z",
+      "cancellation_reason": "Bận công việc đột xuất"
+    },
+    {
+      "_id": "appointment_2024_006",
+      "type": "appointment",
+      "patient_id": "patient_2024_005",
+      "doctor_id": "doctor_2024_001",
+      "appointment_info": {
+        "scheduled_date": "2024-02-01T08:30:00Z",
+        "duration": 30,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Đau đầu kéo dài",
+      "status": "scheduled",
+      "notes": "Lần đầu khám, cần hỏi kỹ tiền sử",
+      "reminders": [
+        {
+          "type": "email",
+          "sent_at": "2024-01-31T08:30:00Z",
+          "status": "pending"
+        }
+      ],
+      "created_at": "2024-01-28T15:00:00Z",
+      "updated_at": "2024-01-28T15:00:00Z",
+      "created_by": "user_receptionist_001"
+    },
+    {
+      "_id": "appointment_2024_007",
+      "type": "appointment",
+      "patient_id": "patient_2024_002",
+      "doctor_id": "doctor_2024_003",
+      "appointment_info": {
+        "scheduled_date": "2024-02-02T14:30:00Z",
+        "duration": 45,
+        "type": "procedure",
+        "priority": "high"
+      },
+      "reason": "Nội soi phế quản",
+      "status": "confirmed",
+      "notes": "Bệnh nhân cần chuẩn bị theo hướng dẫn của bác sĩ",
+      "reminders": [
+        {
+          "type": "phone",
+          "sent_at": "2024-02-01T10:00:00Z",
+          "status": "pending"
+        }
+      ],
+      "created_at": "2024-01-29T11:00:00Z",
+      "updated_at": "2024-01-30T09:00:00Z",
+      "created_by": "user_doctor_003",
+      "confirmed_by": "patient_2024_002",
+      "confirmed_at": "2024-01-30T09:00:00Z"
+    },
+    {
+      "_id": "appointment_2024_008",
+      "type": "appointment",
+      "patient_id": "patient_2024_006",
+      "doctor_id": "doctor_2024_002",
+      "appointment_info": {
+        "scheduled_date": "2024-02-03T10:00:00Z",
+        "duration": 30,
+        "type": "checkup",
+        "priority": "normal"
+      },
+      "reason": "Khám định kỳ tiểu đường",
+      "status": "scheduled",
+      "notes": "Bệnh nhân tiểu đường type 2, cần kiểm tra đường huyết",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2024-02-02T10:00:00Z",
+          "status": "pending"
+        }
+      ],
+      "created_at": "2024-01-30T14:00:00Z",
+      "updated_at": "2024-01-30T14:00:00Z",
+      "created_by": "user_receptionist_002"
+    },
+    {
+      "_id": "_design/appointments",
+      "language": "javascript",
+      "views": {
+        "all": {
+          "map": "function (doc) { if (doc.type === 'appointment') { emit(doc._id, null); } }"
+        },
+        "by_patient": {
+          "map": "function (doc) { if (doc.type === 'appointment' && doc.patient_id) { emit(doc.patient_id, null); } }"
+        },
+        "by_doctor": {
+          "map": "function (doc) { if (doc.type === 'appointment' && doc.doctor_id) { emit(doc.doctor_id, null); } }"
+        },
+        "by_date": {
+          "map": "function (doc) { if (doc.type === 'appointment' && doc.appointment_info && doc.appointment_info.scheduled_date) { emit(doc.appointment_info.scheduled_date, null); } }"
+        },
+        "by_status": {
+          "map": "function (doc) { if (doc.type === 'appointment' && doc.status) { emit(doc.status, null); } }"
+        }
+      }
+    }
+  ]
+}

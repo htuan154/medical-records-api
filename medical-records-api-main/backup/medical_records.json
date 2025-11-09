@@ -1,0 +1,114 @@
+{
+  "total_rows": 2,
+  "offset": 0,
+  "rows": [
+    {
+      "id": "_design/_design/medical_records",
+      "key": "_design/_design/medical_records",
+      "value": {
+        "rev": "4-cc40653ba1245cbf402b9d7b002c2824"
+      },
+      "doc": {
+        "_id": "_design/_design/medical_records",
+        "_rev": "4-cc40653ba1245cbf402b9d7b002c2824",
+        "views": {
+          "by_patient": {
+            "map": "function (doc) {\r\n  if (doc.type === 'medical_record') {\r\n    emit(doc.patient_id, {\r\n      id: doc._id,\r\n      visit_date: doc.visit_info.visit_date,\r\n      diagnosis: doc.diagnosis.primary.description,\r\n      doctor_id: doc.doctor_id,\r\n      status: doc.status\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "by_doctor": {
+            "map": "function (doc) {\r\n  if (doc.type === 'medical_record') {\r\n    emit(doc.doctor_id, {\r\n      id: doc._id,\r\n      patient_id: doc.patient_id,\r\n      visit_date: doc.visit_info.visit_date,\r\n      diagnosis: doc.diagnosis.primary.description\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "by_diagnosis": {
+            "map": "function (doc) {\r\n  if (doc.type === 'medical_record' && doc.diagnosis.primary) {\r\n    emit(doc.diagnosis.primary.code, {\r\n      id: doc._id,\r\n      patient_id: doc.patient_id,\r\n      diagnosis: doc.diagnosis.primary.description,\r\n      visit_date: doc.visit_info.visit_date,\r\n      severity: doc.diagnosis.primary.severity\r\n    });\r\n  }\r\n}\r\n"
+          },
+          "recent_visits": {
+            "map": "function (doc) {\r\n  if (doc.type === 'medical_record') {\r\n    emit(doc.visit_info.visit_date, {\r\n      id: doc._id,\r\n      patient_id: doc.patient_id,\r\n      doctor_id: doc.doctor_id,\r\n      chief_complaint: doc.visit_info.chief_complaint,\r\n      diagnosis: doc.diagnosis.primary.description\r\n    });\r\n  }\r\n}\r\n"
+          }
+        },
+        "language": "javascript"
+      }
+    },
+    {
+      "id": "record_2024_001",
+      "key": "record_2024_001",
+      "value": {
+        "rev": "1-77a0b7e2f72813c1e2f3550007866ee4"
+      },
+      "doc": {
+        "_id": "record_2024_001",
+        "_rev": "1-77a0b7e2f72813c1e2f3550007866ee4",
+        "type": "medical_record",
+        "patient_id": "patient_2024_001",
+        "doctor_id": "doctor_2024_001",
+        "visit_info": {
+          "visit_date": "2024-01-20T09:30:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Đau ngực, khó thở khi gắng sức",
+          "appointment_id": "appointment_2024_001"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.5,
+            "blood_pressure": {
+              "systolic": 140,
+              "diastolic": 90
+            },
+            "heart_rate": 85,
+            "respiratory_rate": 18,
+            "weight": 70.5,
+            "height": 170
+          },
+          "physical_exam": {
+            "general": "Bệnh nhân tỉnh táo, tiếp xúc tốt",
+            "cardiovascular": "Tim đều, không tiếng thổi bất thường",
+            "respiratory": "Phổi trong, không ran ướt",
+            "other_findings": "Không có bất thường khác"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "mild"
+          },
+          "secondary": [],
+          "differential": [
+            "Bệnh mạch vành",
+            "Rối loạn lo âu"
+          ]
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Amlodipine",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn sáng"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Giảm muối trong khẩu phần ăn",
+            "Tập thể dục nhẹ 30 phút/ngày",
+            "Kiểm soát cân nặng"
+          ],
+          "follow_up": {
+            "date": "2024-02-20",
+            "notes": "Tái khám sau 1 tháng để đánh giá hiệu quả thuốc"
+          }
+        },
+        "attachments": [
+          {
+            "type": "ecg",
+            "file_name": "ecg_2024_001.pdf",
+            "description": "Điện tâm đồ 12 chuyển đạo"
+          }
+        ],
+        "status": "completed",
+        "created_at": "2024-01-20T10:45:00Z",
+        "updated_at": "2024-01-20T11:00:00Z"
+      }
+    }
+  ]
+}
