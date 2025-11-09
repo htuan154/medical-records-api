@@ -18,6 +18,7 @@ const MedicationsListView = () => import('@/views/MedicationManagement/Medicatio
 const TreatmentsListView = () => import('@/views/TreatmentManagement/TreatmentsListView.vue')
 const AppointmentsListView = () => import('@/views/AppointmentManagement/AppointmentsListView.vue')
 const InvoicesListView = () => import('@/views/InvoiceManagement/InvoicesListView.vue')
+const ConsultationChatView = () => import('@/views/ConsultationManagement/ConsultationChatView.vue')
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
@@ -38,6 +39,9 @@ const router = createRouter({
     { path: '/treatments', name: 'treatments', component: TreatmentsListView, meta: { requiresAuth: true } },
     { path: '/appointments', name: 'appointments', component: AppointmentsListView, meta: { requiresAuth: true } },
     { path: '/invoices', name: 'invoices', component: InvoicesListView, meta: { requiresAuth: true } },
+
+    // Consultation Chat (cho staff, admin, doctor)
+    { path: '/consultations', name: 'consultations', component: ConsultationChatView, meta: { requiresAuth: true, roles: ['admin', 'staff', 'nurse', 'receptionist', 'doctor'] } },
 
     // bắt các đường dẫn lạ
     { path: '/:pathMatch(.*)*', redirect: '/' }
@@ -94,12 +98,20 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.meta.roles?.length) {
     const userRoles = getUserRolesLower()
+    console.log('🔍 Route requires roles:', to.meta.roles)
+    console.log('🔍 User has roles:', Array.from(userRoles))
 
     // Admin qua tất cả
     if (!userRoles.has('admin')) {
       const required = to.meta.roles.map(r => r.toLowerCase())
       const ok = required.some(r => userRoles.has(r))
-      if (!ok) return next({ name: 'home' })
+      console.log('🔍 Role check:', { required, userRoles: Array.from(userRoles), ok })
+      if (!ok) {
+        console.warn('⚠️ Access denied: user roles do not match')
+        return next({ name: 'home' })
+      }
+    } else {
+      console.log('✅ Admin role detected, allowing access')
     }
   }
 

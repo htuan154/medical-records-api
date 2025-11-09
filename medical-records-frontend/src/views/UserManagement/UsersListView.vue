@@ -45,32 +45,32 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="(u, idx) in items" :key="`user-${u._id || u.id || u.username || idx}`">
-            <tr>
-              <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
-              <td>{{ u.username }}</td>
-              <td>{{ u.email }}</td>
-              <td>{{ joinRoles(u.role_names) }}</td>
-              <td>{{ u.account_type || '-' }}</td>
-              <td>{{ linkedAny(u) }}</td>
-              <td>
-                <span :class="['badge', u.status === 'active' ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary']">
-                  {{ u.status || '-' }}
-                </span>
-              </td>
-              <td>{{ fmtDateTime(u.created_at) }}</td>
-              <td>{{ fmtDateTime(u.updated_at) }}</td>
-              <td>
-                <div class="btn-group">
-                  <button class="btn btn-sm btn-outline-secondary" @click="toggleRow(u)">{{ isExpanded(u) ? 'Ẩn' : 'Xem' }}</button>
-                  <button class="btn btn-sm btn-outline-primary" @click="openEdit(u)">Sửa</button>
-                  <button class="btn btn-sm btn-outline-danger" @click="remove(u)" :disabled="loading">Xóa</button>
-                </div>
-              </td>
-            </tr>
+          <tr v-for="(u, idx) in items" :key="`user-${u._id || u.id || u.username || idx}`">
+            <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
+            <td>{{ u.username }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ joinRoles(u.role_names) }}</td>
+            <td>{{ u.account_type || '-' }}</td>
+            <td>{{ linkedAny(u) }}</td>
+            <td>
+              <span :class="['badge', u.status === 'active' ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary']">
+                {{ u.status || '-' }}
+              </span>
+            </td>
+            <td>{{ fmtDateTime(u.created_at) }}</td>
+            <td>{{ fmtDateTime(u.updated_at) }}</td>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary" @click="toggleRow(u)">{{ isExpanded(u) ? 'Ẩn' : 'Xem' }}</button>
+                <button class="btn btn-sm btn-outline-primary" @click="openEdit(u)">Sửa</button>
+                <button class="btn btn-sm btn-outline-danger" @click="remove(u)" :disabled="loading">Xóa</button>
+              </div>
+            </td>
+          </tr>
 
+          <template v-for="(u, idx) in items">
             <!-- Row details -->
-            <tr v-if="isExpanded(u)" class="row-detail">
+            <tr v-if="isExpanded(u)" class="row-detail" :key="`user-detail-${u._id || u.id || u.username || idx}`">
               <td :colspan="10">
                 <div class="detail-sections">
                   <div class="detail-title">Thông tin tài khoản</div>

@@ -251,6 +251,13 @@ export default {
       // Quick actions giữ nguyên
       quickActions: [
         {
+          title: 'Tư vấn khách hàng',
+          description: 'Trả lời tin nhắn từ bệnh nhân',
+          icon: 'bi bi-chat-dots-fill',
+          color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          route: 'consultations'
+        },
+        {
           title: 'Thêm bệnh nhân mới',
           description: 'Đăng ký bệnh nhân mới vào hệ thống',
           icon: 'bi bi-person-plus-fill',
@@ -632,8 +639,17 @@ export default {
     },
 
     navigateTo (routeName) {
+      console.log('🔍 Navigating to:', routeName)
+      console.log('🔍 Has route?', this.$router.hasRoute(routeName))
+      console.log('🔍 Current user:', this.$store.state.user)
+      console.log('🔍 User roles:', this.$store.getters.roles)
+
       if (routeName && this.$router.hasRoute(routeName)) {
-        this.$router.push({ name: routeName })
+        this.$router.push({ name: routeName }).catch(err => {
+          console.error('❌ Navigation failed:', err)
+        })
+      } else {
+        console.warn('⚠️ Route not found:', routeName)
       }
     },
 
