@@ -30,10 +30,9 @@
             <th style="width:160px">Hành động</th>
           </tr>
         </thead>
-        <tbody>
-          <template v-for="(r, idx) in filteredItems" :key="rowKey(r, idx)">
-            <tr>
-              <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
+        <tbody v-for="(r, idx) in filteredItems" :key="rowKey(r, idx)">
+          <tr>
+            <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
               <td>{{ fmtDateTime(r.visit_date) }}</td>
               <td>{{ displayName(patientsMap[r.patient_id]) || r.patient_id }}</td>
               <td>{{ displayName(doctorsMap[r.doctor_id]) || r.doctor_id }}</td>
@@ -43,16 +42,30 @@
               </td>
               <td>
                 <div class="btn-group">
-                  <button class="btn btn-sm btn-outline-secondary" @click="toggleRow(r)">{{ isExpanded(r) ? 'Ẩn' : 'Xem' }}</button>
-                  <button class="btn btn-sm btn-outline-primary" @click="openEdit(r)">Sửa</button>
-                  <button class="btn btn-sm btn-outline-danger" @click="remove(r)" :disabled="loading">Xóa</button>
+                  <button class="btn btn-sm btn-outline-secondary" @click="toggleRow(r)" title="Xem chi tiết">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-success"
+                    @click="createInvoiceFromRecord(r)"
+                    :disabled="loading || r.status !== 'completed'"
+                    title="Tạo hóa đơn"
+                  >
+                    <i class="bi bi-receipt"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-primary" @click="openEdit(r)" title="Sửa">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" @click="remove(r)" :disabled="loading" title="Xóa">
+                    <i class="bi bi-trash"></i>
+                  </button>
                 </div>
               </td>
-            </tr>
+          </tr>
 
-            <!-- DETAILS xổ khi bấm Xem -->
-            <tr v-if="isExpanded(r)">
-              <td :colspan="7">
+          <!-- DETAILS xổ khi bấm Xem -->
+          <tr v-if="isExpanded(r)">
+            <td :colspan="7">
                 <div class="detail-wrap">
                   <div class="detail-title">Thông tin khám</div>
                   <div class="detail-grid">
@@ -115,12 +128,13 @@
                   <div class="text-muted small mt-2">
                     Tạo: {{ fmtDateTime(r.created_at) }} | Cập nhật: {{ fmtDateTime(r.updated_at) }}
                   </div>
-                </div>
-              </td>
-            </tr>
-          </template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
 
-          <tr v-if="!filteredItems.length">
+        <tbody v-if="!filteredItems.length">
+          <tr>
             <td colspan="7" class="text-center text-muted">Không có dữ liệu</td>
           </tr>
         </tbody>
@@ -139,6 +153,45 @@
     <div v-if="showModal" class="modal-backdrop" @mousedown.self="close">
       <div class="modal-card">
         <h3 class="h6 mb-3">{{ editingId ? 'Sửa hồ sơ' : 'Thêm hồ sơ' }}</h3>
+
+        <!-- ✅ SUC-08: Display previous medical records for follow-up visits -->
+        <div v-if="previousRecords.length > 0" class="alert alert-info mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <strong><i class="bi bi-clock-history"></i> Lịch sử khám bệnh ({{ previousRecords.length }} lần)</strong>
+            <button type="button" class="btn btn-sm btn-outline-info" @click="togglePreviousRecords">
+              {{ showPreviousRecords ? 'Ẩn' : 'Xem' }}
+            </button>
+          </div>
+
+          <div v-if="showPreviousRecords" class="previous-records-list">
+            <div
+              v-for="(prev, idx) in previousRecords.slice(0, 5)"
+              :key="prev._id || idx"
+              class="previous-record-item"
+            >
+              <div class="d-flex justify-content-between">
+                <div>
+                  <strong>{{ fmtDateTime(prev.visit_date) }}</strong>
+                  <span class="text-muted ms-2">{{ prev.visit_type }}</span>
+                </div>
+                <span :class="['badge', statusClass(prev.status)]">{{ prev.status }}</span>
+              </div>
+              <div class="small text-muted mt-1">
+                <strong>Chẩn đoán:</strong> {{ prev.diagnosis?.primary_diagnosis?.description || '-' }}
+              </div>
+              <div class="small text-muted">
+                <strong>Thuốc:</strong>
+                <span v-if="prev.treatment_plan?.medications?.length > 0">
+                  {{ prev.treatment_plan.medications.map(m => m.name).join(', ') }}
+                </span>
+                <span v-else>-</span>
+              </div>
+            </div>
+            <div v-if="previousRecords.length > 5" class="text-muted small mt-2">
+              <i>Hiển thị 5/{{ previousRecords.length }} lần khám gần nhất</i>
+            </div>
+          </div>
+        </div>
 
         <form @submit.prevent="save">
           <!-- Thông tin chung -->
@@ -338,6 +391,7 @@
 import MedicalRecordService from '@/api/medicalRecordService'
 import DoctorService from '@/api/doctorService'
 import PatientService from '@/api/patientService'
+import InvoiceService from '@/api/invoiceService'
 
 export default {
   name: 'MedicalRecordsListView',
@@ -364,7 +418,10 @@ export default {
       doctorsMap: {},
       patientsMap: {},
       optionsLoaded: false,
-      filteredItems: []
+      filteredItems: [],
+      // ✅ SUC-08: Previous records for follow-up visits
+      previousRecords: [],
+      showPreviousRecords: true
     }
   },
   created () { this.fetch() },
@@ -613,10 +670,11 @@ export default {
     openCreate () {
       this.editingId = null
       this.form = this.emptyForm()
+      this.previousRecords = []
       this.showModal = true
       this.ensureOptionsLoaded()
     },
-    openEdit (row) {
+    async openEdit (row) {
       const f = this.flattenRecord(row)
       this.editingId = f._id || f.id
       this.form = {
@@ -631,8 +689,43 @@ export default {
       }
       this.showModal = true
       this.ensureOptionsLoaded()
+
+      // ✅ SUC-08: Load previous records for this patient
+      if (f.patient_id) {
+        await this.loadPreviousRecords(f.patient_id, f._id || f.id)
+      }
     },
-    close () { if (!this.saving) this.showModal = false },
+    close () {
+      if (!this.saving) {
+        this.showModal = false
+        this.previousRecords = []
+      }
+    },
+
+    // ✅ SUC-08: Toggle previous records visibility
+    togglePreviousRecords () {
+      this.showPreviousRecords = !this.showPreviousRecords
+    },
+
+    // ✅ SUC-08: Load previous medical records for patient
+    async loadPreviousRecords (patientId, currentRecordId) {
+      try {
+        // Query medical records for this patient
+        const response = await MedicalRecordService.list({
+          patient_id: patientId,
+          limit: 10,
+          sort: '-visit_date' // Sort by visit date descending
+        })
+
+        // Filter out current record and keep only previous ones
+        this.previousRecords = (response.data || [])
+          .filter(r => (r._id || r.id) !== currentRecordId)
+          .slice(0, 5)
+      } catch (e) {
+        console.error('Failed to load previous records:', e)
+        this.previousRecords = []
+      }
+    },
 
     addMedication () { this.form.medications = [...this.form.medications, { name: '', dosage: '', frequency: '', duration: '', instructions: '' }] },
     removeMedication (i) { this.form.medications = this.form.medications.filter((_, idx) => idx !== i) },
@@ -751,6 +844,107 @@ export default {
         console.error(e)
         alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
       }
+    },
+
+    // ✅ SUC-06: Create invoice from completed medical record
+    async createInvoiceFromRecord (record) {
+      if (!confirm(`Tạo hóa đơn cho Bệnh án này?\n\nBệnh nhân: ${this.displayName(this.patientsMap[record.patient_id])}`)) {
+        return
+      }
+
+      try {
+        this.loading = true
+
+        // Generate invoice number
+        const generateInvoiceNumber = () => {
+          const now = new Date()
+          const year = now.getFullYear()
+          const month = (now.getMonth() + 1).toString().padStart(2, '0')
+          const day = now.getDate().toString().padStart(2, '0')
+          const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+          return `INV${year}${month}${day}${random}`
+        }
+
+        // Build services array from medical record
+        const services = []
+
+        // 1. Add examination fee
+        services.push({
+          service_type: 'examination',
+          description: `Khám ${record.visit_type || 'Tổng quát'}`,
+          quantity: 1,
+          unit_price: 200000, // Default examination fee
+          total_price: 200000
+        })
+
+        // 2. Add medications from prescription
+        if (record.medications && record.medications.length > 0) {
+          record.medications.forEach(med => {
+            services.push({
+              service_type: 'medication',
+              description: `${med.name} - ${med.dosage} - ${med.frequency} - ${med.duration}`,
+              quantity: 1,
+              unit_price: 50000, // Default medication price
+              total_price: 50000
+            })
+          })
+        }
+
+        // 3. Add procedures if any
+        if (record.procedures && record.procedures.length > 0) {
+          record.procedures.forEach(proc => {
+            services.push({
+              service_type: 'procedure',
+              description: proc,
+              quantity: 1,
+              unit_price: 150000, // Default procedure price
+              total_price: 150000
+            })
+          })
+        }
+
+        // Calculate totals
+        const subtotal = services.reduce((sum, s) => sum + (s.total_price || 0), 0)
+        const taxRate = 0 // No tax for medical services
+        const taxAmount = subtotal * taxRate
+        const totalAmount = subtotal + taxAmount
+
+        // Prepare invoice payload
+        const invoicePayload = {
+          invoice_number: generateInvoiceNumber(),
+          invoice_date: new Date().toISOString(),
+          due_date: new Date().toISOString(),
+          patient_id: record.patient_id,
+          medical_record_id: record._id || record.id,
+          services,
+          subtotal,
+          tax_rate: taxRate,
+          tax_amount: taxAmount,
+          discount_amount: 0,
+          insurance_coverage: 0,
+          insurance_amount: 0,
+          total_amount: totalAmount,
+          patient_payment: totalAmount,
+          payment_status: 'unpaid',
+          payment_method: '',
+          notes: `Hóa đơn tự động từ Bệnh án ${record._id || record.id}`
+        }
+
+        // Create invoice
+        await InvoiceService.create(invoicePayload)
+
+        alert(`✅ Đã tạo hóa đơn thành công!\n\nSố HĐ: ${invoicePayload.invoice_number}\nTổng tiền: ${totalAmount.toLocaleString()} VNĐ\n\nVui lòng vào menu "Hóa đơn" để xác nhận thanh toán.`)
+
+        // Optionally navigate to invoices page
+        if (confirm('Chuyển đến trang Hóa đơn?')) {
+          this.$router.push('/invoices')
+        }
+      } catch (e) {
+        console.error('Create invoice error:', e)
+        alert(e?.response?.data?.message || e?.message || 'Không thể tạo hóa đơn')
+      } finally {
+        this.loading = false
+      }
     }
   }
 }
@@ -773,4 +967,23 @@ export default {
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; z-index: 1050; }
 .modal-card { width: min(1000px, 96vw); background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 20px 50px rgba(0,0,0,.25); max-height: 92vh; overflow: auto; }
 .section-title { font-weight: 600; margin: 14px 0 8px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb; }
+
+/* ✅ SUC-08: Previous medical records styles */
+.previous-records-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 0.5rem;
+}
+
+.previous-record-item {
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border-left: 3px solid #0d6efd;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.previous-record-item:hover {
+  background-color: #e9ecef;
+}
 </style>

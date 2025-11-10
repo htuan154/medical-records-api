@@ -31,10 +31,9 @@
             <th style="width:180px">Hành động</th>
           </tr>
         </thead>
-        <tbody>
-          <template v-for="(m, idx) in items" :key="rowKey(m, idx)">
-            <tr>
-              <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
+        <tbody v-for="(m, idx) in items" :key="rowKey(m, idx)">
+          <tr>
+            <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
               <td>{{ m.name }}</td>
               <td>{{ m.active_ingredient }}</td>
               <td>{{ m.strength }}</td>
@@ -48,11 +47,11 @@
                   <button class="btn btn-sm btn-outline-danger" @click="remove(m)" :disabled="loading">Xóa</button>
                 </div>
               </td>
-            </tr>
+          </tr>
 
-            <!-- ROW DETAILS: hiện đủ phần ẩn khi bấm Xem -->
-            <tr v-if="isExpanded(m)">
-              <td :colspan="8">
+          <!-- ROW DETAILS: hiện đủ phần ẩn khi bấm Xem -->
+          <tr v-if="isExpanded(m)">
+            <td :colspan="8">
                 <div class="detail-wrap">
                   <div class="detail-title">Thông tin thuốc</div>
                   <div class="detail-grid">
@@ -87,12 +86,13 @@
                     <div><b>Tạo:</b> {{ fmtDateTime(m.created_at) }}</div>
                     <div><b>Cập nhật:</b> {{ fmtDateTime(m.updated_at) }}</div>
                   </div>
-                </div>
-              </td>
-            </tr>
-          </template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
 
-          <tr v-if="!items.length">
+        <tbody v-if="!items.length">
+          <tr>
             <td colspan="8" class="text-center text-muted">Không có dữ liệu</td>
           </tr>
         </tbody>
@@ -293,14 +293,37 @@ export default {
         const skip = (this.page - 1) * this.pageSize
         const res = await MedicationService.list({ q: this.q || undefined, limit: this.pageSize, offset: skip, skip })
 
+        console.log('🔍 MedicationService.list response:', res)
+        console.log('🔍 Response type:', typeof res)
+        console.log('🔍 Response keys:', res ? Object.keys(res) : 'null')
+        console.log('🔍 Is Array?', Array.isArray(res))
+        console.log('🔍 Has rows?', res?.rows)
+        console.log('🔍 Has data?', res?.data)
+
+        // 🔥 Let's see what those 2 keys actually are!
+        if (res && typeof res === 'object' && !Array.isArray(res)) {
+          const keys = Object.keys(res)
+          console.log('🔥 ACTUAL KEYS:', keys)
+          keys.forEach(key => {
+            console.log(`🔥 res['${key}']:`, res[key])
+          })
+        }
+
         let raw = []; let total = 0; let offset = null
         if (res && Array.isArray(res.rows)) {
+          console.log('✅ Using rows format, count:', res.rows.length)
           raw = res.rows.map(r => r.doc || r.value || r)
           total = res.total_rows ?? raw.length
           offset = res.offset ?? 0
         } else if (res && res.data && Array.isArray(res.data)) {
+          console.log('✅ Using data format, count:', res.data.length)
           raw = res.data; total = res.total ?? raw.length
-        } else if (Array.isArray(res)) { raw = res; total = raw.length }
+        } else if (Array.isArray(res)) {
+          console.log('✅ Using direct array format, count:', res.length)
+          raw = res; total = raw.length
+        } else {
+          console.error('❌ Unknown response format!')
+        }
 
         // FLATTEN để bảng hiển thị đúng
         this.items = (raw || []).map(d => this.flattenMedication(d))

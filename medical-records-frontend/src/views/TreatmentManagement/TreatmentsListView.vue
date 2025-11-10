@@ -30,10 +30,9 @@
             <th style="width:180px">Hành động</th>
           </tr>
         </thead>
-        <tbody>
-          <template v-for="(t, idx) in items" :key="rowKey(t, idx)">
-            <tr>
-              <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
+        <tbody v-for="(t, idx) in items" :key="rowKey(t, idx)">
+          <tr>
+            <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
               <td>{{ t.treatment_name }}</td>
               <td>{{ fmtDate(t.start_date) }}</td>
               <td>{{ fmtDate(t.end_date) }}</td>
@@ -48,11 +47,11 @@
                   <button class="btn btn-sm btn-outline-danger" @click="remove(t)" :disabled="loading">Xóa</button>
                 </div>
               </td>
-            </tr>
+          </tr>
 
-            <!-- DETAILS xổ khi Xem -->
-            <tr v-if="isExpanded(t)">
-              <td :colspan="7">
+          <!-- DETAILS xổ khi Xem -->
+          <tr v-if="isExpanded(t)">
+            <td :colspan="7">
                 <div class="detail-wrap">
                   <div class="detail-title">Liên kết</div>
                   <div class="detail-grid">
@@ -94,12 +93,13 @@
                   <div class="text-muted small mt-2">
                     Tạo: {{ fmtDateTime(t.created_at) }} | Cập nhật: {{ fmtDateTime(t.updated_at) }}
                   </div>
-                </div>
-              </td>
-            </tr>
-          </template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
 
-          <tr v-if="!items.length">
+        <tbody v-if="!items.length">
+          <tr>
             <td colspan="7" class="text-center text-muted">Không có dữ liệu</td>
           </tr>
         </tbody>

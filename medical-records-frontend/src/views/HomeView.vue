@@ -211,6 +211,7 @@ import AppointmentService from '@/api/appointmentService'
 import MedicalTestService from '@/api/medicalTestService'
 import TreatmentService from '@/api/treatmentService'
 import MedicationService from '@/api/medicationService'
+import InvoiceService from '@/api/invoiceService'
 
 export default {
   name: 'HomeView',
@@ -370,7 +371,8 @@ export default {
           appointmentsRes,
           medicalTestsRes,
           treatmentsRes,
-          medicationsRes
+          medicationsRes,
+          invoicesRes
         ] = await Promise.allSettled([
           this.getPatientCount(),
           this.getStaffCount(),
@@ -381,7 +383,8 @@ export default {
           this.getAppointmentCount(),
           this.getMedicalTestCount(),
           this.getTreatmentCount(),
-          this.getMedicationCount()
+          this.getMedicationCount(),
+          this.getInvoiceCount()
         ])
 
         // Cập nhật thống kê chính
@@ -428,6 +431,10 @@ export default {
 
         if (medicationsRes.status === 'fulfilled') {
           this.updateManagementCount('Đơn thuốc', medicationsRes.value)
+        }
+
+        if (invoicesRes.status === 'fulfilled') {
+          this.updateManagementCount('Hóa đơn', invoicesRes.value)
         }
 
         // Cập nhật hoạt động gần đây
@@ -566,24 +573,49 @@ export default {
       }
     },
 
+    async getInvoiceCount () {
+      try {
+        const res = await InvoiceService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng hóa đơn:', error)
+        return 0
+      }
+    },
+
     // Helper function để extract total từ response
     extractTotal (res) {
       if (!res) return 0
 
+      // Helper để filter _design docs
+      const filterDesignDocs = (arr) => {
+        if (!Array.isArray(arr)) return arr
+        return arr.filter(item => {
+          const id = item._id || item.id
+          return id && !id.startsWith('_design/')
+        })
+      }
+
       // Thử các cấu trúc response khác nhau
       if (typeof res.total === 'number') return res.total
-      if (typeof res.total_rows === 'number') return res.total_rows
+      if (typeof res.total_rows === 'number') {
+        // Nếu có rows, đếm sau khi filter _design docs
+        if (Array.isArray(res.rows)) {
+          return filterDesignDocs(res.rows).length
+        }
+        return res.total_rows
+      }
       if (typeof res.count === 'number') return res.count
       if (res.data && typeof res.data.total === 'number') return res.data.total
       if (res.data && typeof res.data.total_rows === 'number') return res.data.total_rows
       if (res.meta && typeof res.meta.total === 'number') return res.meta.total
       if (res.pagination && typeof res.pagination.total === 'number') return res.pagination.total
 
-      // Nếu trả về array, đếm length
-      if (Array.isArray(res)) return res.length
-      if (Array.isArray(res.data)) return res.data.length
-      if (Array.isArray(res.items)) return res.items.length
-      if (Array.isArray(res.rows)) return res.rows.length
+      // Nếu trả về array, đếm length sau khi filter _design docs
+      if (Array.isArray(res)) return filterDesignDocs(res).length
+      if (Array.isArray(res.data)) return filterDesignDocs(res.data).length
+      if (Array.isArray(res.items)) return filterDesignDocs(res.items).length
+      if (Array.isArray(res.rows)) return filterDesignDocs(res.rows).length
 
       return 0
     },

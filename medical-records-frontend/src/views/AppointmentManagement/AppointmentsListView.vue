@@ -55,11 +55,10 @@
             <th style="width:180px">Hành động</th>
           </tr>
         </thead>
-        <tbody>
-          <template v-for="(a, idx) in items" :key="rowKey(a, idx)">
-            <tr>
-              <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
-              <td>{{ a._id || a.id }}</td>
+        <tbody v-for="(a, idx) in items" :key="rowKey(a, idx)">
+          <tr>
+            <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
+            <td>{{ a._id || a.id }}</td>
               <td>{{ displayName(patientsMap[a.patient_id]) || a.patient_id }}</td>
               <td>{{ displayName(doctorsMap[a.doctor_id]) || a.doctor_id }}</td>
               <td>{{ fmtDateTime(a.scheduled_date) }}</td>
@@ -70,15 +69,38 @@
               <td>
                 <div class="btn-group">
                   <button class="btn btn-sm btn-outline-secondary" @click="toggleRow(a)">{{ isExpanded(a) ? 'Ẩn' : 'Xem' }}</button>
+
+                  <!-- Check-in: chỉ hiện khi status = scheduled hoặc approved -->
+                  <button
+                    v-if="['scheduled', 'approved'].includes(a.status)"
+                    class="btn btn-sm btn-success"
+                    @click="checkIn(a)"
+                    :disabled="loading"
+                    title="Check-in bệnh nhân"
+                  >
+                    <i class="bi bi-check-circle"></i> Check-in
+                  </button>
+
+                  <!-- Hủy lịch: chỉ hiện khi chưa completed -->
+                  <button
+                    v-if="a.status !== 'completed' && a.status !== 'canceled'"
+                    class="btn btn-sm btn-warning"
+                    @click="cancelAppointment(a)"
+                    :disabled="loading"
+                    title="Hủy lịch hẹn"
+                  >
+                    <i class="bi bi-x-circle"></i> Hủy
+                  </button>
+
                   <button class="btn btn-sm btn-outline-primary" @click="openEdit(a)">Sửa</button>
                   <button class="btn btn-sm btn-outline-danger" @click="remove(a)" :disabled="loading">Xóa</button>
                 </div>
               </td>
-            </tr>
+          </tr>
 
-            <!-- Details -->
-            <tr v-if="isExpanded(a)">
-              <td :colspan="10">
+          <!-- Details -->
+          <tr v-if="isExpanded(a)">
+            <td :colspan="10">
                 <div class="detail-wrap">
                   <div class="detail-title">Chi tiết lịch hẹn</div>
                   <div class="detail-grid">
@@ -108,12 +130,13 @@
                     <div><b>Người tạo:</b> {{ a.created_by || '-' }}</div>
                     <div><b>Rev:</b> {{ a._rev || '-' }}</div>
                   </div>
-                </div>
-              </td>
-            </tr>
-          </template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
 
-          <tr v-if="!items.length">
+        <tbody v-if="!items.length">
+          <tr>
             <td colspan="10" class="text-center text-muted">Không có dữ liệu</td>
           </tr>
         </tbody>
@@ -470,6 +493,66 @@ export default {
       } catch (e) {
         console.error(e)
         alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
+      }
+    },
+
+    /* ===== Check-in & Cancel ===== */
+    async checkIn (row) {
+      if (!confirm(`Check-in bệnh nhân cho lịch hẹn "${row._id || row.id}"?\n\nBệnh nhân: ${this.displayName(this.patientsMap[row.patient_id]) || row.patient_id}\nBác sĩ: ${this.displayName(this.doctorsMap[row.doctor_id]) || row.doctor_id}\nThời gian: ${this.fmtDateTime(row.scheduled_date)}`)) {
+        return
+      }
+
+      this.loading = true
+      try {
+        const id = row._id || row.id
+        const payload = {
+          _id: id,
+          _rev: row._rev,
+          status: 'completed', // Check-in = đánh dấu đã hoàn thành
+          updated_at: new Date().toISOString(),
+          notes: (row.notes || '') + `\n[Check-in lúc ${new Date().toLocaleString()}]`
+        }
+
+        await AppointmentService.update(id, payload)
+        alert('✅ Check-in thành công!\n\nBệnh nhân đã được đưa vào hàng chờ.')
+        await this.fetch()
+      } catch (e) {
+        console.error(e)
+        alert(e?.response?.data?.message || e?.message || 'Check-in thất bại')
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async cancelAppointment (row) {
+      const reason = prompt(
+        `Hủy lịch hẹn "${row._id || row.id}"?\n\nBệnh nhân: ${this.displayName(this.patientsMap[row.patient_id]) || row.patient_id}\nBác sĩ: ${this.displayName(this.doctorsMap[row.doctor_id]) || row.doctor_id}\nThời gian: ${this.fmtDateTime(row.scheduled_date)}\n\n━━━━━━━━━━━━━━━━━━━━━\nVui lòng nhập lý do hủy:`,
+        'Bệnh nhân yêu cầu hủy'
+      )
+
+      if (!reason || !reason.trim()) {
+        return
+      }
+
+      this.loading = true
+      try {
+        const id = row._id || row.id
+        const payload = {
+          _id: id,
+          _rev: row._rev,
+          status: 'canceled',
+          updated_at: new Date().toISOString(),
+          notes: (row.notes || '') + `\n[Hủy lúc ${new Date().toLocaleString()}] Lý do: ${reason.trim()}`
+        }
+
+        await AppointmentService.update(id, payload)
+        alert('✅ Đã hủy lịch hẹn thành công!\n\nLịch đã được giải phóng.')
+        await this.fetch()
+      } catch (e) {
+        console.error(e)
+        alert(e?.response?.data?.message || e?.message || 'Hủy lịch thất bại')
+      } finally {
+        this.loading = false
       }
     }
   }

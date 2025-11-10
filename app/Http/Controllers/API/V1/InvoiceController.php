@@ -198,4 +198,117 @@ class InvoiceController extends Controller
         $res = $this->svc->delete($id, $rev);
         return response()->json($res['data'], $res['status']);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/invoices/{id}/download",
+     *     tags={"Invoices"},
+     *     summary="Download PDF hóa đơn",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="PDF file", @OA\MediaType(mediaType="application/pdf")),
+     *     @OA\Response(response=404, description="Không tìm thấy"),
+     *     @OA\Response(response=500, description="Lỗi server")
+     * )
+     */
+    public function download(string $id)
+    {
+        try {
+            $res = $this->svc->find($id);
+            
+            if ($res['status'] !== 200) {
+                return response()->json($res['data'], $res['status']);
+            }
+            
+            $invoice = $res['data'];
+            
+            // Generate simple PDF content (you can use a library like TCPDF or DomPDF later)
+            $html = $this->generateInvoiceHtml($invoice);
+            
+            // For now, return HTML as PDF placeholder
+            // TODO: Use proper PDF library (TCPDF, DomPDF, etc.)
+            return response($html, 200)->header('Content-Type', 'application/pdf')
+                                       ->header('Content-Disposition', 'attachment; filename="invoice_' . ($invoice['invoice_info']['invoice_number'] ?? $id) . '.pdf"');
+                                       
+        } catch (Throwable $e) {
+            return $this->error($e);
+        }
+    }
+    
+    /**
+     * Generate HTML for invoice (simple version)
+     */
+    private function generateInvoiceHtml(array $invoice): string
+    {
+        $number = $invoice['invoice_info']['invoice_number'] ?? 'N/A';
+        $date = $invoice['invoice_info']['invoice_date'] ?? 'N/A';
+        $total = $invoice['payment_info']['total_amount'] ?? 0;
+        $status = $invoice['payment_status'] ?? 'pending';
+        
+        $html = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hóa đơn {$number}</title>
+    <style>
+        body { font-family: 'DejaVu Sans', Arial, sans-serif; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .info { margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .total { font-weight: bold; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>HÓA ĐƠN</h1>
+        <p>Số: {$number}</p>
+        <p>Ngày: {$date}</p>
+    </div>
+    
+    <div class="info">
+        <p><strong>Bệnh nhân:</strong> {$invoice['patient_id']}</p>
+        <p><strong>Trạng thái:</strong> {$status}</p>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Dịch vụ</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+HTML;
+
+        if (!empty($invoice['services']) && is_array($invoice['services'])) {
+            foreach ($invoice['services'] as $service) {
+                $desc = $service['description'] ?? '';
+                $qty = $service['quantity'] ?? 1;
+                $price = number_format($service['unit_price'] ?? 0);
+                $total = number_format($service['total_price'] ?? 0);
+                
+                $html .= "<tr><td>{$desc}</td><td>{$qty}</td><td>{$price} VNĐ</td><td>{$total} VNĐ</td></tr>\n";
+            }
+        }
+
+        $totalFormatted = number_format($total);
+        
+        $html .= <<<HTML
+        </tbody>
+    </table>
+    
+    <p class="total" style="text-align: right; margin-top: 20px;">
+        Tổng cộng: {$totalFormatted} VNĐ
+    </p>
+</body>
+</html>
+HTML;
+
+        return $html;
+    }
 }
