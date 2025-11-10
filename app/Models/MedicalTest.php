@@ -8,7 +8,7 @@ class MedicalTest extends BaseModel
 
     protected $fillable = [
         'patient_id','doctor_id','medical_record_id',
-        'test_type','test_name',
+        'test_type','test_name','unit_price',
         'ordered_at','sample_collected_at','result_at',
         'results','interpretation','status','lab_technician'
     ];
@@ -18,6 +18,7 @@ class MedicalTest extends BaseModel
         'sample_collected_at' => 'datetime',
         'result_at' => 'datetime',
         'results' => 'array',
+        'unit_price' => 'integer',
     ];
 
     public function patient()       { return $this->belongsTo(Patient::class); }

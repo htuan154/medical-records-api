@@ -222,13 +222,14 @@ class InvoiceController extends Controller
             
             $invoice = $res['data'];
             
-            // Generate simple PDF content (you can use a library like TCPDF or DomPDF later)
+            // ✅ Generate printable HTML (browser can print to PDF)
             $html = $this->generateInvoiceHtml($invoice);
             
-            // For now, return HTML as PDF placeholder
-            // TODO: Use proper PDF library (TCPDF, DomPDF, etc.)
-            return response($html, 200)->header('Content-Type', 'application/pdf')
-                                       ->header('Content-Disposition', 'attachment; filename="invoice_' . ($invoice['invoice_info']['invoice_number'] ?? $id) . '.pdf"');
+            // ✅ Return HTML for browser print
+            // User can use Ctrl+P or Print button to save as PDF
+            return response($html, 200)
+                ->header('Content-Type', 'text/html; charset=utf-8')
+                ->header('Content-Disposition', 'inline; filename="invoice_' . ($invoice['invoice_info']['invoice_number'] ?? $id) . '.html"');
                                        
         } catch (Throwable $e) {
             return $this->error($e);
@@ -236,79 +237,113 @@ class InvoiceController extends Controller
     }
     
     /**
-     * Generate HTML for invoice (simple version)
+     * Generate HTML for invoice (printable version with print button)
      */
     private function generateInvoiceHtml(array $invoice): string
     {
-        $number = $invoice['invoice_info']['invoice_number'] ?? 'N/A';
-        $date = $invoice['invoice_info']['invoice_date'] ?? 'N/A';
-        $total = $invoice['payment_info']['total_amount'] ?? 0;
-        $status = $invoice['payment_status'] ?? 'pending';
+        $invoiceInfo = $invoice['invoice_info'] ?? [];
+        $paymentInfo = $invoice['payment_info'] ?? [];
         
-        $html = <<<HTML
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Hóa đơn {$number}</title>
-    <style>
-        body { font-family: 'DejaVu Sans', Arial, sans-serif; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .info { margin: 20px 0; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .total { font-weight: bold; font-size: 18px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>HÓA ĐƠN</h1>
-        <p>Số: {$number}</p>
-        <p>Ngày: {$date}</p>
-    </div>
-    
-    <div class="info">
-        <p><strong>Bệnh nhân:</strong> {$invoice['patient_id']}</p>
-        <p><strong>Trạng thái:</strong> {$status}</p>
-    </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Dịch vụ</th>
-                <th>Số lượng</th>
-                <th>Đơn giá</th>
-                <th>Thành tiền</th>
-            </tr>
-        </thead>
-        <tbody>
-HTML;
-
+        $number = $invoiceInfo['invoice_number'] ?? 'N/A';
+        $date = date('d/m/Y', strtotime($invoiceInfo['invoice_date'] ?? 'now'));
+        $subtotal = $paymentInfo['subtotal'] ?? 0;
+        $insuranceAmount = $paymentInfo['insurance_amount'] ?? 0;
+        $total = $paymentInfo['total_amount'] ?? 0;
+        $patientPayment = $paymentInfo['patient_payment'] ?? 0;
+        $status = $invoice['payment_status'] ?? 'unpaid';
+        
+        $statusText = match($status) {
+            'paid' => 'Đã thanh toán',
+            'partial' => 'Thanh toán một phần',
+            'void' => 'Đã hủy',
+            default => 'Chưa thanh toán'
+        };
+        
+        $html = "<!DOCTYPE html>\n<html lang='vi'>\n<head>\n";
+        $html .= "<meta charset='utf-8'>\n";
+        $html .= "<title>Hóa đơn {$number}</title>\n";
+        $html .= "<style>\n";
+        $html .= "body { font-family: Arial, sans-serif; padding: 30px; }\n";
+        $html .= ".print-btn { position: fixed; top: 20px; right: 20px; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; }\n";
+        $html .= ".print-btn:hover { background: #2980b9; }\n";
+        $html .= ".header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }\n";
+        $html .= ".invoice-meta { display: flex; justify-content: space-between; margin: 20px 0; }\n";
+        $html .= "table { width: 100%; border-collapse: collapse; margin: 20px 0; }\n";
+        $html .= "th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }\n";
+        $html .= "th { background: #34495e; color: white; }\n";
+        $html .= ".text-right { text-align: right; }\n";
+        $html .= ".totals { margin-top: 20px; text-align: right; }\n";
+        $html .= ".totals-row { display: flex; justify-content: flex-end; padding: 8px 0; }\n";
+        $html .= ".totals-label { width: 200px; text-align: right; padding-right: 20px; }\n";
+        $html .= ".totals-value { width: 200px; text-align: right; font-weight: 600; }\n";
+        $html .= ".grand-total { border-top: 2px solid #333; margin-top: 10px; padding-top: 15px; font-size: 20px; }\n";
+        $html .= "@media print { .print-btn { display: none; } }\n";
+        $html .= "</style>\n";
+        $html .= "</head>\n<body>\n";
+        
+        $html .= "<button class='print-btn' onclick='window.print()'>🖨️ In / Lưu PDF</button>\n";
+        $html .= "<div class='header'>\n";
+        $html .= "<h1>HÓA ĐƠN THANH TOÁN</h1>\n";
+        $html .= "<p>Số: <strong>{$number}</strong> | Ngày: <strong>{$date}</strong></p>\n";
+        $html .= "<p>Trạng thái: <strong>{$statusText}</strong></p>\n";
+        $html .= "</div>\n";
+        
+        $html .= "<table>\n<thead>\n<tr>\n";
+        $html .= "<th>Dịch vụ</th>\n<th style='width:100px;text-align:center'>Số lượng</th>\n";
+        $html .= "<th style='width:150px;text-align:right'>Đơn giá</th>\n";
+        $html .= "<th style='width:150px;text-align:right'>Thành tiền</th>\n";
+        $html .= "</tr>\n</thead>\n<tbody>\n";
+        
         if (!empty($invoice['services']) && is_array($invoice['services'])) {
             foreach ($invoice['services'] as $service) {
-                $desc = $service['description'] ?? '';
+                $desc = htmlspecialchars($service['description'] ?? 'N/A');
                 $qty = $service['quantity'] ?? 1;
-                $price = number_format($service['unit_price'] ?? 0);
-                $total = number_format($service['total_price'] ?? 0);
+                $price = number_format($service['unit_price'] ?? 0, 0, ',', '.');
+                $itemTotal = number_format($service['total_price'] ?? 0, 0, ',', '.');
                 
-                $html .= "<tr><td>{$desc}</td><td>{$qty}</td><td>{$price} VNĐ</td><td>{$total} VNĐ</td></tr>\n";
+                $html .= "<tr>\n";
+                $html .= "<td>{$desc}</td>\n";
+                $html .= "<td style='text-align:center'>{$qty}</td>\n";
+                $html .= "<td style='text-align:right'>{$price} đ</td>\n";
+                $html .= "<td style='text-align:right'>{$itemTotal} đ</td>\n";
+                $html .= "</tr>\n";
             }
+        } else {
+            $html .= "<tr><td colspan='4' style='text-align:center'>Không có dịch vụ</td></tr>\n";
         }
-
-        $totalFormatted = number_format($total);
         
-        $html .= <<<HTML
-        </tbody>
-    </table>
-    
-    <p class="total" style="text-align: right; margin-top: 20px;">
-        Tổng cộng: {$totalFormatted} VNĐ
-    </p>
-</body>
-</html>
-HTML;
-
+        $html .= "</tbody>\n</table>\n";
+        
+        $html .= "<div class='totals'>\n";
+        $html .= "<div class='totals-row'>\n";
+        $html .= "<div class='totals-label'>Tạm tính:</div>\n";
+        $html .= "<div class='totals-value'>" . number_format($subtotal, 0, ',', '.') . " đ</div>\n";
+        $html .= "</div>\n";
+        
+        if ($insuranceAmount > 0) {
+            $html .= "<div class='totals-row'>\n";
+            $html .= "<div class='totals-label'>Bảo hiểm chi trả:</div>\n";
+            $html .= "<div class='totals-value'>- " . number_format($insuranceAmount, 0, ',', '.') . " đ</div>\n";
+            $html .= "</div>\n";
+        }
+        
+        $html .= "<div class='totals-row grand-total'>\n";
+        $html .= "<div class='totals-label'>TỔNG CỘNG:</div>\n";
+        $html .= "<div class='totals-value'>" . number_format($total, 0, ',', '.') . " đ</div>\n";
+        $html .= "</div>\n";
+        
+        $html .= "<div class='totals-row' style='color:#27ae60;margin-top:10px'>\n";
+        $html .= "<div class='totals-label'>Bệnh nhân thanh toán:</div>\n";
+        $html .= "<div class='totals-value'>" . number_format($patientPayment, 0, ',', '.') . " đ</div>\n";
+        $html .= "</div>\n";
+        $html .= "</div>\n";
+        
+        $html .= "<div style='margin-top:50px;text-align:center;color:#777;font-size:12px'>\n";
+        $html .= "<p>Cảm ơn quý khách! Nhấn nút 'In / Lưu PDF' hoặc Ctrl+P để in/lưu</p>\n";
+        $html .= "</div>\n";
+        
+        $html .= "</body>\n</html>";
+        
         return $html;
     }
 }

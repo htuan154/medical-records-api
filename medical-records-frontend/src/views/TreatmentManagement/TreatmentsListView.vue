@@ -9,9 +9,14 @@
       </div>
     </div>
 
-    <div class="d-flex align-items-center mb-3" style="max-width: 520px">
-      <input v-model.trim="q" class="form-control me-2" placeholder="Tìm theo tên điều trị / loại…" @keyup.enter="search" />
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <input v-model.trim="q" class="form-control" style="max-width: 350px" placeholder="Tìm theo tên điều trị / loại…" @keyup.enter="search" />
+      <select v-model="filterRecordId" class="form-select" style="max-width: 300px" @change="applyFilter">
+        <option value="">-- Tất cả hồ sơ khám --</option>
+        <option v-for="opt in recordOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+      </select>
       <button class="btn btn-outline-secondary" @click="search">Tìm</button>
+      <button v-if="filterRecordId" class="btn btn-outline-danger" @click="clearFilter" title="Xóa bộ lọc">✕</button>
     </div>
 
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
@@ -30,7 +35,7 @@
             <th style="width:180px">Hành động</th>
           </tr>
         </thead>
-        <tbody v-for="(t, idx) in items" :key="rowKey(t, idx)">
+        <tbody v-for="(t, idx) in filteredItems" :key="rowKey(t, idx)">
           <tr>
             <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
               <td>{{ t.treatment_name }}</td>
@@ -72,7 +77,7 @@
                   <div class="detail-title">Thuốc</div>
                   <ul class="mb-2">
                     <li v-for="(m, i) in t.medications" :key="i">
-                      <b>{{ m.name }}</b>
+                      <b>{{ m.name || 'Không có' }}</b>
                       <span v-if="m.dosage"> — {{ m.dosage }}</span>
                       <span v-if="m.frequency">; {{ m.frequency }}</span>
                       <span v-if="m.route">; {{ m.route }}</span>
@@ -80,7 +85,7 @@
                       <span v-if="m.quantity_prescribed">; SL: {{ m.quantity_prescribed }}</span>
                       <span class="text-muted" v-if="m.medication_id"> ({{ m.medication_id }})</span>
                     </li>
-                    <li v-if="!t.medications || !t.medications.length" class="text-muted">-</li>
+                    <li v-if="!t.medications || !t.medications.length" class="text-muted">Không có</li>
                   </ul>
 
                   <div class="detail-title">Theo dõi</div>
@@ -98,9 +103,9 @@
           </tr>
         </tbody>
 
-        <tbody v-if="!items.length">
+        <tbody v-if="!filteredItems.length">
           <tr>
-            <td colspan="7" class="text-center text-muted">Không có dữ liệu</td>
+            <td colspan="7" class="text-center text-muted">{{ filterRecordId ? 'Không tìm thấy điều trị cho hồ sơ này' : 'Không có dữ liệu' }}</td>
           </tr>
         </tbody>
       </table>
@@ -123,26 +128,46 @@
           <!-- Liên kết -->
           <div class="section-title">Liên kết</div>
           <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Hồ sơ khám <span class="text-danger">*</span></label>
+              <select v-model="form.medical_record_id" class="form-select" required @change="onRecordChange">
+                <option value="">-- Chọn hồ sơ khám --</option>
+                <option v-for="r in recordOptions" :key="r.value" :value="r.value">{{ r.label }}</option>
+              </select>
+              <small class="text-muted">Chọn hồ sơ khám để tự động điền bệnh nhân và bác sĩ</small>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Loại điều trị <span class="text-danger">*</span></label>
+              <select v-model="form.treatment_type" class="form-select" required>
+                <option value="">-- Chọn loại --</option>
+                <option value="medication">Điều trị bằng thuốc</option>
+                <option value="procedure">Thủ thuật</option>
+                <option value="surgery">Phẫu thuật</option>
+                <option value="therapy">Vật lý trị liệu</option>
+                <option value="rehabilitation">Phục hồi chức năng</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Trạng thái</label>
+              <select v-model="form.status" class="form-select">
+                <option value="active">Đang điều trị</option>
+                <option value="paused">Tạm dừng</option>
+                <option value="completed">Hoàn thành</option>
+                <option value="discontinued">Ngừng</option>
+              </select>
+            </div>
+
             <div class="col-md-4">
               <label class="form-label">Bệnh nhân</label>
-              <select v-model="form.patient_id" class="form-select" @change="onPatientChange">
-                <option value="">-- chọn bệnh nhân --</option>
-                <option v-for="p in patientOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
-              </select>
+              <input v-model="form.patient_name" class="form-control" readonly placeholder="Tự động từ hồ sơ" />
             </div>
             <div class="col-md-4">
               <label class="form-label">Bác sĩ</label>
-              <select v-model="form.doctor_id" class="form-select">
-                <option value="">-- chọn bác sĩ --</option>
-                <option v-for="d in doctorOptions" :key="d.value" :value="d.value">{{ d.label }}</option>
-              </select>
+              <input v-model="form.doctor_name" class="form-control" readonly placeholder="Tự động từ hồ sơ" />
             </div>
             <div class="col-md-4">
-              <label class="form-label">Hồ sơ khám</label>
-              <select v-model="form.medical_record_id" class="form-select">
-                <option value="">-- chọn hồ sơ (theo bệnh nhân) --</option>
-                <option v-for="r in recordOptions" :key="r.value" :value="r.value">{{ r.label }}</option>
-              </select>
+              <label class="form-label">Ngày khám</label>
+              <input v-model="form.visit_date" class="form-control" readonly placeholder="Tự động từ hồ sơ" />
             </div>
           </div>
 
@@ -275,10 +300,24 @@ export default {
       recordOptions: [],
       doctorsMap: {},
       patientsMap: {},
-      optionsLoaded: false
+      optionsLoaded: false,
+      // ✅ Filter
+      filterRecordId: '',
+      filteredItems: []
     }
   },
-  created () { this.fetch() },
+  created () {
+    // ✅ Check if medical_record_id from query parameter
+    if (this.$route.query.medical_record_id) {
+      this.filterRecordId = this.$route.query.medical_record_id
+    }
+    this.fetch()
+  },
+  watch: {
+    items () {
+      this.applyFilter()
+    }
+  },
   methods: {
     /* ===== helpers ===== */
     rowKey (t, idx) { return t._id || t.id || `${idx}` },
@@ -339,6 +378,9 @@ export default {
         patient_id: '',
         doctor_id: '',
         medical_record_id: '',
+        patient_name: '',
+        doctor_name: '',
+        visit_date: '',
         treatment_name: '',
         start_date: '',
         end_date: '',
@@ -384,6 +426,21 @@ export default {
         this.error = e?.response?.data?.message || e?.message || 'Không tải được dữ liệu'
       } finally { this.loading = false }
     },
+
+    // ✅ Apply filter by medical record
+    applyFilter () {
+      if (!this.filterRecordId) {
+        this.filteredItems = [...this.items]
+      } else {
+        this.filteredItems = this.items.filter(t => t.medical_record_id === this.filterRecordId)
+      }
+    },
+
+    clearFilter () {
+      this.filterRecordId = ''
+      this.applyFilter()
+    },
+
     search () { this.page = 1; this.fetch() },
     reload () { this.fetch() },
     next () { if (this.hasMore) { this.page++; this.fetch() } },
@@ -393,23 +450,44 @@ export default {
     async ensureOptionsLoaded () {
       if (this.optionsLoaded) return
       try {
-        const [dRes, pRes] = await Promise.all([
-          DoctorService.list({ limit: 1000 }), // BS
-          PatientService.list({ limit: 1000 }) // BN
+        const [dRes, pRes, rRes] = await Promise.all([
+          DoctorService.list({ limit: 1000 }),
+          PatientService.list({ limit: 1000 }),
+          MedicalRecordService.list({ limit: 1000 })
         ])
         const arr = r => (Array.isArray(r?.rows)
           ? r.rows.map(x => x.doc || x.value || x)
           : Array.isArray(r?.data)
             ? r.data
             : Array.isArray(r) ? r : [])
-        const dList = arr(dRes); const pList = arr(pRes)
+        const dList = arr(dRes)
+        const pList = arr(pRes)
+        const rList = arr(rRes)
         const key = o => o._id || o.id || o.code || o.username
-        const label = o => o.full_name || o.name || o.display_name || o.code || o.username || key(o)
+        const label = o => o?.personal_info?.full_name || o.full_name || o.name || o.display_name || o.code || o.username || key(o)
 
         this.doctorOptions = dList.map(o => ({ value: key(o), label: label(o) }))
         this.patientOptions = pList.map(o => ({ value: key(o), label: label(o) }))
 
-        // Sửa lỗi ESLint: thay reduce với comma operator thành forEach
+        // Create medical record options
+        this.recordOptions = rList.map(rec => {
+          const patient = pList.find(p => key(p) === rec.patient_id)
+          const doctor = dList.find(d => key(d) === rec.doctor_id)
+          const visitDate = rec.visit_info?.visit_date || rec.visit_date
+          const dateStr = visitDate ? new Date(visitDate).toLocaleDateString('vi-VN') : ''
+          const visitType = rec.visit_info?.visit_type || rec.visit_type || 'khám'
+
+          return {
+            value: key(rec),
+            label: `${dateStr} - ${label(patient)} - ${visitType}`,
+            patient_id: rec.patient_id,
+            doctor_id: rec.doctor_id,
+            patient_name: label(patient),
+            doctor_name: label(doctor),
+            visit_date: dateStr
+          }
+        })
+
         this.doctorsMap = {}
         dList.forEach(o => {
           this.doctorsMap[key(o)] = o
@@ -425,28 +503,22 @@ export default {
         console.error(e)
         this.doctorOptions = []
         this.patientOptions = []
+        this.recordOptions = []
       }
     },
-    async onPatientChange () {
-      this.form.medical_record_id = ''
-      await this.loadRecordsForPatient(this.form.patient_id)
-    },
-    async loadRecordsForPatient (patientId) {
-      try {
-        if (!patientId) { this.recordOptions = []; return }
-        const r = await MedicalRecordService.forPatient(patientId, { limit: 1000 })
-        const arr = Array.isArray(r?.rows)
-          ? r.rows.map(x => x.doc || x.value || x)
-          : Array.isArray(r?.data)
-            ? r.data
-            : Array.isArray(r) ? r : []
-        this.recordOptions = arr.map(rec => ({
-          value: rec._id || rec.id,
-          label: `${(rec.visit_info?.visit_date || rec.visit_date || '').toString().slice(0, 10)} — ${(rec.visit_info?.visit_type || rec.visit_type || 'khám')}`
-        }))
-      } catch (e) {
-        console.error(e)
-        this.recordOptions = []
+
+    // Auto-fill from medical record
+    onRecordChange () {
+      const recordId = this.form.medical_record_id
+      if (!recordId) return
+
+      const selectedRecord = this.recordOptions.find(opt => opt.value === recordId)
+      if (selectedRecord) {
+        this.form.patient_id = selectedRecord.patient_id
+        this.form.doctor_id = selectedRecord.doctor_id
+        this.form.patient_name = selectedRecord.patient_name
+        this.form.doctor_name = selectedRecord.doctor_name
+        this.form.visit_date = selectedRecord.visit_date
       }
     },
 
@@ -456,7 +528,6 @@ export default {
       this.form = this.emptyForm()
       this.showModal = true
       this.ensureOptionsLoaded()
-      this.recordOptions = []
     },
     openEdit (row) {
       const f = this.flattenTreatment(row)
@@ -471,8 +542,10 @@ export default {
         monitor_next_check: (f.monitor_next_check || '').toString().slice(0, 10)
       }
       this.showModal = true
-      this.ensureOptionsLoaded()
-      this.loadRecordsForPatient(this.form.patient_id)
+      this.ensureOptionsLoaded().then(() => {
+        // After options loaded, populate display names
+        this.onRecordChange()
+      })
     },
     close () { if (!this.saving) this.showModal = false },
 

@@ -1210,32 +1210,34 @@ export default {
       }
     },
 
-    // ✅ SUC-06: Download/Print invoice as PDF
+    // ✅ SUC-06: Open invoice print page in new tab with authentication
     async downloadInvoice (row) {
       try {
         this.loading = true
         const invoiceId = row._id || row.id
 
-        // Call API to download invoice PDF
+        // ✅ Fetch HTML with authentication via axios
         const response = await InvoiceService.download(invoiceId)
 
-        // Create blob from response
-        const blob = new Blob([response.data], { type: 'application/pdf' })
+        // ✅ Create blob and open in new window
+        const blob = new Blob([response.data], { type: 'text/html; charset=utf-8' })
         const url = window.URL.createObjectURL(blob)
 
-        // Create temporary link and trigger download
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `Invoice_${row.invoice_number || invoiceId}.pdf`
-        document.body.appendChild(link)
-        link.click()
+        // Open in new tab
+        const printWindow = window.open(url, '_blank')
 
-        // Cleanup
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(url)
+        // Clean up after window loads
+        if (printWindow) {
+          printWindow.addEventListener('load', () => {
+            window.URL.revokeObjectURL(url)
+          })
+        } else {
+          alert('Vui lòng cho phép popup để xem hóa đơn')
+          window.URL.revokeObjectURL(url)
+        }
       } catch (e) {
-        console.error('Download invoice error:', e)
-        alert(e?.response?.data?.message || e?.message || 'Không thể tải hóa đơn')
+        console.error('Open invoice error:', e)
+        alert(e?.response?.data?.message || e?.message || 'Không thể mở hóa đơn')
       } finally {
         this.loading = false
       }
