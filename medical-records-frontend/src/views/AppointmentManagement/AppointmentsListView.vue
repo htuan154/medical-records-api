@@ -17,16 +17,23 @@
 
     <!-- Filters -->
     <div class="row g-2 mb-3">
-      <div class="col-md-3"><input v-model.trim="f.patient_id" class="form-control" placeholder="patient_id" @keyup.enter="search" /></div>
-      <div class="col-md-3"><input v-model.trim="f.doctor_id" class="form-control" placeholder="doctor_id" @keyup.enter="search" /></div>
+      <div class="col-md-2">
+        <input v-model.trim="f.patient_name" class="form-control" placeholder="Tên bệnh nhân" @keyup.enter="search" />
+      </div>
+      <div class="col-md-2">
+        <input v-model.trim="f.patient_phone" class="form-control" placeholder="SĐT bệnh nhân" @keyup.enter="search" />
+      </div>
+      <div class="col-md-2">
+        <input v-model.trim="f.doctor_name" class="form-control" placeholder="Tên bác sĩ" @keyup.enter="search" />
+      </div>
       <div class="col-md-2">
         <select v-model="f.status" class="form-select">
           <option value="">-- Trạng thái --</option>
-          <option value="scheduled">scheduled</option>
-          <option value="approved">approved</option>
-          <option value="completed">completed</option>
-          <option value="canceled">canceled</option>
-          <option value="pending">pending</option>
+          <option value="scheduled">Đã đặt</option>
+          <option value="approved">Đã duyệt</option>
+          <option value="completed">Hoàn thành</option>
+          <option value="canceled">Đã hủy</option>
+          <option value="pending">Chờ xử lý</option>
         </select>
       </div>
       <div class="col-md-2"><input v-model="f.from" type="datetime-local" class="form-control" /></div>
@@ -45,75 +52,66 @@
           <tr>
             <th style="width:56px">#</th>
             <th>Mã</th>
-            <th>Patient</th>
-            <th>Doctor</th>
+            <th>Bệnh nhân</th>
+            <th>Bác sĩ</th>
             <th>Thời gian</th>
             <th>Thời lượng</th>
-            <th>Loại</th>
+            <th>Loại khám</th>
             <th>Ưu tiên</th>
             <th>Trạng thái</th>
             <th style="width:180px">Hành động</th>
           </tr>
         </thead>
-        <tbody>
-          <template v-for="(a, idx) in items" :key="rowKey(a, idx)">
-            <tr>
-              <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
-              <td>{{ a._id || a.id }}</td>
-              <td>{{ displayName(patientsMap[a.patient_id]) || a.patient_id }}</td>
-              <td>{{ displayName(doctorsMap[a.doctor_id]) || a.doctor_id }}</td>
-              <td>{{ fmtDateTime(a.scheduled_date) }}</td>
-              <td>{{ a.duration }} phút</td>
-              <td>{{ a.type || '-' }}</td>
-              <td>{{ a.priority || '-' }}</td>
-              <td><span :class="['badge', statusClass(a.status)]">{{ a.status || '-' }}</span></td>
-              <td>
-                <div class="btn-group">
-                  <button class="btn btn-sm btn-outline-secondary" @click="toggleRow(a)">{{ isExpanded(a) ? 'Ẩn' : 'Xem' }}</button>
-                  <button class="btn btn-sm btn-outline-primary" @click="openEdit(a)">Sửa</button>
-                  <button class="btn btn-sm btn-outline-danger" @click="remove(a)" :disabled="loading">Xóa</button>
+        <tbody v-for="(a, idx) in items" :key="rowKey(a, idx)">
+          <tr>
+            <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
+            <td>{{ a._id || a.id }}</td>
+            <td>{{ displayName(patientsMap[a.patient_id]) || a.patient_id }}</td>
+            <td>{{ displayName(doctorsMap[a.doctor_id]) || a.doctor_id }}</td>
+            <td>{{ fmtDateTime(a.scheduled_date) }}</td>
+            <td>{{ a.duration }} phút</td>
+            <td>{{ typeLabels[a.type] || a.type }}</td>
+            <td>{{ priorityLabels[a.priority] || a.priority }}</td>
+            <td><span :class="['badge', statusClass(a.status)]">{{ statusLabels[a.status] || a.status }}</span></td>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary" @click="toggleRow(a)">{{ isExpanded(a) ? 'Ẩn' : 'Xem' }}</button>
+                <button v-if="['scheduled', 'approved'].includes(a.status)" class="btn btn-sm btn-success" @click="checkIn(a)" :disabled="loading" title="Check-in"><i class="bi bi-check-circle"></i></button>
+                <button v-if="a.status !== 'completed' && a.status !== 'canceled'" class="btn btn-sm btn-warning" @click="cancelAppointment(a)" :disabled="loading" title="Hủy"><i class="bi bi-x-circle"></i></button>
+                <button class="btn btn-sm btn-outline-primary" @click="openEdit(a)">Sửa</button>
+                <button class="btn btn-sm btn-outline-danger" @click="remove(a)" :disabled="loading">Xóa</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Details -->
+          <tr v-if="isExpanded(a)">
+            <td :colspan="10">
+              <div class="detail-wrap">
+                <div class="detail-title">Chi tiết lịch hẹn</div>
+                <div class="detail-grid">
+                  <div><b>Thời gian:</b> {{ fmtDateTime(a.scheduled_date) }}</div>
+                  <div><b>Thời lượng:</b> {{ a.duration }} phút</div>
+                  <div><b>Loại khám:</b> {{ typeLabels[a.type] || a.type }}</div>
+                  <div><b>Ưu tiên:</b> {{ priorityLabels[a.priority] || a.priority }}</div>
                 </div>
-              </td>
-            </tr>
-
-            <!-- Details -->
-            <tr v-if="isExpanded(a)">
-              <td :colspan="10">
-                <div class="detail-wrap">
-                  <div class="detail-title">Chi tiết lịch hẹn</div>
-                  <div class="detail-grid">
-                    <div><b>Thời gian:</b> {{ fmtDateTime(a.scheduled_date) }}</div>
-                    <div><b>Thời lượng:</b> {{ a.duration }} phút</div>
-                    <div><b>Loại:</b> {{ a.type }}</div>
-                    <div><b>Ưu tiên:</b> {{ a.priority || '-' }}</div>
-                  </div>
-
-                  <div class="detail-grid">
-                    <div><b>Lý do:</b> {{ a.reason || '-' }}</div>
-                    <div><b>Ghi chú:</b> {{ a.notes || '-' }}</div>
-                  </div>
-
-                  <div class="detail-title">Nhắc lịch</div>
-                  <ul>
-                    <li v-for="(r, i) in a.reminders" :key="i">
-                      • {{ r.type }} — {{ fmtDateTime(r.sent_at) }} <i>({{ r.status }})</i>
-                    </li>
-                    <li v-if="!a.reminders || !a.reminders.length" class="text-muted">-</li>
-                  </ul>
-
-                  <div class="detail-title">Khác</div>
-                  <div class="detail-grid">
-                    <div><b>Tạo lúc:</b> {{ fmtDateTime(a.created_at) }}</div>
-                    <div><b>Cập nhật:</b> {{ fmtDateTime(a.updated_at) }}</div>
-                    <div><b>Người tạo:</b> {{ a.created_by || '-' }}</div>
-                    <div><b>Rev:</b> {{ a._rev || '-' }}</div>
-                  </div>
+                <div class="detail-grid">
+                  <div><b>Lý do:</b> {{ a.reason || 'Không có' }}</div>
+                  <div><b>Ghi chú:</b> {{ a.notes || 'Không có' }}</div>
                 </div>
-              </td>
-            </tr>
-          </template>
+                <div class="detail-title">Khác</div>
+                <div class="detail-grid">
+                  <div><b>Tạo lúc:</b> {{ fmtDateTime(a.created_at) }}</div>
+                  <div><b>Cập nhật:</b> {{ fmtDateTime(a.updated_at) }}</div>
+                  <div><b>Người tạo:</b> {{ displayCreator(a.created_by) }}</div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
 
-          <tr v-if="!items.length">
+        <tbody v-if="!items.length">
+          <tr>
             <td colspan="10" class="text-center text-muted">Không có dữ liệu</td>
           </tr>
         </tbody>
@@ -128,7 +126,7 @@
       </div>
     </div>
 
-    <!-- MODAL: Form đầy đủ + combobox id -->
+    <!-- MODAL -->
     <div v-if="showModal" class="modal-backdrop" @mousedown.self="close">
       <div class="modal-card">
         <h3 class="h6 mb-3">{{ editingId ? 'Sửa lịch hẹn' : 'Thêm lịch hẹn' }}</h3>
@@ -137,91 +135,91 @@
           <div class="section-title">Liên kết</div>
           <div class="row g-3">
             <div class="col-md-4">
-              <label class="form-label">Bệnh nhân</label>
-              <select v-model="form.patient_id" class="form-select">
-                <option value="">-- chọn bệnh nhân --</option>
+              <label class="form-label">Bệnh nhân <span class="text-danger">*</span></label>
+              <select v-model="form.patient_id" class="form-select" required>
+                <option value="">-- Chọn bệnh nhân --</option>
                 <option v-for="p in patientOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
               </select>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Bác sĩ</label>
-              <select v-model="form.doctor_id" class="form-select">
-                <option value="">-- chọn bác sĩ --</option>
+              <label class="form-label">Bác sĩ <span class="text-danger">*</span></label>
+              <select v-model="form.doctor_id" class="form-select" required @change="loadAvailableSlots">
+                <option value="">-- Chọn bác sĩ --</option>
                 <option v-for="d in doctorOptions" :key="d.value" :value="d.value">{{ d.label }}</option>
               </select>
             </div>
             <div class="col-md-4">
               <label class="form-label">Trạng thái</label>
               <select v-model="form.status" class="form-select">
-                <option value="scheduled">scheduled</option>
-                <option value="approved">approved</option>
-                <option value="completed">completed</option>
-                <option value="canceled">canceled</option>
-                <option value="pending">pending</option>
+                <option value="scheduled">Đã đặt</option>
+                <option value="approved">Đã duyệt</option>
+                <option value="completed">Hoàn thành</option>
+                <option value="canceled">Đã hủy</option>
+                <option value="pending">Chờ xử lý</option>
               </select>
             </div>
           </div>
 
           <div class="section-title">Thông tin lịch hẹn</div>
           <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">Thời gian</label>
-              <input v-model="form.scheduled_date" type="datetime-local" class="form-control" />
-            </div>
-            <div class="col-md-2">
-              <label class="form-label">Thời lượng (phút)</label>
-              <input v-model.number="form.duration" type="number" min="0" class="form-control" />
+            <div class="col-md-3">
+              <label class="form-label">Ngày khám <span class="text-danger">*</span></label>
+              <input v-model="form.appointment_date" type="date" class="form-control" required @change="loadAvailableSlots" />
             </div>
             <div class="col-md-3">
-              <label class="form-label">Loại</label>
-              <input v-model.trim="form.type" class="form-control" placeholder="follow_up / consultation…" />
+              <label class="form-label">Thời lượng (phút) <span class="text-danger">*</span></label>
+              <select v-model.number="form.duration" class="form-select" required @change="loadAvailableSlots">
+                <option :value="15">15 phút</option>
+                <option :value="30">30 phút</option>
+                <option :value="45">45 phút</option>
+                <option :value="60">60 phút</option>
+                <option :value="90">90 phút</option>
+                <option :value="120">120 phút</option>
+              </select>
             </div>
             <div class="col-md-3">
-              <label class="form-label">Ưu tiên</label>
-              <select v-model="form.priority" class="form-select">
-                <option value="low">low</option>
-                <option value="normal">normal</option>
-                <option value="high">high</option>
+              <label class="form-label">Khung giờ khám <span class="text-danger">*</span></label>
+              <select v-model="form.time_slot" class="form-select" required :disabled="!availableSlots.length || !form.doctor_id || !form.appointment_date">
+                <option value="">-- Chọn giờ --</option>
+                <option v-for="slot in availableSlots" :key="slot.value" :value="slot.value">
+                  {{ slot.label }}
+                </option>
+              </select>
+              <small v-if="loadingSlots" class="text-info d-block mt-1">Đang tải khung giờ...</small>
+              <small v-else-if="availableSlots.length === 0 && form.appointment_date && form.doctor_id" class="text-warning d-block mt-1">
+                Không có khung giờ trống
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Loại khám <span class="text-danger">*</span></label>
+              <select v-model="form.type" class="form-select" required>
+                <option value="consultation">Tư vấn</option>
+                <option value="follow_up">Tái khám</option>
+                <option value="checkup">Khám sức khỏe</option>
+                <option value="emergency">Cấp cứu</option>
+                <option value="procedure">Thủ thuật</option>
               </select>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Lý do</label>
-              <input v-model.trim="form.reason" class="form-control" />
+            <div class="col-md-3">
+              <label class="form-label">Ưu tiên</label>
+              <select v-model="form.priority" class="form-select">
+                <option value="normal">Bình thường</option>
+                <option value="high">Cao</option>
+                <option value="urgent">Khẩn cấp</option>
+              </select>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Ghi chú</label>
-              <input v-model.trim="form.notes" class="form-control" />
-            </div>
-          </div>
 
-          <div class="section-title">Nhắc lịch</div>
-          <div class="table-responsive">
-            <table class="table table-sm align-middle">
-              <thead>
-              <tr>
-                <th style="width:18%">Loại</th>
-                <th style="width:26%">Gửi lúc</th>
-                <th style="width:18%">Trạng thái</th>
-                <th style="width:6%"></th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="(r, i) in form.reminders" :key="i">
-                <td><input v-model.trim="r.type" class="form-control form-control-sm" placeholder="sms / email" /></td>
-                <td><input v-model="r.sent_at" type="datetime-local" class="form-control form-control-sm" /></td>
-                <td><input v-model.trim="r.status" class="form-control form-control-sm" placeholder="sent / failed / pending" /></td>
-                <td class="text-end">
-                  <button type="button" class="btn btn-sm btn-outline-danger" @click="removeReminder(i)">×</button>
-                </td>
-              </tr>
-              <tr v-if="!form.reminders.length">
-                <td colspan="4" class="text-muted small">Chưa có nhắc lịch — bấm “+ Thêm nhắc lịch”</td>
-              </tr>
-              </tbody>
-            </table>
+            <div class="col-md-9">
+              <label class="form-label">Lý do khám</label>
+              <input v-model.trim="form.reason" class="form-control" placeholder="Mô tả lý do đến khám..." />
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Ghi chú</label>
+              <textarea v-model.trim="form.notes" class="form-control" rows="2" placeholder="Ghi chú thêm..."></textarea>
+            </div>
           </div>
-          <button type="button" class="btn btn-outline-secondary btn-sm" @click="addReminder">+ Thêm nhắc lịch</button>
 
           <div class="d-flex justify-content-end gap-2 mt-3">
             <button type="button" class="btn btn-outline-secondary" @click="close">Hủy</button>
@@ -234,12 +232,16 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import AppointmentService from '@/api/appointmentService'
 import DoctorService from '@/api/doctorService'
 import PatientService from '@/api/patientService'
 
 export default {
   name: 'AppointmentsListView',
+  computed: {
+    ...mapGetters(['me'])
+  },
   data () {
     return {
       items: [],
@@ -250,7 +252,7 @@ export default {
       loading: false,
       error: '',
       // filters
-      f: { patient_id: '', doctor_id: '', status: '', from: '', to: '' },
+      f: { patient_name: '', patient_phone: '', doctor_name: '', status: '', from: '', to: '' },
       // modal
       showModal: false,
       saving: false,
@@ -263,17 +265,68 @@ export default {
       patientOptions: [],
       doctorsMap: {},
       patientsMap: {},
-      optionsLoaded: false
+      optionsLoaded: false,
+      // Available slots
+      availableSlots: [],
+      loadingSlots: false,
+      // Labels
+      typeLabels: {
+        consultation: 'Tư vấn',
+        follow_up: 'Tái khám',
+        checkup: 'Khám sức khỏe',
+        emergency: 'Cấp cứu',
+        procedure: 'Thủ thuật'
+      },
+      priorityLabels: {
+        normal: 'Bình thường',
+        high: 'Cao',
+        urgent: 'Khẩn cấp'
+      },
+      statusLabels: {
+        scheduled: 'Đã đặt',
+        approved: 'Đã duyệt',
+        completed: 'Hoàn thành',
+        canceled: 'Đã hủy',
+        pending: 'Chờ xử lý'
+      }
     }
   },
-  created () { this.fetch() },
+  created () {
+    console.log('🔍 AppointmentsListView created, current user:', this.me)
+    this.fetch()
+  },
   methods: {
     /* ===== helpers ===== */
-    fmtDateTime (v) { if (!v) return '-'; try { return new Date(v).toLocaleString() } catch { return v } },
+    fmtDateTime (v) { if (!v) return 'Không có'; try { return new Date(v).toLocaleString('vi-VN') } catch { return v } },
     rowKey (r, i) { return r._id || r.id || `${i}` },
     isExpanded (r) { return !!this.expanded[this.rowKey(r, 0)] },
     toggleRow (r) { const k = this.rowKey(r, 0); this.expanded = { ...this.expanded, [k]: !this.expanded[k] } },
-    displayName (o) { return o?.full_name || o?.name || o?.display_name || o?.code || o?.username },
+    displayName (o) {
+      if (!o) return ''
+      return o?.personal_info?.full_name || o?.full_name || o?.name || o?.display_name || o?.code || o?.username || ''
+    },
+    displayCreator (userId) {
+      if (!userId) return 'Không có'
+
+      // If creator is current user, show their name
+      if (this.me && (userId === this.me.id || userId === this.me._id || userId === this.me.username)) {
+        return this.me.username || this.me.name || this.me.full_name || 'Tôi'
+      }
+
+      // Extract username from user_xxx_001 format
+      // user_receptionist_001 -> receptionist
+      // user_admin_001 -> admin
+      if (typeof userId === 'string' && userId.startsWith('user_')) {
+        const parts = userId.split('_')
+        if (parts.length >= 2) {
+          // Return the middle part (role/username)
+          return parts.slice(1, -1).join('_') || userId
+        }
+      }
+
+      // Otherwise just show the full ID
+      return userId
+    },
     statusClass (s) {
       return s === 'scheduled'
         ? 'bg-info-subtle text-info'
@@ -293,17 +346,12 @@ export default {
         patient_id: d.patient_id || '',
         doctor_id: d.doctor_id || '',
         scheduled_date: ai.scheduled_date || d.scheduled_date || '',
-        duration: ai.duration ?? d.duration ?? 0,
-        type: ai.type || d.type || '',
-        priority: ai.priority || d.priority || '',
+        duration: ai.duration ?? d.duration ?? 30,
+        type: ai.type || d.type || 'consultation',
+        priority: ai.priority || d.priority || 'normal',
         reason: d.reason || '',
         status: d.status || 'scheduled',
         notes: d.notes || '',
-        reminders: (d.reminders || []).map(r => ({
-          type: r.type || 'sms',
-          sent_at: r.sent_at || '',
-          status: r.status || ''
-        })),
         created_at: d.created_at || null,
         updated_at: d.updated_at || null,
         created_by: d.created_by || '',
@@ -317,17 +365,121 @@ export default {
         _rev: null,
         patient_id: '',
         doctor_id: '',
-        scheduled_date: '',
+        appointment_date: '',
+        time_slot: '',
         duration: 30,
-        type: 'follow_up',
+        type: 'consultation',
         priority: 'normal',
         reason: '',
         status: 'scheduled',
-        notes: '',
-        reminders: [],
-        created_at: null,
-        updated_at: null,
-        created_by: ''
+        notes: ''
+      }
+    },
+
+    /* ===== Generate time slots ===== */
+    generateTimeSlots (duration) {
+      const slots = []
+      const addSlots = (startHour, endHour) => {
+        for (let h = startHour; h < endHour; h++) {
+          for (let m = 0; m < 60; m += 15) {
+            const slotStart = h * 60 + m
+            const slotEnd = slotStart + duration
+
+            // Check if slot fits before end time
+            if (slotEnd <= endHour * 60) {
+              const hh = String(h).padStart(2, '0')
+              const mm = String(m).padStart(2, '0')
+              const endH = Math.floor(slotEnd / 60)
+              const endM = slotEnd % 60
+              const hhEnd = String(endH).padStart(2, '0')
+              const mmEnd = String(endM).padStart(2, '0')
+
+              slots.push({
+                value: `${hh}:${mm}`,
+                label: `${hh}:${mm} - ${hhEnd}:${mmEnd}`,
+                startMinutes: slotStart,
+                endMinutes: slotEnd
+              })
+            }
+          }
+        }
+      }
+
+      // Morning: 7:00 - 12:00
+      addSlots(7, 12)
+      // Afternoon: 13:00 - 17:00
+      addSlots(13, 17)
+
+      return slots
+    },
+
+    /* ===== Load available slots ===== */
+    async loadAvailableSlots () {
+      const doctorId = this.form.doctor_id
+      const appointmentDate = this.form.appointment_date
+      const duration = this.form.duration
+
+      if (!doctorId || !appointmentDate || !duration) {
+        this.availableSlots = []
+        return
+      }
+
+      this.loadingSlots = true
+      try {
+        // Generate all possible slots
+        const allSlots = this.generateTimeSlots(duration)
+
+        // Get existing appointments for this doctor on this date
+        const res = await AppointmentService.list({
+          doctor_id: doctorId,
+          from: `${appointmentDate}T00:00:00`,
+          to: `${appointmentDate}T23:59:59`,
+          limit: 1000
+        })
+
+        let existingAppointments = []
+        if (res && Array.isArray(res.rows)) {
+          existingAppointments = res.rows.map(r => r.doc || r.value || r)
+        } else if (res && Array.isArray(res.data)) {
+          existingAppointments = res.data
+        } else if (Array.isArray(res)) {
+          existingAppointments = res
+        }
+
+        // Filter out editing appointment
+        if (this.editingId) {
+          existingAppointments = existingAppointments.filter(a => {
+            const id = a._id || a.id
+            return id !== this.editingId && a.status !== 'canceled'
+          })
+        } else {
+          existingAppointments = existingAppointments.filter(a => a.status !== 'canceled')
+        }
+
+        // Convert existing appointments to time ranges
+        const busyRanges = existingAppointments.map(apt => {
+          const scheduledDate = apt.appointment_info?.scheduled_date || apt.scheduled_date
+          const aptDuration = apt.appointment_info?.duration || apt.duration || 30
+          const date = new Date(scheduledDate)
+          const startMinutes = date.getHours() * 60 + date.getMinutes()
+          const endMinutes = startMinutes + aptDuration
+
+          return { startMinutes, endMinutes }
+        })
+
+        // Filter available slots
+        this.availableSlots = allSlots.filter(slot => {
+          // Check if slot conflicts with any busy range
+          return !busyRanges.some(busy => {
+            // Slot is busy if it overlaps with existing appointment
+            return !(slot.endMinutes <= busy.startMinutes || slot.startMinutes >= busy.endMinutes)
+          })
+        })
+      } catch (e) {
+        console.error('Error loading slots:', e)
+        this.availableSlots = []
+      } finally {
+        this.loadingSlots = false
       }
     },
 
@@ -338,8 +490,6 @@ export default {
       try {
         const skip = (this.page - 1) * this.pageSize
         const params = {
-          patient_id: this.f.patient_id || undefined,
-          doctor_id: this.f.doctor_id || undefined,
           status: this.f.status || undefined,
           from: this.f.from || undefined,
           to: this.f.to || undefined,
@@ -353,7 +503,39 @@ export default {
           raw = res.rows.map(r => r.doc || r.value || r); total = res.total_rows ?? raw.length; offset = res.offset ?? 0
         } else if (res && Array.isArray(res.data)) { raw = res.data; total = res.total ?? raw.length } else if (Array.isArray(res)) { raw = res; total = raw.length }
 
+        // Map appointments and enrich with patient/doctor info
         this.items = (raw || []).map(d => this.flattenAppointment(d))
+
+        // Client-side filtering by patient name/phone or doctor name
+        if (this.f.patient_name || this.f.patient_phone || this.f.doctor_name) {
+          this.items = this.items.filter(item => {
+            const patient = this.patientsMap[item.patient_id]
+            const doctor = this.doctorsMap[item.doctor_id]
+
+            let matchPatientName = true
+            let matchPatientPhone = true
+            let matchDoctorName = true
+
+            if (this.f.patient_name) {
+              const patientName = (patient?.personal_info?.full_name || patient?.full_name || patient?.name || '').toLowerCase()
+              matchPatientName = patientName.includes(this.f.patient_name.toLowerCase())
+            }
+
+            if (this.f.patient_phone) {
+              const patientPhone = patient?.personal_info?.phone || patient?.phone || patient?.mobile || ''
+              matchPatientPhone = patientPhone.includes(this.f.patient_phone)
+            }
+
+            if (this.f.doctor_name) {
+              const doctorName = (doctor?.personal_info?.full_name || doctor?.full_name || doctor?.name || '').toLowerCase()
+              matchDoctorName = doctorName.includes(this.f.doctor_name.toLowerCase())
+            }
+
+            return matchPatientName && matchPatientPhone && matchDoctorName
+          })
+          total = this.items.length
+        }
+
         this.total = total
         this.hasMore = (offset != null)
           ? (offset + this.items.length) < (this.total || 0)
@@ -386,12 +568,11 @@ export default {
             : Array.isArray(r) ? r : [])
         const dList = arr(dRes); const pList = arr(pRes)
         const key = o => o._id || o.id || o.code || o.username
-        const label = o => o.full_name || o.name || o.display_name || o.code || o.username || key(o)
+        const label = o => o?.personal_info?.full_name || o.full_name || o.name || o.display_name || o.code || o.username || key(o)
 
         this.doctorOptions = dList.map(o => ({ value: key(o), label: label(o) }))
         this.patientOptions = pList.map(o => ({ value: key(o), label: label(o) }))
 
-        // Sửa lỗi ESLint: thay reduce với comma operator thành forEach
         this.doctorsMap = {}
         dList.forEach(o => {
           this.doctorsMap[key(o)] = o
@@ -407,54 +588,94 @@ export default {
     },
 
     /* ===== modal ===== */
-    openCreate () { this.editingId = null; this.form = this.emptyForm(); this.showModal = true; this.ensureOptionsLoaded() },
-    openEdit (row) {
-      const f = this.flattenAppointment(row)
-      this.editingId = f._id || f.id
-      this.form = {
-        ...this.emptyForm(),
-        ...f,
-        scheduled_date: f.scheduled_date ? new Date(f.scheduled_date).toISOString().slice(0, 16) : ''
-      }
+    openCreate () {
+      this.editingId = null
+      this.form = this.emptyForm()
+      this.availableSlots = []
       this.showModal = true
       this.ensureOptionsLoaded()
     },
-    close () { if (!this.saving) this.showModal = false },
+    openEdit (row) {
+      const f = this.flattenAppointment(row)
+      this.editingId = f._id || f.id
 
-    addReminder () { this.form.reminders = [...this.form.reminders, { type: 'sms', sent_at: '', status: 'pending' }] },
-    removeReminder (i) { this.form.reminders = this.form.reminders.filter((_, idx) => idx !== i) },
+      // Extract date and time from scheduled_date
+      let appointmentDate = ''
+      let timeSlot = ''
+      if (f.scheduled_date) {
+        const dt = new Date(f.scheduled_date)
+        appointmentDate = dt.toISOString().split('T')[0]
+        timeSlot = `${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`
+      }
+
+      this.form = {
+        ...this.emptyForm(),
+        ...f,
+        appointment_date: appointmentDate,
+        time_slot: timeSlot
+      }
+
+      this.showModal = true
+      this.ensureOptionsLoaded()
+
+      // Load available slots after form is populated
+      if (this.form.doctor_id && this.form.appointment_date && this.form.duration) {
+        this.loadAvailableSlots()
+      }
+    },
+    close () { if (!this.saving) this.showModal = false },
 
     async save () {
       if (this.saving) return
+
+      // Validate required fields
+      if (!this.form.patient_id || !this.form.doctor_id || !this.form.appointment_date || !this.form.time_slot) {
+        alert('Vui lòng điền đầy đủ thông tin bắt buộc (Bệnh nhân, Bác sĩ, Ngày khám, Khung giờ)')
+        return
+      }
+
       this.saving = true
       try {
+        // Combine date and time into scheduled_date
+        const scheduledDate = `${this.form.appointment_date}T${this.form.time_slot}:00`
+
         const payload = {
           type: 'appointment',
-          patient_id: this.form.patient_id || undefined,
-          doctor_id: this.form.doctor_id || undefined,
+          patient_id: this.form.patient_id,
+          doctor_id: this.form.doctor_id,
           appointment_info: {
-            scheduled_date: this.form.scheduled_date || undefined,
-            duration: this.form.duration ?? undefined,
-            type: this.form.type || undefined,
-            priority: this.form.priority || undefined
+            scheduled_date: scheduledDate,
+            duration: this.form.duration,
+            type: this.form.type,
+            priority: this.form.priority
           },
           reason: this.form.reason || undefined,
           status: this.form.status || 'scheduled',
           notes: this.form.notes || undefined,
-          reminders: (this.form.reminders || []).map(r => ({
-            type: r.type || undefined,
-            sent_at: r.sent_at || undefined,
-            status: r.status || undefined
-          }))
+          reminders: []
         }
+
         if (this.form._id) payload._id = this.form._id
         if (this.form._rev) payload._rev = this.form._rev
 
-        if (this.editingId) await AppointmentService.update(this.editingId, payload)
-        else await AppointmentService.create(payload)
+        if (this.editingId) {
+          await AppointmentService.update(this.editingId, payload)
+        } else {
+          // Set created_by to current user when creating new appointment
+          console.log('🔍 Current user (me):', this.me)
+          if (this.me) {
+            const createdBy = this.me.id || this.me._id || this.me.username
+            console.log('🔍 Setting created_by to:', createdBy)
+            payload.created_by = createdBy
+          } else {
+            console.warn('⚠️ No current user found, created_by will be undefined')
+          }
+          await AppointmentService.create(payload)
+        }
 
         this.showModal = false
         await this.fetch()
+        alert('✅ Lưu lịch hẹn thành công!')
       } catch (e) {
         console.error(e)
         alert(e?.response?.data?.message || e?.message || 'Lưu thất bại')
@@ -467,9 +688,68 @@ export default {
         const id = row._id || row.id
         await AppointmentService.remove(id)
         await this.fetch()
+        alert('✅ Đã xóa lịch hẹn')
       } catch (e) {
         console.error(e)
         alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
+      }
+    },
+
+    /* ===== Check-in & Cancel ===== */
+    async checkIn (row) {
+      if (!confirm(`Check-in bệnh nhân cho lịch hẹn?\n\nBệnh nhân: ${this.displayName(this.patientsMap[row.patient_id])}\nBác sĩ: ${this.displayName(this.doctorsMap[row.doctor_id])}\nThời gian: ${this.fmtDateTime(row.scheduled_date)}`)) {
+        return
+      }
+
+      this.loading = true
+      try {
+        const id = row._id || row.id
+        const payload = {
+          _id: id,
+          _rev: row._rev,
+          status: 'completed',
+          updated_at: new Date().toISOString(),
+          notes: (row.notes || '') + `\n[Check-in lúc ${new Date().toLocaleString('vi-VN')}]`
+        }
+
+        await AppointmentService.update(id, payload)
+        alert('✅ Check-in thành công!')
+        await this.fetch()
+      } catch (e) {
+        console.error(e)
+        alert(e?.response?.data?.message || e?.message || 'Check-in thất bại')
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async cancelAppointment (row) {
+      const reason = prompt(
+        `Hủy lịch hẹn?\n\nBệnh nhân: ${this.displayName(this.patientsMap[row.patient_id])}\nBác sĩ: ${this.displayName(this.doctorsMap[row.doctor_id])}\nThời gian: ${this.fmtDateTime(row.scheduled_date)}\n\n━━━━━━━━━━━━━━━━━━━━━\nVui lòng nhập lý do hủy:`,
+        'Bệnh nhân yêu cầu hủy'
+      )
+
+      if (!reason || !reason.trim()) return
+
+      this.loading = true
+      try {
+        const id = row._id || row.id
+        const payload = {
+          _id: id,
+          _rev: row._rev,
+          status: 'canceled',
+          updated_at: new Date().toISOString(),
+          notes: (row.notes || '') + `\n[Hủy lúc ${new Date().toLocaleString('vi-VN')}] Lý do: ${reason.trim()}`
+        }
+
+        await AppointmentService.update(id, payload)
+        alert('✅ Đã hủy lịch hẹn!')
+        await this.fetch()
+      } catch (e) {
+        console.error(e)
+        alert(e?.response?.data?.message || e?.message || 'Hủy lịch thất bại')
+      } finally {
+        this.loading = false
       }
     }
   }

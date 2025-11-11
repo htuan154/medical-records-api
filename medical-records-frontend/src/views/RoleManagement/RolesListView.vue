@@ -10,7 +10,7 @@
           <option :value="50">50 / trang</option>
           <option :value="100">100 / trang</option>
         </select>
-        <button class="btn btn-outline-secondary" @click="reload" :disabled="loading">Tải lại</button>
+        <button class="btn btn-outline-secondary" @click="reloadPage" :disabled="loading">Tải lại</button>
         <button class="btn btn-primary" @click="openCreate" :disabled="loading">+ Thêm mới</button>
       </div>
     </div>
@@ -364,7 +364,8 @@ export default {
         rows = payload
       } else if (payload && typeof payload === 'object') {
         if (Array.isArray(payload.rows)) {
-          rows = payload.rows.map(r => r.doc || r.value || r)
+          // CouchDB format: extract doc from rows
+          rows = payload.rows.map(row => row.doc || row)
         } else if (Array.isArray(payload.items)) {
           rows = payload.items
         } else if (Array.isArray(payload.data)) {
@@ -372,7 +373,18 @@ export default {
         }
       }
 
-      const items = rows.filter(item => item && item.type === 'role')
+      // Lọc các document có type === 'role'
+      let items = rows.filter(item => item && item.type === 'role')
+
+      // Nếu có từ khóa tìm kiếm, lọc trên cả name và display_name
+      if (this.q) {
+        const qLower = this.q.trim().toLowerCase()
+        items = items.filter(item => {
+          const name = (item.name || '').toLowerCase()
+          const display = (item.display_name || item.displayName || '').toLowerCase()
+          return name.includes(qLower) || display.includes(qLower)
+        })
+      }
       const total = payload?.total_rows ?? payload?.total ?? items.length
 
       return { items, total: Number(total) || 0 }
@@ -383,11 +395,12 @@ export default {
       this.error = ''
       try {
         const skip = (this.page - 1) * this.pageSize
-        const res = await RoleService.list({
-          q: this.q || undefined,
+        // Luôn lấy tất cả vai trò, chỉ lọc trên giao diện
+        const params = {
           limit: this.pageSize,
           skip
-        })
+        }
+        const res = await RoleService.list(params)
         const meta = this.normalize(res)
         this.items = meta.items
         this.total = meta.total
@@ -402,6 +415,7 @@ export default {
 
     search () { this.page = 1; this.fetch() },
     reload () { this.fetch() },
+    reloadPage () { window.location.reload() },
     next () { if (this.hasMore) { this.page++; this.fetch() } },
     prev () { if (this.page > 1) { this.page--; this.fetch() } },
     changePageSize () { this.page = 1; this.fetch() },

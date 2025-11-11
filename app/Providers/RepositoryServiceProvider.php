@@ -17,6 +17,8 @@ use App\Repositories\Interfaces\RolesRepositoryInterface;
 use App\Repositories\Interfaces\StaffsRepositoryInterface;
 use App\Repositories\Interfaces\TreatmentsRepositoryInterface;
 use App\Repositories\Interfaces\UsersRepositoryInterface;
+use App\Repositories\Interfaces\ConsultationsRepositoryInterface;
+use App\Repositories\Interfaces\MessagesRepositoryInterface;
 
 // CouchDB implementations (khớp đúng tên file bạn đang có)
 use App\Repositories\CouchDB\AppointmentRepository;       // singular
@@ -30,6 +32,8 @@ use App\Repositories\CouchDB\RolesRepository;
 use App\Repositories\CouchDB\StaffsRepository;
 use App\Repositories\CouchDB\TreatmentsRepository;
 use App\Repositories\CouchDB\UsersRepository;
+use App\Repositories\CouchDB\ConsultationRepository;
+use App\Repositories\CouchDB\MessageRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -50,6 +54,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(StaffsRepositoryInterface::class,           StaffsRepository::class);
         $this->app->bind(TreatmentsRepositoryInterface::class,       TreatmentsRepository::class);
         $this->app->bind(UsersRepositoryInterface::class,            UsersRepository::class);
+        $this->app->bind(ConsultationsRepositoryInterface::class,    ConsultationRepository::class);
+        $this->app->bind(MessagesRepositoryInterface::class,         MessageRepository::class);
     }
 
     public function boot(): void

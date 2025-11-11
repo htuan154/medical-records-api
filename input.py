@@ -4,8 +4,8 @@ import requests, json, os, math
 USER = "admin"
 PASSWORD = "0986480752A"
 # PASSWORD = "123"
-BASE_URL = "https://couchdb-public.onrender.com"   # ✅ KHÔNG dùng /_utils/#
-# BASE_URL = "http://127.0.0.1:5984"   # ✅ KHÔNG dùng /_utils/#
+BASE_URL = "https://couchdb-public.onrender.com"   
+# BASE_URL = "http://127.0.0.1:5984" 
 
 BACKUP_FOLDER = "backup"
 BATCH_SIZE = 1000  # import theo lô để tránh request quá lớn

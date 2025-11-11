@@ -30,8 +30,7 @@
           <th style="width:180px">Hành động</th>
         </tr>
         </thead>
-        <tbody>
-        <template v-for="(inv, idx) in items" :key="rowKey(inv, idx)">
+        <tbody v-for="(inv, idx) in items" :key="rowKey(inv, idx)">
           <tr>
             <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
             <td>{{ inv.invoice_number }}</td>
@@ -41,9 +40,18 @@
             <td><span :class="['badge', statusClass(inv.payment_status)]">{{ inv.payment_status || '-' }}</span></td>
             <td>
               <div class="btn-group">
-                <button class="btn btn-sm btn-outline-secondary" @click="toggleRow(inv)">{{ isExpanded(inv) ? 'Ẩn' : 'Xem' }}</button>
-                <button class="btn btn-sm btn-outline-primary" @click="openEdit(inv)">Sửa</button>
-                <button class="btn btn-sm btn-outline-danger" @click="remove(inv)" :disabled="loading">Xoá</button>
+                <button class="btn btn-sm btn-outline-secondary" @click="toggleRow(inv)" title="Xem chi tiết">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-success" @click="downloadInvoice(inv)" :disabled="loading" title="In hóa đơn">
+                  <i class="bi bi-printer"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-primary" @click="openEdit(inv)" title="Sửa">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" @click="remove(inv)" :disabled="loading" title="Xóa">
+                  <i class="bi bi-trash"></i>
+                </button>
               </div>
             </td>
           </tr>
@@ -93,14 +101,15 @@
                 <div class="text-muted small mt-2">
                   Tạo: {{ fmtDateTime(inv.created_at) }} | Cập nhật: {{ fmtDateTime(inv.updated_at) }}
                 </div>
-              </div>
-            </td>
-          </tr>
-        </template>
-
-        <tr v-if="!items.length">
-          <td colspan="7" class="text-center text-muted">Không có dữ liệu</td>
+            </div>
+          </td>
         </tr>
+        </tbody>
+
+        <tbody v-if="!items.length">
+          <tr>
+            <td colspan="7" class="text-center text-muted">Không có dữ liệu</td>
+          </tr>
         </tbody>
       </table>
 
@@ -1199,6 +1208,39 @@ export default {
         // Clear payment date if unpaid
         this.form.paid_date = ''
       }
+    },
+
+    // ✅ SUC-06: Open invoice print page in new tab with authentication
+    async downloadInvoice (row) {
+      try {
+        this.loading = true
+        const invoiceId = row._id || row.id
+
+        // ✅ Fetch HTML with authentication via axios
+        const response = await InvoiceService.download(invoiceId)
+
+        // ✅ Create blob and open in new window
+        const blob = new Blob([response.data], { type: 'text/html; charset=utf-8' })
+        const url = window.URL.createObjectURL(blob)
+
+        // Open in new tab
+        const printWindow = window.open(url, '_blank')
+
+        // Clean up after window loads
+        if (printWindow) {
+          printWindow.addEventListener('load', () => {
+            window.URL.revokeObjectURL(url)
+          })
+        } else {
+          alert('Vui lòng cho phép popup để xem hóa đơn')
+          window.URL.revokeObjectURL(url)
+        }
+      } catch (e) {
+        console.error('Open invoice error:', e)
+        alert(e?.response?.data?.message || e?.message || 'Không thể mở hóa đơn')
+      } finally {
+        this.loading = false
+      }
     }
   }
 }
@@ -1231,13 +1273,6 @@ export default {
 
 .selected-medication .fw-bold {
   color: #198754;
-}
-
-/* Remove dropdown styles - không cần nữa */
-.medication-dropdown,
-.medication-dropdown-header,
-.medication-option {
-  /* REMOVED */
 }
 
 /* Combobox styles */

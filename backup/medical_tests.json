@@ -46,7 +46,8 @@
           "test_name": "Tổng phân tích máu",
           "ordered_date": "2024-01-20T10:45:00Z",
           "sample_collected_date": "2024-01-21T08:00:00Z",
-          "result_date": "2024-01-21T16:00:00Z"
+          "result_date": "2024-01-21T16:00:00Z",
+          "unit_price": 150000
         },
         "results": {
           "wbc": {

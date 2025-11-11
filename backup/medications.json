@@ -1,28 +1,24 @@
 {
-  "total_rows": 2,
+  "total_rows": 115,
   "offset": 0,
   "rows": [
     {
-      "id": "_design/_design/medications",
-      "key": "_design/_design/medications",
+      "id": "_design/medications",
+      "key": "_design/medications",
       "value": {
-        "rev": "4-8152db0f2c140e5bd0bd0a404238bb2a"
+        "rev": "1-abc123"
       },
       "doc": {
-        "_id": "_design/_design/medications",
-        "_rev": "4-8152db0f2c140e5bd0bd0a404238bb2a",
+        "_id": "_design/medications",
         "views": {
           "by_name": {
-            "map": "function (doc) {\r\n  if (doc.type === 'medication') {\r\n    emit(doc.medication_info.name.toLowerCase(), {\r\n      id: doc._id,\r\n      name: doc.medication_info.name,\r\n      strength: doc.medication_info.strength,\r\n      current_stock: doc.inventory.current_stock,\r\n      status: doc.status\r\n    });\r\n  }\r\n}\r\n"
+            "map": "function (doc) { if (doc.type === 'medication') { emit(doc.medication_info.name.toLowerCase(), doc); } }"
           },
           "by_therapeutic_class": {
-            "map": "function (doc) {\r\n  if (doc.type === 'medication') {\r\n    emit(doc.clinical_info.therapeutic_class, {\r\n      id: doc._id,\r\n      name: doc.medication_info.name,\r\n      strength: doc.medication_info.strength,\r\n      current_stock: doc.inventory.current_stock\r\n    });\r\n  }\r\n}\r\n"
+            "map": "function (doc) { if (doc.type === 'medication') { emit(doc.clinical_info.therapeutic_class, doc); } }"
           },
           "low_stock": {
-            "map": "function (doc) {\r\n  if (doc.type === 'medication' && doc.inventory.current_stock < 100) {\r\n    emit(doc.inventory.current_stock, {\r\n      id: doc._id,\r\n      name: doc.medication_info.name,\r\n      current_stock: doc.inventory.current_stock,\r\n      supplier: doc.inventory.supplier\r\n    });\r\n  }\r\n}\r\n"
-          },
-          "expiring_soon": {
-            "map": "function (doc) {\r\n  if (doc.type === 'medication') {\r\n    var expiryDate = new Date(doc.inventory.expiry_date);\r\n    var threeMonthsFromNow = new Date();\r\n    threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);\r\n    if (expiryDate <= threeMonthsFromNow) {\r\n      emit(doc.inventory.expiry_date, {\r\n        id: doc._id,\r\n        name: doc.medication_info.name,\r\n        expiry_date: doc.inventory.expiry_date,\r\n        current_stock: doc.inventory.current_stock\r\n      });\r\n    }\r\n  }\r\n}\r\n"
+            "map": "function (doc) { if (doc.type === 'medication' && doc.inventory.current_stock < 100) { emit(doc.inventory.current_stock, doc); } }"
           }
         },
         "language": "javascript"
@@ -32,48 +28,5700 @@
       "id": "med_amlodipine_5mg",
       "key": "med_amlodipine_5mg",
       "value": {
-        "rev": "1-9dd51d08ef53116718b125d613fd4202"
+        "rev": "1-469484"
       },
       "doc": {
         "_id": "med_amlodipine_5mg",
-        "_rev": "1-9dd51d08ef53116718b125d613fd4202",
         "type": "medication",
         "medication_info": {
           "name": "Amlodipine",
-          "generic_name": "Amlodipine besylate",
+          "generic_name": "Amlodipine",
           "strength": "5mg",
           "dosage_form": "tablet",
-          "manufacturer": "Pharmaco",
-          "barcode": "8936001234567"
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000001",
+          "inventory": {
+            "unit_cost": 50000
+          }
         },
         "clinical_info": {
           "therapeutic_class": "Calcium channel blocker",
           "indications": [
-            "Hypertension",
-            "Angina pectoris"
+            "Hypertension, Angina"
           ],
           "contraindications": [
-            "Hypersensitivity to amlodipine"
+            "Hypersensitivity",
+            "Severe hepatic impairment"
           ],
           "side_effects": [
-            "Ankle edema",
+            "Nausea",
             "Dizziness",
-            "Flushing"
+            "Headache"
           ],
           "drug_interactions": [
-            "Grapefruit juice",
-            "Simvastatin"
+            "Alcohol",
+            "MAO inhibitors"
           ]
         },
         "inventory": {
-          "current_stock": 500,
-          "unit_cost": 1200,
-          "expiry_date": "2025-12-31",
+          "current_stock": 580,
+          "unit_cost": 22104,
+          "expiry_date": "2027-09-25",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_losartan_50mg",
+      "key": "med_losartan_50mg",
+      "value": {
+        "rev": "1-691472"
+      },
+      "doc": {
+        "_id": "med_losartan_50mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Losartan",
+          "generic_name": "Losartan",
+          "strength": "50mg",
+          "dosage_form": "tablet",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000002",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Angiotensin II receptor blocker",
+          "indications": [
+            "Hypertension"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 567,
+          "unit_cost": 9892,
+          "expiry_date": "2026-07-18",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_enalapril_10mg",
+      "key": "med_enalapril_10mg",
+      "value": {
+        "rev": "1-306585"
+      },
+      "doc": {
+        "_id": "med_enalapril_10mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Enalapril",
+          "generic_name": "Enalapril",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000003",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "ACE inhibitor",
+          "indications": [
+            "Hypertension, Heart failure"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 451,
+          "unit_cost": 9418,
+          "expiry_date": "2027-11-05",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_atenolol_50mg",
+      "key": "med_atenolol_50mg",
+      "value": {
+        "rev": "1-191234"
+      },
+      "doc": {
+        "_id": "med_atenolol_50mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Atenolol",
+          "generic_name": "Atenolol",
+          "strength": "50mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000004",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Beta blocker",
+          "indications": [
+            "Hypertension, Angina"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 478,
+          "unit_cost": 14635,
+          "expiry_date": "2027-03-31",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_metoprolol_50mg",
+      "key": "med_metoprolol_50mg",
+      "value": {
+        "rev": "1-168577"
+      },
+      "doc": {
+        "_id": "med_metoprolol_50mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Metoprolol",
+          "generic_name": "Metoprolol",
+          "strength": "50mg",
+          "dosage_form": "tablet",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000005",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Beta blocker",
+          "indications": [
+            "Hypertension, Heart failure"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 63,
+          "unit_cost": 40820,
+          "expiry_date": "2027-04-06",
           "supplier": "Medical Supply Co."
         },
         "status": "active",
         "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-15T10:00:00Z"
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_bisoprolol_5mg",
+      "key": "med_bisoprolol_5mg",
+      "value": {
+        "rev": "1-876666"
+      },
+      "doc": {
+        "_id": "med_bisoprolol_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Bisoprolol",
+          "generic_name": "Bisoprolol",
+          "strength": "5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000006",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Beta blocker",
+          "indications": [
+            "Hypertension, Heart failure"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 472,
+          "unit_cost": 30711,
+          "expiry_date": "2026-12-09",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_hydrochlorothiazide_25mg",
+      "key": "med_hydrochlorothiazide_25mg",
+      "value": {
+        "rev": "1-794663"
+      },
+      "doc": {
+        "_id": "med_hydrochlorothiazide_25mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Hydrochlorothiazide",
+          "generic_name": "Hydrochlorothiazide",
+          "strength": "25mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000007",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Thiazide diuretic",
+          "indications": [
+            "Hypertension, Edema"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 660,
+          "unit_cost": 19577,
+          "expiry_date": "2027-05-27",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_furosemide_40mg",
+      "key": "med_furosemide_40mg",
+      "value": {
+        "rev": "1-662640"
+      },
+      "doc": {
+        "_id": "med_furosemide_40mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Furosemide",
+          "generic_name": "Furosemide",
+          "strength": "40mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000008",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Loop diuretic",
+          "indications": [
+            "Edema, Heart failure"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 282,
+          "unit_cost": 40506,
+          "expiry_date": "2026-06-03",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_spironolactone_25mg",
+      "key": "med_spironolactone_25mg",
+      "value": {
+        "rev": "1-948521"
+      },
+      "doc": {
+        "_id": "med_spironolactone_25mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Spironolactone",
+          "generic_name": "Spironolactone",
+          "strength": "25mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000009",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Potassium-sparing diuretic",
+          "indications": [
+            "Heart failure, Hypertension"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 983,
+          "unit_cost": 2534,
+          "expiry_date": "2026-06-18",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_atorvastatin_20mg",
+      "key": "med_atorvastatin_20mg",
+      "value": {
+        "rev": "1-209492"
+      },
+      "doc": {
+        "_id": "med_atorvastatin_20mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Atorvastatin",
+          "generic_name": "Atorvastatin",
+          "strength": "20mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000010",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Statin",
+          "indications": [
+            "Hyperlipidemia"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 52,
+          "unit_cost": 36841,
+          "expiry_date": "2026-12-29",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_simvastatin_20mg",
+      "key": "med_simvastatin_20mg",
+      "value": {
+        "rev": "1-352159"
+      },
+      "doc": {
+        "_id": "med_simvastatin_20mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Simvastatin",
+          "generic_name": "Simvastatin",
+          "strength": "20mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000011",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Statin",
+          "indications": [
+            "Hyperlipidemia"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 816,
+          "unit_cost": 14311,
+          "expiry_date": "2027-05-13",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_rosuvastatin_10mg",
+      "key": "med_rosuvastatin_10mg",
+      "value": {
+        "rev": "1-264472"
+      },
+      "doc": {
+        "_id": "med_rosuvastatin_10mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Rosuvastatin",
+          "generic_name": "Rosuvastatin",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000012",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Statin",
+          "indications": [
+            "Hyperlipidemia"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 125,
+          "unit_cost": 13028,
+          "expiry_date": "2026-11-08",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_aspirin_100mg",
+      "key": "med_aspirin_100mg",
+      "value": {
+        "rev": "1-642903"
+      },
+      "doc": {
+        "_id": "med_aspirin_100mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Aspirin",
+          "generic_name": "Aspirin",
+          "strength": "100mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000013",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Antiplatelet",
+          "indications": [
+            "Cardiovascular prevention"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 136,
+          "unit_cost": 14613,
+          "expiry_date": "2027-11-05",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_clopidogrel_75mg",
+      "key": "med_clopidogrel_75mg",
+      "value": {
+        "rev": "1-407925"
+      },
+      "doc": {
+        "_id": "med_clopidogrel_75mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Clopidogrel",
+          "generic_name": "Clopidogrel",
+          "strength": "75mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000014",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Antiplatelet",
+          "indications": [
+            "Acute coronary syndrome"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 347,
+          "unit_cost": 48692,
+          "expiry_date": "2026-11-07",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_warfarin_5mg",
+      "key": "med_warfarin_5mg",
+      "value": {
+        "rev": "1-454674"
+      },
+      "doc": {
+        "_id": "med_warfarin_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Warfarin",
+          "generic_name": "Warfarin",
+          "strength": "5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000015",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Anticoagulant",
+          "indications": [
+            "Atrial fibrillation, DVT"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 471,
+          "unit_cost": 15519,
+          "expiry_date": "2026-06-08",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_rivaroxaban_15mg",
+      "key": "med_rivaroxaban_15mg",
+      "value": {
+        "rev": "1-757828"
+      },
+      "doc": {
+        "_id": "med_rivaroxaban_15mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Rivaroxaban",
+          "generic_name": "Rivaroxaban",
+          "strength": "15mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000016",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Direct oral anticoagulant",
+          "indications": [
+            "DVT, Atrial fibrillation"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 133,
+          "unit_cost": 22809,
+          "expiry_date": "2026-12-22",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_digoxin_0_25mg",
+      "key": "med_digoxin_0_25mg",
+      "value": {
+        "rev": "1-167523"
+      },
+      "doc": {
+        "_id": "med_digoxin_0_25mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Digoxin",
+          "generic_name": "Digoxin",
+          "strength": "0.25mg",
+          "dosage_form": "tablet",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000017",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Cardiac glycoside",
+          "indications": [
+            "Heart failure, Atrial fibrillation"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 475,
+          "unit_cost": 16614,
+          "expiry_date": "2027-07-13",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_isosorbide_dinitrate_10mg",
+      "key": "med_isosorbide_dinitrate_10mg",
+      "value": {
+        "rev": "1-486920"
+      },
+      "doc": {
+        "_id": "med_isosorbide_dinitrate_10mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Isosorbide dinitrate",
+          "generic_name": "Isosorbide dinitrate",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000018",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Nitrate",
+          "indications": [
+            "Angina"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 96,
+          "unit_cost": 38684,
+          "expiry_date": "2026-12-30",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_nitroglycerin_0_5mg",
+      "key": "med_nitroglycerin_0_5mg",
+      "value": {
+        "rev": "1-340261"
+      },
+      "doc": {
+        "_id": "med_nitroglycerin_0_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Nitroglycerin",
+          "generic_name": "Nitroglycerin",
+          "strength": "0.5mg",
+          "dosage_form": "sublingual",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000019",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Nitrate",
+          "indications": [
+            "Acute angina"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 644,
+          "unit_cost": 12118,
+          "expiry_date": "2027-03-01",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_verapamil_80mg",
+      "key": "med_verapamil_80mg",
+      "value": {
+        "rev": "1-391298"
+      },
+      "doc": {
+        "_id": "med_verapamil_80mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Verapamil",
+          "generic_name": "Verapamil",
+          "strength": "80mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000020",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Calcium channel blocker",
+          "indications": [
+            "Hypertension, Arrhythmia"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 940,
+          "unit_cost": 48994,
+          "expiry_date": "2027-07-05",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_metformin_500mg",
+      "key": "med_metformin_500mg",
+      "value": {
+        "rev": "1-867310"
+      },
+      "doc": {
+        "_id": "med_metformin_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Metformin",
+          "generic_name": "Metformin",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000021",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Biguanide",
+          "indications": [
+            "Type 2 diabetes"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 293,
+          "unit_cost": 17189,
+          "expiry_date": "2026-12-20",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_glibenclamide_5mg",
+      "key": "med_glibenclamide_5mg",
+      "value": {
+        "rev": "1-376868"
+      },
+      "doc": {
+        "_id": "med_glibenclamide_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Glibenclamide",
+          "generic_name": "Glibenclamide",
+          "strength": "5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000022",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Sulfonylurea",
+          "indications": [
+            "Type 2 diabetes"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 426,
+          "unit_cost": 23644,
+          "expiry_date": "2026-12-13",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_gliclazide_80mg",
+      "key": "med_gliclazide_80mg",
+      "value": {
+        "rev": "1-994972"
+      },
+      "doc": {
+        "_id": "med_gliclazide_80mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Gliclazide",
+          "generic_name": "Gliclazide",
+          "strength": "80mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000023",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Sulfonylurea",
+          "indications": [
+            "Type 2 diabetes"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 830,
+          "unit_cost": 34789,
+          "expiry_date": "2027-03-10",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_glimepiride_2mg",
+      "key": "med_glimepiride_2mg",
+      "value": {
+        "rev": "1-804992"
+      },
+      "doc": {
+        "_id": "med_glimepiride_2mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Glimepiride",
+          "generic_name": "Glimepiride",
+          "strength": "2mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000024",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Sulfonylurea",
+          "indications": [
+            "Type 2 diabetes"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 148,
+          "unit_cost": 27149,
+          "expiry_date": "2027-08-06",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_sitagliptin_100mg",
+      "key": "med_sitagliptin_100mg",
+      "value": {
+        "rev": "1-925957"
+      },
+      "doc": {
+        "_id": "med_sitagliptin_100mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Sitagliptin",
+          "generic_name": "Sitagliptin",
+          "strength": "100mg",
+          "dosage_form": "tablet",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000025",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "DPP-4 inhibitor",
+          "indications": [
+            "Type 2 diabetes"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 367,
+          "unit_cost": 35368,
+          "expiry_date": "2026-06-16",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_insulin_glargine_100U_ml",
+      "key": "med_insulin_glargine_100U_ml",
+      "value": {
+        "rev": "1-245875"
+      },
+      "doc": {
+        "_id": "med_insulin_glargine_100U_ml",
+        "type": "medication",
+        "medication_info": {
+          "name": "Insulin glargine",
+          "generic_name": "Insulin glargine",
+          "strength": "100U/ml",
+          "dosage_form": "injection",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000026",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Long-acting insulin",
+          "indications": [
+            "Diabetes"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 358,
+          "unit_cost": 19073,
+          "expiry_date": "2026-12-14",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_insulin_aspart_100U_ml",
+      "key": "med_insulin_aspart_100U_ml",
+      "value": {
+        "rev": "1-509574"
+      },
+      "doc": {
+        "_id": "med_insulin_aspart_100U_ml",
+        "type": "medication",
+        "medication_info": {
+          "name": "Insulin aspart",
+          "generic_name": "Insulin aspart",
+          "strength": "100U/ml",
+          "dosage_form": "injection",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000027",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Rapid-acting insulin",
+          "indications": [
+            "Diabetes"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 777,
+          "unit_cost": 17307,
+          "expiry_date": "2027-06-05",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_levothyroxine_100mcg",
+      "key": "med_levothyroxine_100mcg",
+      "value": {
+        "rev": "1-872169"
+      },
+      "doc": {
+        "_id": "med_levothyroxine_100mcg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Levothyroxine",
+          "generic_name": "Levothyroxine",
+          "strength": "100mcg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000028",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Thyroid hormone",
+          "indications": [
+            "Hypothyroidism"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 959,
+          "unit_cost": 38134,
+          "expiry_date": "2026-07-01",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_methimazole_10mg",
+      "key": "med_methimazole_10mg",
+      "value": {
+        "rev": "1-941721"
+      },
+      "doc": {
+        "_id": "med_methimazole_10mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Methimazole",
+          "generic_name": "Methimazole",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000029",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Antithyroid",
+          "indications": [
+            "Hyperthyroidism"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 463,
+          "unit_cost": 3464,
+          "expiry_date": "2027-09-11",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_prednisolone_5mg",
+      "key": "med_prednisolone_5mg",
+      "value": {
+        "rev": "1-199883"
+      },
+      "doc": {
+        "_id": "med_prednisolone_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Prednisolone",
+          "generic_name": "Prednisolone",
+          "strength": "5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000030",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Corticosteroid",
+          "indications": [
+            "Inflammation, Autoimmune disorders"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 587,
+          "unit_cost": 35106,
+          "expiry_date": "2026-07-03",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_dexamethasone_4mg",
+      "key": "med_dexamethasone_4mg",
+      "value": {
+        "rev": "1-979264"
+      },
+      "doc": {
+        "_id": "med_dexamethasone_4mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Dexamethasone",
+          "generic_name": "Dexamethasone",
+          "strength": "4mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000031",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Corticosteroid",
+          "indications": [
+            "Severe inflammation"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 150,
+          "unit_cost": 16271,
+          "expiry_date": "2027-03-06",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_hydrocortisone_20mg",
+      "key": "med_hydrocortisone_20mg",
+      "value": {
+        "rev": "1-911251"
+      },
+      "doc": {
+        "_id": "med_hydrocortisone_20mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Hydrocortisone",
+          "generic_name": "Hydrocortisone",
+          "strength": "20mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000032",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Corticosteroid",
+          "indications": [
+            "Adrenal insufficiency"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 349,
+          "unit_cost": 34426,
+          "expiry_date": "2026-11-20",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_testosterone_250mg_ml",
+      "key": "med_testosterone_250mg_ml",
+      "value": {
+        "rev": "1-933538"
+      },
+      "doc": {
+        "_id": "med_testosterone_250mg_ml",
+        "type": "medication",
+        "medication_info": {
+          "name": "Testosterone",
+          "generic_name": "Testosterone",
+          "strength": "250mg/ml",
+          "dosage_form": "injection",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000033",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Androgen",
+          "indications": [
+            "Hypogonadism"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 626,
+          "unit_cost": 6877,
+          "expiry_date": "2026-12-12",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_estradiol_2mg",
+      "key": "med_estradiol_2mg",
+      "value": {
+        "rev": "1-818573"
+      },
+      "doc": {
+        "_id": "med_estradiol_2mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Estradiol",
+          "generic_name": "Estradiol",
+          "strength": "2mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000034",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Estrogen",
+          "indications": [
+            "Menopause"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 939,
+          "unit_cost": 31635,
+          "expiry_date": "2027-03-25",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_finasteride_5mg",
+      "key": "med_finasteride_5mg",
+      "value": {
+        "rev": "1-879867"
+      },
+      "doc": {
+        "_id": "med_finasteride_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Finasteride",
+          "generic_name": "Finasteride",
+          "strength": "5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000035",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "5-alpha reductase inhibitor",
+          "indications": [
+            "BPH, Hair loss"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 174,
+          "unit_cost": 6513,
+          "expiry_date": "2026-11-20",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_omeprazole_20mg",
+      "key": "med_omeprazole_20mg",
+      "value": {
+        "rev": "1-576325"
+      },
+      "doc": {
+        "_id": "med_omeprazole_20mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Omeprazole",
+          "generic_name": "Omeprazole",
+          "strength": "20mg",
+          "dosage_form": "capsule",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000036",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Proton pump inhibitor",
+          "indications": [
+            "GERD, Peptic ulcer"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 363,
+          "unit_cost": 22683,
+          "expiry_date": "2026-10-06",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_esomeprazole_40mg",
+      "key": "med_esomeprazole_40mg",
+      "value": {
+        "rev": "1-795334"
+      },
+      "doc": {
+        "_id": "med_esomeprazole_40mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Esomeprazole",
+          "generic_name": "Esomeprazole",
+          "strength": "40mg",
+          "dosage_form": "capsule",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000037",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Proton pump inhibitor",
+          "indications": [
+            "GERD, Peptic ulcer"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 313,
+          "unit_cost": 22868,
+          "expiry_date": "2027-07-17",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_lansoprazole_30mg",
+      "key": "med_lansoprazole_30mg",
+      "value": {
+        "rev": "1-849800"
+      },
+      "doc": {
+        "_id": "med_lansoprazole_30mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Lansoprazole",
+          "generic_name": "Lansoprazole",
+          "strength": "30mg",
+          "dosage_form": "capsule",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000038",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Proton pump inhibitor",
+          "indications": [
+            "GERD, Peptic ulcer"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 856,
+          "unit_cost": 28163,
+          "expiry_date": "2027-08-29",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_ranitidine_150mg",
+      "key": "med_ranitidine_150mg",
+      "value": {
+        "rev": "1-494115"
+      },
+      "doc": {
+        "_id": "med_ranitidine_150mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Ranitidine",
+          "generic_name": "Ranitidine",
+          "strength": "150mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000039",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "H2 receptor antagonist",
+          "indications": [
+            "GERD, Peptic ulcer"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 358,
+          "unit_cost": 28466,
+          "expiry_date": "2027-03-31",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_famotidine_20mg",
+      "key": "med_famotidine_20mg",
+      "value": {
+        "rev": "1-458702"
+      },
+      "doc": {
+        "_id": "med_famotidine_20mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Famotidine",
+          "generic_name": "Famotidine",
+          "strength": "20mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000040",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "H2 receptor antagonist",
+          "indications": [
+            "GERD, Peptic ulcer"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 912,
+          "unit_cost": 23801,
+          "expiry_date": "2026-06-02",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_aluminum_hydroxide_500mg",
+      "key": "med_aluminum_hydroxide_500mg",
+      "value": {
+        "rev": "1-897371"
+      },
+      "doc": {
+        "_id": "med_aluminum_hydroxide_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Aluminum hydroxide",
+          "generic_name": "Aluminum hydroxide",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000041",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Antacid",
+          "indications": [
+            "Heartburn, Indigestion"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 692,
+          "unit_cost": 13884,
+          "expiry_date": "2026-10-12",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_metoclopramide_10mg",
+      "key": "med_metoclopramide_10mg",
+      "value": {
+        "rev": "1-114808"
+      },
+      "doc": {
+        "_id": "med_metoclopramide_10mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Metoclopramide",
+          "generic_name": "Metoclopramide",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000042",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Prokinetic",
+          "indications": [
+            "Nausea, GERD"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 992,
+          "unit_cost": 39352,
+          "expiry_date": "2027-08-17",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_domperidone_10mg",
+      "key": "med_domperidone_10mg",
+      "value": {
+        "rev": "1-895645"
+      },
+      "doc": {
+        "_id": "med_domperidone_10mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Domperidone",
+          "generic_name": "Domperidone",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000043",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Prokinetic",
+          "indications": [
+            "Nausea, Vomiting"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 141,
+          "unit_cost": 46751,
+          "expiry_date": "2026-05-17",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_loperamide_2mg",
+      "key": "med_loperamide_2mg",
+      "value": {
+        "rev": "1-231057"
+      },
+      "doc": {
+        "_id": "med_loperamide_2mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Loperamide",
+          "generic_name": "Loperamide",
+          "strength": "2mg",
+          "dosage_form": "capsule",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000044",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Antidiarrheal",
+          "indications": [
+            "Diarrhea"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 412,
+          "unit_cost": 30528,
+          "expiry_date": "2026-05-16",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_bisacodyl_5mg",
+      "key": "med_bisacodyl_5mg",
+      "value": {
+        "rev": "1-148217"
+      },
+      "doc": {
+        "_id": "med_bisacodyl_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Bisacodyl",
+          "generic_name": "Bisacodyl",
+          "strength": "5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000045",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Laxative",
+          "indications": [
+            "Constipation"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 755,
+          "unit_cost": 45326,
+          "expiry_date": "2027-08-11",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_lactulose_10g_15ml",
+      "key": "med_lactulose_10g_15ml",
+      "value": {
+        "rev": "1-286854"
+      },
+      "doc": {
+        "_id": "med_lactulose_10g_15ml",
+        "type": "medication",
+        "medication_info": {
+          "name": "Lactulose",
+          "generic_name": "Lactulose",
+          "strength": "10g/15ml",
+          "dosage_form": "syrup",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000046",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Laxative",
+          "indications": [
+            "Constipation"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 474,
+          "unit_cost": 27183,
+          "expiry_date": "2027-08-20",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_mesalamine_500mg",
+      "key": "med_mesalamine_500mg",
+      "value": {
+        "rev": "1-499789"
+      },
+      "doc": {
+        "_id": "med_mesalamine_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Mesalamine",
+          "generic_name": "Mesalamine",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000047",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Anti-inflammatory",
+          "indications": [
+            "Ulcerative colitis, Crohn's"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 530,
+          "unit_cost": 10467,
+          "expiry_date": "2027-03-01",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_salbutamol_100mcg",
+      "key": "med_salbutamol_100mcg",
+      "value": {
+        "rev": "1-220401"
+      },
+      "doc": {
+        "_id": "med_salbutamol_100mcg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Salbutamol",
+          "generic_name": "Salbutamol",
+          "strength": "100mcg",
+          "dosage_form": "inhaler",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000048",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Beta-2 agonist",
+          "indications": [
+            "Asthma, COPD"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 948,
+          "unit_cost": 20520,
+          "expiry_date": "2027-02-16",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_formoterol_12mcg",
+      "key": "med_formoterol_12mcg",
+      "value": {
+        "rev": "1-466142"
+      },
+      "doc": {
+        "_id": "med_formoterol_12mcg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Formoterol",
+          "generic_name": "Formoterol",
+          "strength": "12mcg",
+          "dosage_form": "inhaler",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000049",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Long-acting beta-2 agonist",
+          "indications": [
+            "Asthma, COPD"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 587,
+          "unit_cost": 43203,
+          "expiry_date": "2027-07-27",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_salmeterol_50mcg",
+      "key": "med_salmeterol_50mcg",
+      "value": {
+        "rev": "1-655940"
+      },
+      "doc": {
+        "_id": "med_salmeterol_50mcg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Salmeterol",
+          "generic_name": "Salmeterol",
+          "strength": "50mcg",
+          "dosage_form": "inhaler",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000050",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Long-acting beta-2 agonist",
+          "indications": [
+            "Asthma, COPD"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 70,
+          "unit_cost": 24470,
+          "expiry_date": "2027-03-28",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_budesonide_200mcg",
+      "key": "med_budesonide_200mcg",
+      "value": {
+        "rev": "1-785905"
+      },
+      "doc": {
+        "_id": "med_budesonide_200mcg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Budesonide",
+          "generic_name": "Budesonide",
+          "strength": "200mcg",
+          "dosage_form": "inhaler",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000051",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Inhaled corticosteroid",
+          "indications": [
+            "Asthma"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 489,
+          "unit_cost": 10662,
+          "expiry_date": "2026-06-24",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_fluticasone_125mcg",
+      "key": "med_fluticasone_125mcg",
+      "value": {
+        "rev": "1-186894"
+      },
+      "doc": {
+        "_id": "med_fluticasone_125mcg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Fluticasone",
+          "generic_name": "Fluticasone",
+          "strength": "125mcg",
+          "dosage_form": "inhaler",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000052",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Inhaled corticosteroid",
+          "indications": [
+            "Asthma"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 518,
+          "unit_cost": 45326,
+          "expiry_date": "2026-12-03",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_tiotropium_18mcg",
+      "key": "med_tiotropium_18mcg",
+      "value": {
+        "rev": "1-749164"
+      },
+      "doc": {
+        "_id": "med_tiotropium_18mcg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Tiotropium",
+          "generic_name": "Tiotropium",
+          "strength": "18mcg",
+          "dosage_form": "inhaler",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000053",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Anticholinergic",
+          "indications": [
+            "COPD"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 238,
+          "unit_cost": 2797,
+          "expiry_date": "2027-02-25",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_ipratropium_20mcg",
+      "key": "med_ipratropium_20mcg",
+      "value": {
+        "rev": "1-172634"
+      },
+      "doc": {
+        "_id": "med_ipratropium_20mcg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Ipratropium",
+          "generic_name": "Ipratropium",
+          "strength": "20mcg",
+          "dosage_form": "inhaler",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000054",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Anticholinergic",
+          "indications": [
+            "COPD"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 181,
+          "unit_cost": 31170,
+          "expiry_date": "2026-09-17",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_montelukast_10mg",
+      "key": "med_montelukast_10mg",
+      "value": {
+        "rev": "1-462641"
+      },
+      "doc": {
+        "_id": "med_montelukast_10mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Montelukast",
+          "generic_name": "Montelukast",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000055",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Leukotriene antagonist",
+          "indications": [
+            "Asthma"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 643,
+          "unit_cost": 22998,
+          "expiry_date": "2027-07-28",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_theophylline_200mg",
+      "key": "med_theophylline_200mg",
+      "value": {
+        "rev": "1-195120"
+      },
+      "doc": {
+        "_id": "med_theophylline_200mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Theophylline",
+          "generic_name": "Theophylline",
+          "strength": "200mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000056",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Methylxanthine",
+          "indications": [
+            "Asthma, COPD"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 117,
+          "unit_cost": 4219,
+          "expiry_date": "2026-12-15",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_ambroxol_30mg",
+      "key": "med_ambroxol_30mg",
+      "value": {
+        "rev": "1-581073"
+      },
+      "doc": {
+        "_id": "med_ambroxol_30mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Ambroxol",
+          "generic_name": "Ambroxol",
+          "strength": "30mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000057",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Mucolytic",
+          "indications": [
+            "Productive cough"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 722,
+          "unit_cost": 3531,
+          "expiry_date": "2026-07-17",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_acetylcysteine_200mg",
+      "key": "med_acetylcysteine_200mg",
+      "value": {
+        "rev": "1-601939"
+      },
+      "doc": {
+        "_id": "med_acetylcysteine_200mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Acetylcysteine",
+          "generic_name": "Acetylcysteine",
+          "strength": "200mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000058",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Mucolytic",
+          "indications": [
+            "Productive cough"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 159,
+          "unit_cost": 22204,
+          "expiry_date": "2026-09-30",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_dextromethorphan_15mg",
+      "key": "med_dextromethorphan_15mg",
+      "value": {
+        "rev": "1-770105"
+      },
+      "doc": {
+        "_id": "med_dextromethorphan_15mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Dextromethorphan",
+          "generic_name": "Dextromethorphan",
+          "strength": "15mg",
+          "dosage_form": "syrup",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000059",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Antitussive",
+          "indications": [
+            "Dry cough"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 723,
+          "unit_cost": 16302,
+          "expiry_date": "2026-06-23",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_paracetamol_500mg",
+      "key": "med_paracetamol_500mg",
+      "value": {
+        "rev": "1-837764"
+      },
+      "doc": {
+        "_id": "med_paracetamol_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Paracetamol",
+          "generic_name": "Paracetamol",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000060",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Analgesic, Antipyretic",
+          "indications": [
+            "Pain, Fever"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 767,
+          "unit_cost": 14999,
+          "expiry_date": "2026-06-06",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_ibuprofen_400mg",
+      "key": "med_ibuprofen_400mg",
+      "value": {
+        "rev": "1-979124"
+      },
+      "doc": {
+        "_id": "med_ibuprofen_400mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Ibuprofen",
+          "generic_name": "Ibuprofen",
+          "strength": "400mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000061",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "NSAID",
+          "indications": [
+            "Pain, Inflammation"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 609,
+          "unit_cost": 16672,
+          "expiry_date": "2027-07-18",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_diclofenac_50mg",
+      "key": "med_diclofenac_50mg",
+      "value": {
+        "rev": "1-455639"
+      },
+      "doc": {
+        "_id": "med_diclofenac_50mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Diclofenac",
+          "generic_name": "Diclofenac",
+          "strength": "50mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000062",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "NSAID",
+          "indications": [
+            "Pain, Inflammation"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 638,
+          "unit_cost": 49598,
+          "expiry_date": "2027-03-09",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_naproxen_500mg",
+      "key": "med_naproxen_500mg",
+      "value": {
+        "rev": "1-959246"
+      },
+      "doc": {
+        "_id": "med_naproxen_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Naproxen",
+          "generic_name": "Naproxen",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000063",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "NSAID",
+          "indications": [
+            "Pain, Inflammation"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 302,
+          "unit_cost": 32263,
+          "expiry_date": "2027-01-18",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_celecoxib_200mg",
+      "key": "med_celecoxib_200mg",
+      "value": {
+        "rev": "1-513153"
+      },
+      "doc": {
+        "_id": "med_celecoxib_200mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Celecoxib",
+          "generic_name": "Celecoxib",
+          "strength": "200mg",
+          "dosage_form": "capsule",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000064",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "COX-2 inhibitor",
+          "indications": [
+            "Arthritis pain"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 88,
+          "unit_cost": 24468,
+          "expiry_date": "2027-04-10",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_meloxicam_15mg",
+      "key": "med_meloxicam_15mg",
+      "value": {
+        "rev": "1-250192"
+      },
+      "doc": {
+        "_id": "med_meloxicam_15mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Meloxicam",
+          "generic_name": "Meloxicam",
+          "strength": "15mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000065",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "NSAID",
+          "indications": [
+            "Osteoarthritis"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 322,
+          "unit_cost": 7019,
+          "expiry_date": "2027-04-01",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_tramadol_50mg",
+      "key": "med_tramadol_50mg",
+      "value": {
+        "rev": "1-302557"
+      },
+      "doc": {
+        "_id": "med_tramadol_50mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Tramadol",
+          "generic_name": "Tramadol",
+          "strength": "50mg",
+          "dosage_form": "capsule",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000066",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Opioid analgesic",
+          "indications": [
+            "Moderate to severe pain"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 571,
+          "unit_cost": 23620,
+          "expiry_date": "2027-03-17",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_morphine_10mg",
+      "key": "med_morphine_10mg",
+      "value": {
+        "rev": "1-581917"
+      },
+      "doc": {
+        "_id": "med_morphine_10mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Morphine",
+          "generic_name": "Morphine",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000067",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Opioid analgesic",
+          "indications": [
+            "Severe pain"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 687,
+          "unit_cost": 40830,
+          "expiry_date": "2026-07-30",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_codeine_30mg",
+      "key": "med_codeine_30mg",
+      "value": {
+        "rev": "1-720281"
+      },
+      "doc": {
+        "_id": "med_codeine_30mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Codeine",
+          "generic_name": "Codeine",
+          "strength": "30mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000068",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Opioid analgesic",
+          "indications": [
+            "Moderate pain, Cough"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 919,
+          "unit_cost": 30869,
+          "expiry_date": "2027-04-16",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_gabapentin_300mg",
+      "key": "med_gabapentin_300mg",
+      "value": {
+        "rev": "1-542797"
+      },
+      "doc": {
+        "_id": "med_gabapentin_300mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Gabapentin",
+          "generic_name": "Gabapentin",
+          "strength": "300mg",
+          "dosage_form": "capsule",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000069",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Anticonvulsant",
+          "indications": [
+            "Neuropathic pain"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 350,
+          "unit_cost": 29261,
+          "expiry_date": "2026-10-23",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_pregabalin_75mg",
+      "key": "med_pregabalin_75mg",
+      "value": {
+        "rev": "1-916731"
+      },
+      "doc": {
+        "_id": "med_pregabalin_75mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Pregabalin",
+          "generic_name": "Pregabalin",
+          "strength": "75mg",
+          "dosage_form": "capsule",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000070",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Anticonvulsant",
+          "indications": [
+            "Neuropathic pain"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 655,
+          "unit_cost": 40795,
+          "expiry_date": "2027-02-18",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_lidocaine_5%",
+      "key": "med_lidocaine_5%",
+      "value": {
+        "rev": "1-912731"
+      },
+      "doc": {
+        "_id": "med_lidocaine_5%",
+        "type": "medication",
+        "medication_info": {
+          "name": "Lidocaine",
+          "generic_name": "Lidocaine",
+          "strength": "5%",
+          "dosage_form": "patch",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000071",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Local anesthetic",
+          "indications": [
+            "Local pain relief"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 95,
+          "unit_cost": 32908,
+          "expiry_date": "2027-07-22",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_capsaicin_0_075%",
+      "key": "med_capsaicin_0_075%",
+      "value": {
+        "rev": "1-195602"
+      },
+      "doc": {
+        "_id": "med_capsaicin_0_075%",
+        "type": "medication",
+        "medication_info": {
+          "name": "Capsaicin",
+          "generic_name": "Capsaicin",
+          "strength": "0.075%",
+          "dosage_form": "cream",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000072",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Topical analgesic",
+          "indications": [
+            "Muscle pain"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 775,
+          "unit_cost": 10192,
+          "expiry_date": "2027-05-15",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_piroxicam_20mg",
+      "key": "med_piroxicam_20mg",
+      "value": {
+        "rev": "1-670052"
+      },
+      "doc": {
+        "_id": "med_piroxicam_20mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Piroxicam",
+          "generic_name": "Piroxicam",
+          "strength": "20mg",
+          "dosage_form": "capsule",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000073",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "NSAID",
+          "indications": [
+            "Arthritis"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 993,
+          "unit_cost": 17079,
+          "expiry_date": "2026-07-15",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_ketorolac_10mg",
+      "key": "med_ketorolac_10mg",
+      "value": {
+        "rev": "1-513404"
+      },
+      "doc": {
+        "_id": "med_ketorolac_10mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Ketorolac",
+          "generic_name": "Ketorolac",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000074",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "NSAID",
+          "indications": [
+            "Acute pain"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 812,
+          "unit_cost": 39871,
+          "expiry_date": "2027-11-08",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_amoxicillin_500mg",
+      "key": "med_amoxicillin_500mg",
+      "value": {
+        "rev": "1-360307"
+      },
+      "doc": {
+        "_id": "med_amoxicillin_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Amoxicillin",
+          "generic_name": "Amoxicillin",
+          "strength": "500mg",
+          "dosage_form": "capsule",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000075",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Penicillin",
+          "indications": [
+            "Bacterial infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 255,
+          "unit_cost": 35108,
+          "expiry_date": "2027-08-31",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_amoxicillin_clavulanate_625mg",
+      "key": "med_amoxicillin_clavulanate_625mg",
+      "value": {
+        "rev": "1-201987"
+      },
+      "doc": {
+        "_id": "med_amoxicillin_clavulanate_625mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Amoxicillin-Clavulanate",
+          "generic_name": "Amoxicillin-Clavulanate",
+          "strength": "625mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000076",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Penicillin + Beta-lactamase inhibitor",
+          "indications": [
+            "Bacterial infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 791,
+          "unit_cost": 18129,
+          "expiry_date": "2026-11-15",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_azithromycin_500mg",
+      "key": "med_azithromycin_500mg",
+      "value": {
+        "rev": "1-689425"
+      },
+      "doc": {
+        "_id": "med_azithromycin_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Azithromycin",
+          "generic_name": "Azithromycin",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000077",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Macrolide",
+          "indications": [
+            "Respiratory infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 524,
+          "unit_cost": 15273,
+          "expiry_date": "2026-05-28",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_clarithromycin_500mg",
+      "key": "med_clarithromycin_500mg",
+      "value": {
+        "rev": "1-655264"
+      },
+      "doc": {
+        "_id": "med_clarithromycin_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Clarithromycin",
+          "generic_name": "Clarithromycin",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000078",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Macrolide",
+          "indications": [
+            "Respiratory infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 78,
+          "unit_cost": 8028,
+          "expiry_date": "2026-12-02",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_ciprofloxacin_500mg",
+      "key": "med_ciprofloxacin_500mg",
+      "value": {
+        "rev": "1-250988"
+      },
+      "doc": {
+        "_id": "med_ciprofloxacin_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Ciprofloxacin",
+          "generic_name": "Ciprofloxacin",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000079",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Fluoroquinolone",
+          "indications": [
+            "Bacterial infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 941,
+          "unit_cost": 49045,
+          "expiry_date": "2027-07-27",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_levofloxacin_500mg",
+      "key": "med_levofloxacin_500mg",
+      "value": {
+        "rev": "1-959284"
+      },
+      "doc": {
+        "_id": "med_levofloxacin_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Levofloxacin",
+          "generic_name": "Levofloxacin",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Pharmaco",
+          "barcode": "8936000000080",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Fluoroquinolone",
+          "indications": [
+            "Respiratory infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 106,
+          "unit_cost": 36971,
+          "expiry_date": "2027-01-08",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_doxycycline_100mg",
+      "key": "med_doxycycline_100mg",
+      "value": {
+        "rev": "1-336575"
+      },
+      "doc": {
+        "_id": "med_doxycycline_100mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Doxycycline",
+          "generic_name": "Doxycycline",
+          "strength": "100mg",
+          "dosage_form": "capsule",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000081",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Tetracycline",
+          "indications": [
+            "Various infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 760,
+          "unit_cost": 6210,
+          "expiry_date": "2026-11-23",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_cephalexin_500mg",
+      "key": "med_cephalexin_500mg",
+      "value": {
+        "rev": "1-631848"
+      },
+      "doc": {
+        "_id": "med_cephalexin_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Cephalexin",
+          "generic_name": "Cephalexin",
+          "strength": "500mg",
+          "dosage_form": "capsule",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000082",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Cephalosporin",
+          "indications": [
+            "Skin infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 687,
+          "unit_cost": 41573,
+          "expiry_date": "2027-05-08",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_cefuroxime_500mg",
+      "key": "med_cefuroxime_500mg",
+      "value": {
+        "rev": "1-314310"
+      },
+      "doc": {
+        "_id": "med_cefuroxime_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Cefuroxime",
+          "generic_name": "Cefuroxime",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000083",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Cephalosporin",
+          "indications": [
+            "Respiratory infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 239,
+          "unit_cost": 27895,
+          "expiry_date": "2027-09-12",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_metronidazole_500mg",
+      "key": "med_metronidazole_500mg",
+      "value": {
+        "rev": "1-372741"
+      },
+      "doc": {
+        "_id": "med_metronidazole_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Metronidazole",
+          "generic_name": "Metronidazole",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000084",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Nitroimidazole",
+          "indications": [
+            "Anaerobic infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 810,
+          "unit_cost": 23759,
+          "expiry_date": "2026-11-16",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_clindamycin_300mg",
+      "key": "med_clindamycin_300mg",
+      "value": {
+        "rev": "1-192980"
+      },
+      "doc": {
+        "_id": "med_clindamycin_300mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Clindamycin",
+          "generic_name": "Clindamycin",
+          "strength": "300mg",
+          "dosage_form": "capsule",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000085",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Lincosamide",
+          "indications": [
+            "Skin infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 421,
+          "unit_cost": 4292,
+          "expiry_date": "2026-07-04",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_trimethoprim_sulfamethoxazole_960mg",
+      "key": "med_trimethoprim_sulfamethoxazole_960mg",
+      "value": {
+        "rev": "1-858397"
+      },
+      "doc": {
+        "_id": "med_trimethoprim_sulfamethoxazole_960mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Trimethoprim-Sulfamethoxazole",
+          "generic_name": "Trimethoprim-Sulfamethoxazole",
+          "strength": "960mg",
+          "dosage_form": "tablet",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000086",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Sulfonamide",
+          "indications": [
+            "UTI, Various infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 289,
+          "unit_cost": 43291,
+          "expiry_date": "2026-10-01",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_nitrofurantoin_100mg",
+      "key": "med_nitrofurantoin_100mg",
+      "value": {
+        "rev": "1-181327"
+      },
+      "doc": {
+        "_id": "med_nitrofurantoin_100mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Nitrofurantoin",
+          "generic_name": "Nitrofurantoin",
+          "strength": "100mg",
+          "dosage_form": "capsule",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000087",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Nitrofuran",
+          "indications": [
+            "UTI"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 363,
+          "unit_cost": 8390,
+          "expiry_date": "2027-07-16",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_fluconazole_150mg",
+      "key": "med_fluconazole_150mg",
+      "value": {
+        "rev": "1-198005"
+      },
+      "doc": {
+        "_id": "med_fluconazole_150mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Fluconazole",
+          "generic_name": "Fluconazole",
+          "strength": "150mg",
+          "dosage_form": "capsule",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000088",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Antifungal",
+          "indications": [
+            "Fungal infections"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 737,
+          "unit_cost": 34192,
+          "expiry_date": "2027-06-04",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_rifampicin_450mg",
+      "key": "med_rifampicin_450mg",
+      "value": {
+        "rev": "1-544502"
+      },
+      "doc": {
+        "_id": "med_rifampicin_450mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Rifampicin",
+          "generic_name": "Rifampicin",
+          "strength": "450mg",
+          "dosage_form": "capsule",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000089",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Antimycobacterial",
+          "indications": [
+            "Tuberculosis"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 355,
+          "unit_cost": 36707,
+          "expiry_date": "2026-10-02",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_sertraline_50mg",
+      "key": "med_sertraline_50mg",
+      "value": {
+        "rev": "1-839962"
+      },
+      "doc": {
+        "_id": "med_sertraline_50mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Sertraline",
+          "generic_name": "Sertraline",
+          "strength": "50mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000090",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "SSRI",
+          "indications": [
+            "Depression, Anxiety"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 340,
+          "unit_cost": 26030,
+          "expiry_date": "2027-04-06",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_escitalopram_10mg",
+      "key": "med_escitalopram_10mg",
+      "value": {
+        "rev": "1-364468"
+      },
+      "doc": {
+        "_id": "med_escitalopram_10mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Escitalopram",
+          "generic_name": "Escitalopram",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000091",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "SSRI",
+          "indications": [
+            "Depression, Anxiety"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 676,
+          "unit_cost": 33099,
+          "expiry_date": "2026-11-29",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_fluoxetine_20mg",
+      "key": "med_fluoxetine_20mg",
+      "value": {
+        "rev": "1-167536"
+      },
+      "doc": {
+        "_id": "med_fluoxetine_20mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Fluoxetine",
+          "generic_name": "Fluoxetine",
+          "strength": "20mg",
+          "dosage_form": "capsule",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000092",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "SSRI",
+          "indications": [
+            "Depression, OCD"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 780,
+          "unit_cost": 35424,
+          "expiry_date": "2027-08-19",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_amitriptyline_25mg",
+      "key": "med_amitriptyline_25mg",
+      "value": {
+        "rev": "1-325458"
+      },
+      "doc": {
+        "_id": "med_amitriptyline_25mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Amitriptyline",
+          "generic_name": "Amitriptyline",
+          "strength": "25mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000093",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Tricyclic antidepressant",
+          "indications": [
+            "Depression, Neuropathic pain"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 186,
+          "unit_cost": 31200,
+          "expiry_date": "2027-05-26",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_venlafaxine_75mg",
+      "key": "med_venlafaxine_75mg",
+      "value": {
+        "rev": "1-107473"
+      },
+      "doc": {
+        "_id": "med_venlafaxine_75mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Venlafaxine",
+          "generic_name": "Venlafaxine",
+          "strength": "75mg",
+          "dosage_form": "capsule",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000094",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "SNRI",
+          "indications": [
+            "Depression, Anxiety"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 297,
+          "unit_cost": 7305,
+          "expiry_date": "2026-11-02",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_duloxetine_60mg",
+      "key": "med_duloxetine_60mg",
+      "value": {
+        "rev": "1-809077"
+      },
+      "doc": {
+        "_id": "med_duloxetine_60mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Duloxetine",
+          "generic_name": "Duloxetine",
+          "strength": "60mg",
+          "dosage_form": "capsule",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000095",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "SNRI",
+          "indications": [
+            "Depression, Neuropathic pain"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 264,
+          "unit_cost": 9405,
+          "expiry_date": "2026-11-24",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_diazepam_5mg",
+      "key": "med_diazepam_5mg",
+      "value": {
+        "rev": "1-187722"
+      },
+      "doc": {
+        "_id": "med_diazepam_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Diazepam",
+          "generic_name": "Diazepam",
+          "strength": "5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000096",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Benzodiazepine",
+          "indications": [
+            "Anxiety, Muscle spasm"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 503,
+          "unit_cost": 9373,
+          "expiry_date": "2026-11-19",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_lorazepam_1mg",
+      "key": "med_lorazepam_1mg",
+      "value": {
+        "rev": "1-689914"
+      },
+      "doc": {
+        "_id": "med_lorazepam_1mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Lorazepam",
+          "generic_name": "Lorazepam",
+          "strength": "1mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000097",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Benzodiazepine",
+          "indications": [
+            "Anxiety"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 145,
+          "unit_cost": 12540,
+          "expiry_date": "2027-01-09",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_alprazolam_0_5mg",
+      "key": "med_alprazolam_0_5mg",
+      "value": {
+        "rev": "1-200850"
+      },
+      "doc": {
+        "_id": "med_alprazolam_0_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Alprazolam",
+          "generic_name": "Alprazolam",
+          "strength": "0.5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000098",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Benzodiazepine",
+          "indications": [
+            "Anxiety, Panic disorder"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 244,
+          "unit_cost": 23307,
+          "expiry_date": "2027-01-08",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_clonazepam_0_5mg",
+      "key": "med_clonazepam_0_5mg",
+      "value": {
+        "rev": "1-664684"
+      },
+      "doc": {
+        "_id": "med_clonazepam_0_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Clonazepam",
+          "generic_name": "Clonazepam",
+          "strength": "0.5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000099",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Benzodiazepine",
+          "indications": [
+            "Seizures, Anxiety"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 675,
+          "unit_cost": 9860,
+          "expiry_date": "2026-10-25",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_zolpidem_10mg",
+      "key": "med_zolpidem_10mg",
+      "value": {
+        "rev": "1-616356"
+      },
+      "doc": {
+        "_id": "med_zolpidem_10mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Zolpidem",
+          "generic_name": "Zolpidem",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000100",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Hypnotic",
+          "indications": [
+            "Insomnia"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 470,
+          "unit_cost": 26433,
+          "expiry_date": "2026-08-28",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_quetiapine_100mg",
+      "key": "med_quetiapine_100mg",
+      "value": {
+        "rev": "1-553075"
+      },
+      "doc": {
+        "_id": "med_quetiapine_100mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Quetiapine",
+          "generic_name": "Quetiapine",
+          "strength": "100mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000101",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Atypical antipsychotic",
+          "indications": [
+            "Schizophrenia, Bipolar"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 984,
+          "unit_cost": 3683,
+          "expiry_date": "2027-07-25",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_risperidone_2mg",
+      "key": "med_risperidone_2mg",
+      "value": {
+        "rev": "1-551428"
+      },
+      "doc": {
+        "_id": "med_risperidone_2mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Risperidone",
+          "generic_name": "Risperidone",
+          "strength": "2mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000102",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Atypical antipsychotic",
+          "indications": [
+            "Schizophrenia"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 575,
+          "unit_cost": 31273,
+          "expiry_date": "2026-11-17",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_haloperidol_5mg",
+      "key": "med_haloperidol_5mg",
+      "value": {
+        "rev": "1-610283"
+      },
+      "doc": {
+        "_id": "med_haloperidol_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Haloperidol",
+          "generic_name": "Haloperidol",
+          "strength": "5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000103",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Typical antipsychotic",
+          "indications": [
+            "Psychosis"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 349,
+          "unit_cost": 14014,
+          "expiry_date": "2026-09-27",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_carbamazepine_200mg",
+      "key": "med_carbamazepine_200mg",
+      "value": {
+        "rev": "1-569118"
+      },
+      "doc": {
+        "_id": "med_carbamazepine_200mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Carbamazepine",
+          "generic_name": "Carbamazepine",
+          "strength": "200mg",
+          "dosage_form": "tablet",
+          "manufacturer": "MediCare",
+          "barcode": "8936000000104",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Anticonvulsant",
+          "indications": [
+            "Epilepsy, Bipolar"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 886,
+          "unit_cost": 49171,
+          "expiry_date": "2027-05-08",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_vitamin_b_complex_1 tab",
+      "key": "med_vitamin_b_complex_1 tab",
+      "value": {
+        "rev": "1-929400"
+      },
+      "doc": {
+        "_id": "med_vitamin_b_complex_1 tab",
+        "type": "medication",
+        "medication_info": {
+          "name": "Vitamin B Complex",
+          "generic_name": "Vitamin B Complex",
+          "strength": "1 tab",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000105",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "B vitamins",
+          "indications": [
+            "Nutritional supplement"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 403,
+          "unit_cost": 8546,
+          "expiry_date": "2027-05-01",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_vitamin_c_500mg",
+      "key": "med_vitamin_c_500mg",
+      "value": {
+        "rev": "1-922673"
+      },
+      "doc": {
+        "_id": "med_vitamin_c_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Vitamin C",
+          "generic_name": "Vitamin C",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000106",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Ascorbic acid",
+          "indications": [
+            "Immune support"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 268,
+          "unit_cost": 29172,
+          "expiry_date": "2027-02-23",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_vitamin_d3_1000IU",
+      "key": "med_vitamin_d3_1000IU",
+      "value": {
+        "rev": "1-381020"
+      },
+      "doc": {
+        "_id": "med_vitamin_d3_1000IU",
+        "type": "medication",
+        "medication_info": {
+          "name": "Vitamin D3",
+          "generic_name": "Vitamin D3",
+          "strength": "1000IU",
+          "dosage_form": "capsule",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000107",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Cholecalciferol",
+          "indications": [
+            "Bone health"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 343,
+          "unit_cost": 3246,
+          "expiry_date": "2026-08-28",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_calcium_carbonate_500mg",
+      "key": "med_calcium_carbonate_500mg",
+      "value": {
+        "rev": "1-246542"
+      },
+      "doc": {
+        "_id": "med_calcium_carbonate_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Calcium carbonate",
+          "generic_name": "Calcium carbonate",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000108",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Calcium supplement",
+          "indications": [
+            "Osteoporosis prevention"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 72,
+          "unit_cost": 7283,
+          "expiry_date": "2026-12-23",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_iron_sulfate_200mg",
+      "key": "med_iron_sulfate_200mg",
+      "value": {
+        "rev": "1-417640"
+      },
+      "doc": {
+        "_id": "med_iron_sulfate_200mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Iron sulfate",
+          "generic_name": "Iron sulfate",
+          "strength": "200mg",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000109",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Iron supplement",
+          "indications": [
+            "Anemia"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 965,
+          "unit_cost": 24089,
+          "expiry_date": "2026-11-21",
+          "supplier": "Global Med Inc."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_folic_acid_5mg",
+      "key": "med_folic_acid_5mg",
+      "value": {
+        "rev": "1-281873"
+      },
+      "doc": {
+        "_id": "med_folic_acid_5mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Folic acid",
+          "generic_name": "Folic acid",
+          "strength": "5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "BioPharm",
+          "barcode": "8936000000110",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Vitamin B9",
+          "indications": [
+            "Anemia, Pregnancy"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 547,
+          "unit_cost": 2163,
+          "expiry_date": "2027-11-08",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_multivitamin_1 tab",
+      "key": "med_multivitamin_1 tab",
+      "value": {
+        "rev": "1-119535"
+      },
+      "doc": {
+        "_id": "med_multivitamin_1 tab",
+        "type": "medication",
+        "medication_info": {
+          "name": "Multivitamin",
+          "generic_name": "Multivitamin",
+          "strength": "1 tab",
+          "dosage_form": "tablet",
+          "manufacturer": "VitaMed",
+          "barcode": "8936000000111",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Multiple vitamins",
+          "indications": [
+            "Nutritional supplement"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 103,
+          "unit_cost": 34184,
+          "expiry_date": "2027-04-04",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_omega_3_fatty_acids_1000mg",
+      "key": "med_omega_3_fatty_acids_1000mg",
+      "value": {
+        "rev": "1-225522"
+      },
+      "doc": {
+        "_id": "med_omega_3_fatty_acids_1000mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Omega-3 fatty acids",
+          "generic_name": "Omega-3 fatty acids",
+          "strength": "1000mg",
+          "dosage_form": "capsule",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000112",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Fish oil",
+          "indications": [
+            "Cardiovascular health"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 562,
+          "unit_cost": 33190,
+          "expiry_date": "2027-01-16",
+          "supplier": "Pharma Distributors"
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_glucosamine_500mg",
+      "key": "med_glucosamine_500mg",
+      "value": {
+        "rev": "1-721951"
+      },
+      "doc": {
+        "_id": "med_glucosamine_500mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Glucosamine",
+          "generic_name": "Glucosamine",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000113",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Joint supplement",
+          "indications": [
+            "Osteoarthritis"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 769,
+          "unit_cost": 45522,
+          "expiry_date": "2027-08-20",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_coenzyme_q10_100mg",
+      "key": "med_coenzyme_q10_100mg",
+      "value": {
+        "rev": "1-639469"
+      },
+      "doc": {
+        "_id": "med_coenzyme_q10_100mg",
+        "type": "medication",
+        "medication_info": {
+          "name": "Coenzyme Q10",
+          "generic_name": "Coenzyme Q10",
+          "strength": "100mg",
+          "dosage_form": "capsule",
+          "manufacturer": "HealthPlus",
+          "barcode": "8936000000114",
+          "inventory": {
+            "unit_cost": 50000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Antioxidant",
+          "indications": [
+            "Heart health"
+          ],
+          "contraindications": [
+            "Hypersensitivity",
+            "Severe hepatic impairment"
+          ],
+          "side_effects": [
+            "Nausea",
+            "Dizziness",
+            "Headache"
+          ],
+          "drug_interactions": [
+            "Alcohol",
+            "MAO inhibitors"
+          ]
+        },
+        "inventory": {
+          "current_stock": 195,
+          "unit_cost": 42929,
+          "expiry_date": "2026-06-21",
+          "supplier": "Medical Supply Co."
+        },
+        "status": "active",
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2025-11-10T15:55:46Z"
       }
     }
   ]

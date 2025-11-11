@@ -4,6 +4,115 @@ use App\Services\CouchDB\CouchClient;
 
 Route::get('/', fn() => 'OK');
 
+// 🚀 Setup consultations database
+Route::get('/setup-consultations', function () {
+    try {
+        $client = new CouchClient();
+        $db = $client->db('consultations');
+        
+        // Create design docs
+        $consultationService = app(\App\Services\CouchDB\ConsultationService::class);
+        $messageService = app(\App\Services\CouchDB\MessageService::class);
+        
+        $designConsultations = $consultationService->ensureDesignDoc();
+        $designMessages = $messageService->ensureDesignDoc();
+        
+        // Create sample data
+        $sampleConsultations = [
+            [
+                '_id' => 'consultation_2025_001',
+                'type' => 'consultation',
+                'patient_id' => 'patient_2024_001',
+                'patient_info' => [
+                    'name' => 'Nguyễn Văn A',
+                    'phone' => '0901234567',
+                ],
+                'status' => 'waiting',
+                'last_message' => 'Xin chào, tôi muốn tư vấn về dịch vụ khám sức khỏe tổng quát',
+                'last_message_at' => '2025-11-09T09:00:00Z',
+                'unread_count_patient' => 0,
+                'unread_count_staff' => 1,
+                'created_at' => '2025-11-09T09:00:00Z',
+                'updated_at' => '2025-11-09T09:00:00Z',
+            ],
+            [
+                '_id' => 'consultation_2025_002',
+                'type' => 'consultation',
+                'patient_id' => 'patient_2024_002',
+                'patient_info' => [
+                    'name' => 'Trần Thị B',
+                    'phone' => '0902345678',
+                ],
+                'staff_id' => 'user_admin_001',
+                'staff_info' => [
+                    'name' => 'Admin',
+                ],
+                'status' => 'active',
+                'last_message' => 'Chúng tôi sẽ hỗ trợ bạn ngay',
+                'last_message_at' => '2025-11-09T10:30:00Z',
+                'unread_count_patient' => 1,
+                'unread_count_staff' => 0,
+                'created_at' => '2025-11-09T10:00:00Z',
+                'updated_at' => '2025-11-09T10:30:00Z',
+            ],
+        ];
+        
+        $sampleMessages = [
+            [
+                '_id' => 'message_2025_001',
+                'type' => 'message',
+                'consultation_id' => 'consultation_2025_001',
+                'sender_id' => 'patient_2024_001',
+                'sender_type' => 'patient',
+                'sender_name' => 'Nguyễn Văn A',
+                'message' => 'Xin chào, tôi muốn tư vấn về dịch vụ khám sức khỏe tổng quát',
+                'is_read' => false,
+                'created_at' => '2025-11-09T09:00:00Z',
+            ],
+            [
+                '_id' => 'message_2025_002',
+                'type' => 'message',
+                'consultation_id' => 'consultation_2025_002',
+                'sender_id' => 'patient_2024_002',
+                'sender_type' => 'patient',
+                'sender_name' => 'Trần Thị B',
+                'message' => 'Tôi cần đặt lịch hẹn khám bệnh',
+                'is_read' => true,
+                'created_at' => '2025-11-09T10:00:00Z',
+            ],
+            [
+                '_id' => 'message_2025_003',
+                'type' => 'message',
+                'consultation_id' => 'consultation_2025_002',
+                'sender_id' => 'user_admin_001',
+                'sender_type' => 'staff',
+                'sender_name' => 'Admin',
+                'message' => 'Chúng tôi sẽ hỗ trợ bạn ngay. Bạn muốn đặt lịch vào thời gian nào?',
+                'is_read' => false,
+                'created_at' => '2025-11-09T10:30:00Z',
+            ],
+        ];
+        
+        $allDocs = array_merge($sampleConsultations, $sampleMessages);
+        $bulkResult = $db->bulk($allDocs);
+        
+        return response()->json([
+            'status' => 'success',
+            'design_consultations' => $designConsultations,
+            'design_messages' => $designMessages,
+            'bulk_insert' => $bulkResult,
+            'total_docs' => count($allDocs),
+        ]);
+        
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'failed',
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ], 500);
+    }
+});
+
 // 🔍 Simple CouchDB test
 Route::get('/test-couchdb', function () {
     try {

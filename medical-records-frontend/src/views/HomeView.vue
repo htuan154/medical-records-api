@@ -211,6 +211,7 @@ import AppointmentService from '@/api/appointmentService'
 import MedicalTestService from '@/api/medicalTestService'
 import TreatmentService from '@/api/treatmentService'
 import MedicationService from '@/api/medicationService'
+import InvoiceService from '@/api/invoiceService'
 
 export default {
   name: 'HomeView',
@@ -250,6 +251,13 @@ export default {
       ],
       // Quick actions giữ nguyên
       quickActions: [
+        {
+          title: 'Tư vấn khách hàng',
+          description: 'Trả lời tin nhắn từ bệnh nhân',
+          icon: 'bi bi-chat-dots-fill',
+          color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          route: 'consultations'
+        },
         {
           title: 'Thêm bệnh nhân mới',
           description: 'Đăng ký bệnh nhân mới vào hệ thống',
@@ -363,7 +371,8 @@ export default {
           appointmentsRes,
           medicalTestsRes,
           treatmentsRes,
-          medicationsRes
+          medicationsRes,
+          invoicesRes
         ] = await Promise.allSettled([
           this.getPatientCount(),
           this.getStaffCount(),
@@ -374,7 +383,8 @@ export default {
           this.getAppointmentCount(),
           this.getMedicalTestCount(),
           this.getTreatmentCount(),
-          this.getMedicationCount()
+          this.getMedicationCount(),
+          this.getInvoiceCount()
         ])
 
         // Cập nhật thống kê chính
@@ -423,6 +433,10 @@ export default {
           this.updateManagementCount('Đơn thuốc', medicationsRes.value)
         }
 
+        if (invoicesRes.status === 'fulfilled') {
+          this.updateManagementCount('Hóa đơn', invoicesRes.value)
+        }
+
         // Cập nhật hoạt động gần đây
         this.updateRecentActivities()
       } catch (error) {
@@ -445,8 +459,21 @@ export default {
 
     async getStaffCount () {
       try {
-        const res = await StaffService.list({ limit: 1 })
-        return this.extractTotal(res)
+        // Lấy toàn bộ nhân viên, không giới hạn limit
+        const res = await StaffService.list({})
+        // Nếu trả về mảng, lấy length
+        if (Array.isArray(res)) return res.length
+        // Nếu trả về object có rows, lấy rows.length
+        if (res && Array.isArray(res.rows)) return res.rows.length
+        // Nếu trả về object có total, lấy total
+        if (res && typeof res.total === 'number') return res.total
+        // Nếu trả về object có items, lấy items.length
+        if (res && Array.isArray(res.items)) return res.items.length
+        // Nếu trả về object có data là mảng, lấy data.length
+        if (res && Array.isArray(res.data)) return res.data.length
+        // Nếu trả về object có total_rows, lấy total_rows
+        if (res && typeof res.total_rows === 'number') return res.total_rows
+        return 0
       } catch (error) {
         console.error('Lỗi khi lấy số lượng nhân viên:', error)
         return 0
@@ -455,8 +482,21 @@ export default {
 
     async getDoctorCount () {
       try {
-        const res = await DoctorService.list({ limit: 1 })
-        return this.extractTotal(res)
+        // Lấy toàn bộ bác sĩ, không giới hạn limit
+        const res = await DoctorService.list({})
+        // Nếu trả về mảng, lấy length
+        if (Array.isArray(res)) return res.length
+        // Nếu trả về object có rows, lấy rows.length
+        if (res && Array.isArray(res.rows)) return res.rows.length
+        // Nếu trả về object có total, lấy total
+        if (res && typeof res.total === 'number') return res.total
+        // Nếu trả về object có items, lấy items.length
+        if (res && Array.isArray(res.items)) return res.items.length
+        // Nếu trả về object có data là mảng, lấy data.length
+        if (res && Array.isArray(res.data)) return res.data.length
+        // Nếu trả về object có total_rows, lấy total_rows
+        if (res && typeof res.total_rows === 'number') return res.total_rows
+        return 0
       } catch (error) {
         console.error('Lỗi khi lấy số lượng bác sĩ:', error)
         return 0
@@ -533,24 +573,49 @@ export default {
       }
     },
 
+    async getInvoiceCount () {
+      try {
+        const res = await InvoiceService.list({ limit: 1 })
+        return this.extractTotal(res)
+      } catch (error) {
+        console.error('Lỗi khi lấy số lượng hóa đơn:', error)
+        return 0
+      }
+    },
+
     // Helper function để extract total từ response
     extractTotal (res) {
       if (!res) return 0
 
+      // Helper để filter _design docs
+      const filterDesignDocs = (arr) => {
+        if (!Array.isArray(arr)) return arr
+        return arr.filter(item => {
+          const id = item._id || item.id
+          return id && !id.startsWith('_design/')
+        })
+      }
+
       // Thử các cấu trúc response khác nhau
       if (typeof res.total === 'number') return res.total
-      if (typeof res.total_rows === 'number') return res.total_rows
+      if (typeof res.total_rows === 'number') {
+        // Nếu có rows, đếm sau khi filter _design docs
+        if (Array.isArray(res.rows)) {
+          return filterDesignDocs(res.rows).length
+        }
+        return res.total_rows
+      }
       if (typeof res.count === 'number') return res.count
       if (res.data && typeof res.data.total === 'number') return res.data.total
       if (res.data && typeof res.data.total_rows === 'number') return res.data.total_rows
       if (res.meta && typeof res.meta.total === 'number') return res.meta.total
       if (res.pagination && typeof res.pagination.total === 'number') return res.pagination.total
 
-      // Nếu trả về array, đếm length
-      if (Array.isArray(res)) return res.length
-      if (Array.isArray(res.data)) return res.data.length
-      if (Array.isArray(res.items)) return res.items.length
-      if (Array.isArray(res.rows)) return res.rows.length
+      // Nếu trả về array, đếm length sau khi filter _design docs
+      if (Array.isArray(res)) return filterDesignDocs(res).length
+      if (Array.isArray(res.data)) return filterDesignDocs(res.data).length
+      if (Array.isArray(res.items)) return filterDesignDocs(res.items).length
+      if (Array.isArray(res.rows)) return filterDesignDocs(res.rows).length
 
       return 0
     },
@@ -606,8 +671,17 @@ export default {
     },
 
     navigateTo (routeName) {
+      console.log('🔍 Navigating to:', routeName)
+      console.log('🔍 Has route?', this.$router.hasRoute(routeName))
+      console.log('🔍 Current user:', this.$store.state.user)
+      console.log('🔍 User roles:', this.$store.getters.roles)
+
       if (routeName && this.$router.hasRoute(routeName)) {
-        this.$router.push({ name: routeName })
+        this.$router.push({ name: routeName }).catch(err => {
+          console.error('❌ Navigation failed:', err)
+        })
+      } else {
+        console.warn('⚠️ Route not found:', routeName)
       }
     },
 

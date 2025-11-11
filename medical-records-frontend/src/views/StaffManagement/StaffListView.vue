@@ -11,7 +11,7 @@
           <option :value="50">50 / trang</option>
           <option :value="100">100 / trang</option>
         </select>
-        <button class="btn btn-outline-secondary" @click="reload" :disabled="loading">Tải lại</button>
+  <button class="btn btn-outline-secondary" @click="refreshPage" :disabled="loading">Tải lại</button>
         <button class="btn btn-primary" @click="openCreate" :disabled="loading">+ Thêm mới</button>
       </div>
     </div>
@@ -152,7 +152,7 @@
 
             <div class="col-md-4">
               <label class="form-label">Điện thoại</label>
-              <input v-model.trim="form.phone" class="form-control" />
+              <input v-model.trim="form.phone" class="form-control" maxlength="10" pattern="\d{10}" @input="onPhoneInput" />
             </div>
             <div class="col-md-8">
               <label class="form-label">Email</label>
@@ -164,23 +164,23 @@
             </div>
           </div>
 
-          <div class="section-title">Ca làm</div>
+          <div class="section-title">Ca làm (Cố định)</div>
           <div class="row g-3">
             <div class="col-12">
-              <div class="d-flex flex-wrap gap-2">
-                <label v-for="d in dayOptions" :key="d.value" class="form-check form-check-inline m-0">
-                  <input class="form-check-input" type="checkbox" :value="d.value" v-model="form.shift.days">
-                  <span class="form-check-label">{{ d.label }}</span>
-                </label>
+              <label class="form-label">Ngày làm việc</label>
+              <div class="alert alert-info py-2">
+                <strong>Cố định:</strong> Thứ 2, Thứ 3, Thứ 4, Thứ 5, Thứ 6
               </div>
             </div>
             <div class="col-md-3">
               <label class="form-label">Bắt đầu</label>
-              <input v-model="form.shift.start" type="time" class="form-control" />
+              <input type="text" class="form-control" value="08:00" readonly />
+              <small class="text-muted">Cố định: 08:00 (24 giờ)</small>
             </div>
             <div class="col-md-3">
               <label class="form-label">Kết thúc</label>
-              <input v-model="form.shift.end" type="time" class="form-control" />
+              <input type="text" class="form-control" value="17:00" readonly />
+              <small class="text-muted">Cố định: 17:00 (24 giờ)</small>
             </div>
           </div>
 
@@ -220,7 +220,7 @@ export default {
       total: 0,
       q: '',
       page: 1,
-      pageSize: 50,
+      pageSize: 5,
       hasMore: false,
       loading: false,
       error: '',
@@ -255,7 +255,11 @@ export default {
         phone: '',
         email: '',
         department: '',
-        shift: { days: [], start: '', end: '' },
+        shift: {
+          days: ['mon', 'tue', 'wed', 'thu', 'fri'], // Cố định thứ 2-6
+          start: '08:00', // Cố định 8:00
+          end: '17:00' // Cố định 17:00
+        },
         status: 'active'
       }
     },
@@ -297,14 +301,19 @@ export default {
       this.error = ''
       try {
         const skip = (this.page - 1) * this.pageSize
-        const res = await StaffService.list({
-          q: this.q || undefined,
+        // Build params for API
+        // Build params for API
+        const params = {
           limit: this.pageSize,
           offset: skip,
           skip
-        })
-
+        }
+        if (typeof this.q === 'string' && this.q.trim().length > 0) {
+          params.q = this.q.trim()
+        }
+        const res = await StaffService.list(params)
         let items = []; let total = 0; let offset = null
+        // Chuẩn hóa dữ liệu trả về
         if (res && Array.isArray(res.rows)) {
           items = (res.rows || []).map(r => r.doc || r.value || r)
           total = res.total_rows ?? items.length
@@ -313,6 +322,18 @@ export default {
           items = res.data; total = res.total ?? items.length
         } else if (Array.isArray(res)) { items = res; total = res.length }
 
+        // Nếu có từ khóa tìm kiếm, lọc trên frontend nếu backend chưa hỗ trợ
+        if (typeof this.q === 'string' && this.q.trim().length > 0) {
+          const keyword = this.q.trim().toLowerCase()
+          items = items.filter(s => {
+            return (
+              (s.full_name && s.full_name.toLowerCase().includes(keyword)) ||
+              (s.email && s.email.toLowerCase().includes(keyword)) ||
+              (s.phone && s.phone.includes(keyword))
+            )
+          })
+          total = items.length
+        }
         this.items = items
         this.total = total
         this.hasMore = (offset != null)
@@ -325,8 +346,20 @@ export default {
         this.loading = false
       }
     },
-    search () { this.page = 1; this.fetch() },
+    search () {
+      this.page = 1
+      this.fetch()
+    },
     reload () { this.fetch() },
+    refreshPage () {
+      // Reset tất cả bộ lọc và trạng thái
+      this.q = ''
+      this.page = 1
+      this.expanded = {}
+      this.error = ''
+      // Tải lại dữ liệu
+      this.fetch()
+    },
     changePageSize () { this.page = 1; this.fetch() },
     next () { if (this.hasMore) { this.page++; this.fetch() } },
     prev () { if (this.page > 1) { this.page--; this.fetch() } },
@@ -335,11 +368,16 @@ export default {
     openCreate () {
       this.editingId = null
       this.form = this.emptyForm()
+      // Force set giá trị cố định
+      this.form.shift = {
+        days: ['mon', 'tue', 'wed', 'thu', 'fri'],
+        start: '08:00',
+        end: '17:00'
+      }
       this.showModal = true
     },
     openEdit (row) {
       this.editingId = row._id || row.id || row.full_name
-      const shift = row.shift || {}
       this.form = {
         _id: row._id,
         _rev: row._rev,
@@ -350,9 +388,9 @@ export default {
         email: row.email || '',
         department: row.department || '',
         shift: {
-          days: Array.isArray(shift.days) ? [...shift.days] : [],
-          start: shift.start || '',
-          end: shift.end || ''
+          days: ['mon', 'tue', 'wed', 'thu', 'fri'], // Force cố định thứ 2-6
+          start: '08:00', // Force cố định 8:00
+          end: '17:00' // Force cố định 17:00
         },
         status: row.status || 'active'
       }
@@ -408,6 +446,11 @@ export default {
         console.error(e)
         alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
       }
+    },
+    onPhoneInput (e) {
+      // Chỉ cho phép nhập số và tối đa 10 ký tự
+      const val = e.target.value.replace(/\D/g, '').slice(0, 10)
+      this.form.phone = val
     }
   }
 }

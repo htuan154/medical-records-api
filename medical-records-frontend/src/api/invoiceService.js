@@ -32,7 +32,8 @@ const InvoiceService = {
     return api.post(`/invoices/${id}/void`, { reason }).then((r) => r.data)
   },
   download (id) {
-    return api.get(`/invoices/${id}/download`, { responseType: 'blob' })
+    // ✅ Get HTML content with authentication
+    return api.get(`/invoices/${id}/download`, { responseType: 'text' })
   }
 }
 

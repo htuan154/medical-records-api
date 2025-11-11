@@ -12,6 +12,8 @@ use App\Services\CouchDB\InvoiceService;
 use App\Services\CouchDB\MedicationService;
 use App\Services\CouchDB\MedicalTestService;
 use App\Services\CouchDB\RoleService;
+use App\Services\CouchDB\ConsultationService;
+use App\Services\CouchDB\MessageService;
 
 /**
  * Setup/Migration Routes
@@ -35,7 +37,7 @@ Route::prefix('setup')->group(function () {
         $databases = [
             'appointments', 'patients', 'doctors', 'staff', 'users',
             'treatments', 'medical_records', 'invoices', 'medications',
-            'medical_tests', 'roles'
+            'medical_tests', 'roles', 'consultations'
         ];
         
         foreach ($databases as $dbName) {
@@ -146,6 +148,22 @@ Route::prefix('setup')->group(function () {
                 $results['services']['roles'] = $roleService->ensureDesignDoc();
             } catch (\Throwable $e) {
                 $results['services']['roles'] = ['error' => $e->getMessage()];
+            }
+            
+            // Consultations
+            try {
+                $consultationService = app(ConsultationService::class);
+                $results['services']['consultations'] = $consultationService->ensureDesignDoc();
+            } catch (\Throwable $e) {
+                $results['services']['consultations'] = ['error' => $e->getMessage()];
+            }
+            
+            // Messages
+            try {
+                $messageService = app(MessageService::class);
+                $results['services']['messages'] = $messageService->ensureDesignDoc();
+            } catch (\Throwable $e) {
+                $results['services']['messages'] = ['error' => $e->getMessage()];
             }
             
             return response()->json($results, 200);
