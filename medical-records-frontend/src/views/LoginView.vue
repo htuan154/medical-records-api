@@ -127,7 +127,7 @@ export default {
   display: grid;
   place-items: center;
   padding: clamp(24px, 6vh, 56px) 16px; /* khoảng đệm chống dính mép trên/dưới */
-  background: linear-gradient(135deg, #7c87ff 0%, #8e6cfd 45%, #b26aff 75%, #c66bff 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
 }
 
 /* Thẻ card gọn gàng, không bị cắt, tự co vừa màn hình nhỏ */
@@ -154,7 +154,7 @@ export default {
   display: grid;
   place-items: center;
   font-size: 28px;
-  background: #eef2ff;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
 }
 
 .auth-title {
@@ -225,7 +225,7 @@ export default {
 }
 
 .password-toggle:focus {
-  outline: 2px solid #6366f1;
+  outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
 
@@ -247,10 +247,13 @@ export default {
 
 .link {
   font-size: 13px;
-  color: #6366f1;
+  color: #3b82f6;
   text-decoration: none;
 }
-.link:hover { text-decoration: underline; }
+.link:hover {
+  text-decoration: underline;
+  color: #1d4ed8;
+}
 
 /* Nút đăng nhập */
 .btn-primary {
@@ -260,8 +263,13 @@ export default {
   font-weight: 600;
   cursor: pointer;
   margin-top: 8px;
-  background: linear-gradient(135deg, #5b67ff, #7f57ff);
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: #fff;
+  transition: all 0.3s ease;
+}
+.btn-primary:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 .btn-primary[disabled] {
   opacity: 0.75;

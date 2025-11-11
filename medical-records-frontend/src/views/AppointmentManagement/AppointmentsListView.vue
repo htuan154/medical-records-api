@@ -2,7 +2,7 @@
   <section class="container py-4">
     <!-- Header + Tools -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="h5 mb-0">Quản lý Lịch hẹn</h2>
+      <h2 class="h5 mb-0"></h2>
       <div class="d-flex gap-2">
         <select v-model.number="pageSize" class="form-select" style="width:120px" @change="changePageSize" :disabled="loading">
           <option :value="10">10 / trang</option>
