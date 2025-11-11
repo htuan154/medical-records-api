@@ -109,35 +109,35 @@ class MessageController extends Controller
     {
         try {
             $validated = $req->validate([
+                '_id' => 'nullable|string',
                 'consultation_id' => 'required|string',
                 'sender_id'       => 'required|string',
                 'sender_type'     => 'required|string|in:patient,staff',
                 'sender_name'     => 'required|string',
                 'message'         => 'required|string',
             ]);
-
+            // Nếu có _id thì truyền xuống service, nếu không có thì service tự sinh
+            $data = $validated;
+            if ($req->has('_id')) {
+                $data['_id'] = $req->input('_id');
+            }
             // Create message
-            $result = $this->svc->create($validated);
+            $result = $this->svc->create($data);
 
             // Update consultation: last_message + unread count (1 lần để tránh race condition)
             $consultation = $this->consultationSvc->get($validated['consultation_id']);
             $timestamp = $result['created_at'] ?? now()->toIso8601String();
             $receiverType = $validated['sender_type'] === 'patient' ? 'staff' : 'patient';
             $currentUnread = $consultation['unread_count_' . $receiverType] ?? 0;
-            
             // Merge tất cả thay đổi vào 1 lần update
             $consultation['last_message'] = $validated['message'];
             $consultation['last_message_at'] = $timestamp;
             $consultation['unread_count_' . $receiverType] = $currentUnread + 1;
-            
             // Nếu staff gửi tin nhắn thì reset unread_count_staff về 0
-            // (vì staff đang xem conversation nên đã đọc hết tin nhắn của patient)
             if ($validated['sender_type'] === 'staff') {
                 $consultation['unread_count_staff'] = 0;
             }
-            
             $consultation['updated_at'] = now()->toIso8601String();
-            
             $this->consultationSvc->update($validated['consultation_id'], $consultation);
 
             return response()->json($result, 201);
