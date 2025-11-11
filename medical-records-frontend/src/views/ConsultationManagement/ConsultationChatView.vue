@@ -201,10 +201,16 @@ export default {
           return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)
         })
 
-        // Auto select first if current selection is gone
+        // Cập nhật selectedConsultation với data mới từ server
         if (this.selectedConsultation) {
-          const stillExists = this.consultations.find(c => c._id === this.selectedConsultation._id)
-          if (!stillExists) this.selectedConsultation = null
+          const updated = this.consultations.find(c => c._id === this.selectedConsultation._id)
+          if (updated) {
+            // Cập nhật data nhưng giữ nguyên reference để không trigger re-render
+            Object.assign(this.selectedConsultation, updated)
+          } else {
+            // Nếu conversation bị xóa thì clear selection
+            this.selectedConsultation = null
+          }
         }
       } catch (e) {
         console.error('Load consultations failed:', e)
@@ -233,6 +239,10 @@ export default {
         // Sort by created_at ascending
         this.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
 
+        // Lưu vị trí scroll hiện tại
+        const container = this.$refs.messagesContainer
+        const shouldScrollToBottom = !container || (container.scrollHeight - container.scrollTop - container.clientHeight < 100)
+
         // Mark unread messages as read (staff side)
         const unreadIds = this.messages
           .filter(m => !m.is_read && m.sender_type === 'patient')
@@ -240,12 +250,15 @@ export default {
 
         if (unreadIds.length) {
           try {
+            console.log('Marking as read:', unreadIds)
             await ConsultationService.markAsRead(unreadIds)
-            // Update local
+            // Update local - chỉ cập nhật is_read, không làm mất data khác
             this.messages.forEach(m => {
-              if (unreadIds.includes(m._id)) m.is_read = true
+              if (unreadIds.includes(m._id)) {
+                m.is_read = true
+              }
             })
-            // Reset unread count
+            // Reset unread count for staff
             if (this.selectedConsultation.unread_count_staff > 0) {
               this.selectedConsultation.unread_count_staff = 0
             }
@@ -254,7 +267,10 @@ export default {
           }
         }
 
-        this.$nextTick(() => this.scrollToBottom())
+        // Chỉ scroll xuống bottom nếu đang ở gần bottom (tránh làm gián đoạn khi đang đọc tin nhắn cũ)
+        if (shouldScrollToBottom) {
+          this.$nextTick(() => this.scrollToBottom())
+        }
       } catch (e) {
         console.error('Load messages failed:', e)
         alert(e?.response?.data?.message || e?.message || 'Không tải được tin nhắn')
@@ -269,19 +285,26 @@ export default {
 
       this.processing = true
       try {
+        const staffId = this.currentUser._id || this.currentUser.id || this.currentUser.username
         const staffInfo = {
           name: this.currentUser.username || 'Nhân viên',
           email: this.currentUser.email
         }
 
-        await ConsultationService.assignStaff(this.selectedConsultation._id, {
-          staff_id: this.currentUser._id || this.currentUser.id || this.currentUser.username,
+        const result = await ConsultationService.assignStaff(this.selectedConsultation._id, {
+          staff_id: staffId,
           staff_info: staffInfo
         })
 
-        this.selectedConsultation.status = 'active'
-        this.selectedConsultation.staff_id = staffInfo.staff_id
-        this.selectedConsultation.staff_info = staffInfo
+        // Cập nhật từ response để đảm bảo data đồng bộ
+        if (result && result.data) {
+          this.selectedConsultation = result.data
+        } else {
+          // Fallback: update local
+          this.selectedConsultation.status = 'active'
+          this.selectedConsultation.staff_id = staffId
+          this.selectedConsultation.staff_info = staffInfo
+        }
 
         await this.loadConsultations()
       } catch (e) {
@@ -302,6 +325,9 @@ export default {
         await ConsultationService.closeConsultation(this.selectedConsultation._id)
         this.selectedConsultation.status = 'closed'
         await this.loadConsultations()
+
+        // Thông báo thành công
+        alert('Đã đóng cuộc hội thoại thành công!')
       } catch (e) {
         console.error('Close consultation failed:', e)
         alert(e?.response?.data?.message || e?.message || 'Không thể đóng')
@@ -326,6 +352,13 @@ export default {
         await ConsultationService.sendMessage(payload)
         this.messageText = ''
 
+        // Reset unread count về 0 sau khi staff gửi tin nhắn
+        // Vì staff vừa nhắn nên đã đọc hết tin nhắn của patient
+        if (this.selectedConsultation.unread_count_staff > 0) {
+          this.selectedConsultation.unread_count_staff = 0
+        }
+
+        // Reload để cập nhật tin nhắn mới
         await this.loadMessages()
         await this.loadConsultations()
       } catch (e) {
@@ -349,6 +382,8 @@ export default {
     },
 
     hasUnread (consultation) {
+      // Chỉ hiển thị badge khi có tin nhắn chưa đọc từ patient
+      // Staff không cần thấy badge cho tin nhắn của chính mình
       return (consultation.unread_count_staff || 0) > 0
     },
 
@@ -388,12 +423,14 @@ export default {
     startPolling () {
       this.pollingInterval = setInterval(() => {
         if (!document.hidden) {
+          // Chỉ reload consultations, không reload messages để tránh flicker
           this.loadConsultations()
+          // Chỉ reload messages khi có conversation được chọn
           if (this.selectedConsultation) {
             this.loadMessages()
           }
         }
-      }, 5000) // Poll every 5 seconds
+      }, 10000) // Poll every 10 seconds (giảm tải server)
     },
 
     stopPolling () {

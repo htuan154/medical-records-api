@@ -136,51 +136,85 @@ JS
         return $this->repo->delete($id, $rev);
     }
 
-    /** Assign staff to consultation (staff nhận chat) */
+    /**
+     * Assign staff to consultation (staff nhận chat)
+     * @param string $consultationId Consultation ID
+     * @param string $staffId Staff ID
+     * @param array $staffInfo Staff info
+     * @return array Updated consultation
+     */
     public function assignStaff(string $consultationId, string $staffId, array $staffInfo): array
     {
+        /** @var string $consultationId */
         $consultation = $this->get($consultationId);
         
-        return $this->update($consultationId, [
-            '_rev' => $consultation['_rev'],
-            'staff_id' => $staffId,
-            'staff_info' => $staffInfo,
-            'status' => 'active',
-        ]);
+        // Merge với data cũ để không mất các field khác (patient_info, last_message, etc.)
+        $consultation['staff_id'] = $staffId;
+        $consultation['staff_info'] = $staffInfo;
+        $consultation['status'] = 'active';
+        $consultation['updated_at'] = now()->toIso8601String();
+        
+        return $this->repo->update($consultationId, $consultation);
     }
 
-    /** Close consultation */
+    /**
+     * Close consultation
+     * @param string $consultationId Consultation ID
+     * @return array Updated consultation
+     */
     public function close(string $consultationId): array
     {
+        /** @var string $consultationId */
         $consultation = $this->get($consultationId);
         
-        return $this->update($consultationId, [
-            '_rev' => $consultation['_rev'],
-            'status' => 'closed',
-        ]);
+        // Merge với data cũ
+        $consultation['status'] = 'closed';
+        $consultation['updated_at'] = now()->toIso8601String();
+        
+        return $this->repo->update($consultationId, $consultation);
     }
 
-    /** Update unread count */
+    /**
+     * Update unread count
+     * @param string $consultationId Consultation ID
+     * @param string $userType User type (patient|staff)
+     * @param int $count New count
+     * @return array Updated consultation
+     */
     public function updateUnreadCount(string $consultationId, string $userType, int $count): array
     {
+        /** @var string $consultationId */
+        /** @var string $userType */
+        /** @var int $count */
         $consultation = $this->get($consultationId);
         $field = $userType === 'patient' ? 'unread_count_patient' : 'unread_count_staff';
         
-        return $this->update($consultationId, [
-            '_rev' => $consultation['_rev'],
-            $field => $count,
-        ]);
+        // Merge với data cũ
+        $consultation[$field] = $count;
+        $consultation['updated_at'] = now()->toIso8601String();
+        
+        return $this->repo->update($consultationId, $consultation);
     }
 
-    /** Update last message */
+    /**
+     * Update last message
+     * @param string $consultationId Consultation ID
+     * @param string $message Message text
+     * @param string $timestamp Timestamp
+     * @return array Updated consultation
+     */
     public function updateLastMessage(string $consultationId, string $message, string $timestamp): array
     {
+        /** @var string $consultationId */
+        /** @var string $message */
+        /** @var string $timestamp */
         $consultation = $this->get($consultationId);
         
-        return $this->update($consultationId, [
-            '_rev' => $consultation['_rev'],
-            'last_message' => $message,
-            'last_message_at' => $timestamp,
-        ]);
+        // Merge với data cũ
+        $consultation['last_message'] = $message;
+        $consultation['last_message_at'] = $timestamp;
+        $consultation['updated_at'] = now()->toIso8601String();
+        
+        return $this->repo->update($consultationId, $consultation);
     }
 }

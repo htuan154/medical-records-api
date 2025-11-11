@@ -7,6 +7,7 @@ use App\Services\CouchDB\MessageService;
 use App\Services\CouchDB\ConsultationService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -118,23 +119,26 @@ class MessageController extends Controller
             // Create message
             $result = $this->svc->create($validated);
 
-            // Update consultation's last_message and increment unread count
-            $timestamp = $result['created_at'] ?? now()->toIso8601String();
-            $this->consultationSvc->updateLastMessage(
-                $validated['consultation_id'],
-                $validated['message'],
-                $timestamp
-            );
-
-            // Increment unread count for the receiver
+            // Update consultation: last_message + unread count (1 lần để tránh race condition)
             $consultation = $this->consultationSvc->get($validated['consultation_id']);
+            $timestamp = $result['created_at'] ?? now()->toIso8601String();
             $receiverType = $validated['sender_type'] === 'patient' ? 'staff' : 'patient';
             $currentUnread = $consultation['unread_count_' . $receiverType] ?? 0;
-            $this->consultationSvc->updateUnreadCount(
-                $validated['consultation_id'],
-                $receiverType,
-                $currentUnread + 1
-            );
+            
+            // Merge tất cả thay đổi vào 1 lần update
+            $consultation['last_message'] = $validated['message'];
+            $consultation['last_message_at'] = $timestamp;
+            $consultation['unread_count_' . $receiverType] = $currentUnread + 1;
+            
+            // Nếu staff gửi tin nhắn thì reset unread_count_staff về 0
+            // (vì staff đang xem conversation nên đã đọc hết tin nhắn của patient)
+            if ($validated['sender_type'] === 'staff') {
+                $consultation['unread_count_staff'] = 0;
+            }
+            
+            $consultation['updated_at'] = now()->toIso8601String();
+            
+            $this->consultationSvc->update($validated['consultation_id'], $consultation);
 
             return response()->json($result, 201);
         } catch (ValidationException $e) {
@@ -165,6 +169,8 @@ class MessageController extends Controller
     public function update(Request $req, string $id)
     {
         try {
+            /** @var Request $req */
+            /** @var string $id */
             $data = $req->only(['is_read']);
             return response()->json($this->svc->update($id, $data), 200);
         } catch (Throwable $e) {
@@ -189,6 +195,8 @@ class MessageController extends Controller
     public function destroy(Request $req, string $id)
     {
         try {
+            /** @var Request $req */
+            /** @var string $id */
             $rev = $req->query('rev');
             if (!$rev) {
                 return response()->json(['error' => 'Missing rev parameter'], 400);
@@ -226,15 +234,33 @@ class MessageController extends Controller
     public function markAsRead(Request $req)
     {
         try {
+            /** @var Request $req */
             $validated = $req->validate([
                 'message_ids' => 'required|array',
                 'message_ids.*' => 'string',
             ]);
 
-            return response()->json(
-                $this->svc->markMultipleAsRead($validated['message_ids']),
-                200
-            );
+            $result = $this->svc->markMultipleAsRead($validated['message_ids']);
+            
+            // Reset unread count for staff khi staff đọc tin nhắn
+            // Lấy consultation_id từ message đầu tiên
+            if (!empty($validated['message_ids'])) {
+                try {
+                    $firstMessage = $this->svc->get($validated['message_ids'][0]);
+                    if (isset($firstMessage['consultation_id'])) {
+                        $this->consultationSvc->updateUnreadCount(
+                            $firstMessage['consultation_id'],
+                            'staff',
+                            0
+                        );
+                    }
+                } catch (\Throwable $e) {
+                    // Ignore error, just log it
+                    Log::warning('Failed to reset unread count', ['error' => $e->getMessage()]);
+                }
+            }
+
+            return response()->json($result, 200);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (Throwable $e) {
@@ -258,6 +284,8 @@ class MessageController extends Controller
     public function byConsultation(Request $req, string $consultationId)
     {
         try {
+            /** @var Request $req */
+            /** @var string $consultationId */
             $limit = (int) $req->query('limit', 100);
             $skip  = (int) $req->query('skip', 0);
 
