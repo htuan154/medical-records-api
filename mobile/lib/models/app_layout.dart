@@ -23,6 +23,7 @@ class AppLayout extends StatelessWidget {
                   child: Container(
                     color: Colors.white,
                     child: BottomNavigationBar(
+                      type: BottomNavigationBarType.fixed, // Đảm bảo hiển thị đúng với 4 tab
                       currentIndex: controller.selectedIndex,
                       onTap: controller.select,
                       items: controller.items

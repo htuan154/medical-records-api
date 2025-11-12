@@ -224,28 +224,28 @@ export default {
           title: 'Tổng bệnh nhân',
           value: '0', // sẽ được cập nhật từ API
           icon: 'bi bi-people-fill',
-          gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          gradient: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
           trend: { isPositive: true, percentage: '0' }
         },
         {
           title: 'Hồ sơ y tế',
           value: '0',
           icon: 'bi bi-file-medical-fill',
-          gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+          gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
           trend: { isPositive: true, percentage: '0' }
         },
         {
           title: 'Nhân viên',
           value: '0',
           icon: 'bi bi-person-workspace',
-          gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+          gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
           trend: { isPositive: false, percentage: '0' }
         },
         {
           title: 'Người dùng',
           value: '0',
           icon: 'bi bi-people-fill',
-          gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+          gradient: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
           trend: { isPositive: true, percentage: '0' }
         }
       ],
@@ -255,49 +255,49 @@ export default {
           title: 'Tư vấn khách hàng',
           description: 'Trả lời tin nhắn từ bệnh nhân',
           icon: 'bi bi-chat-dots-fill',
-          color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
           route: 'consultations'
         },
         {
           title: 'Thêm bệnh nhân mới',
           description: 'Đăng ký bệnh nhân mới vào hệ thống',
           icon: 'bi bi-person-plus-fill',
-          color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
           route: 'patients'
         },
         {
           title: 'Quản lý nhân viên',
           description: 'Quản lý thông tin nhân viên y tế',
           icon: 'bi bi-person-workspace',
-          color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+          color: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
           route: 'staff'
         },
         {
           title: 'Hồ sơ y tế',
           description: 'Quản lý hồ sơ bệnh án',
           icon: 'bi bi-file-medical-fill',
-          color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+          color: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
           route: 'medical-records'
         },
         {
           title: 'Quản lý người dùng',
           description: 'Quản lý tài khoản và phân quyền',
           icon: 'bi bi-people-fill',
-          color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+          color: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
           route: 'users'
         },
         {
           title: 'Phân quyền',
           description: 'Quản lý vai trò và quyền hạn',
           icon: 'bi bi-shield-lock-fill',
-          color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+          color: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
           route: 'roles'
         },
         {
           title: 'Báo cáo',
           description: 'Xem báo cáo và thống kê',
           icon: 'bi bi-bar-chart-fill',
-          color: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+          color: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
           route: 'reports'
         }
       ],
@@ -726,8 +726,13 @@ export default {
 </script>
 
 <style scoped>
+.home-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+}
+
 .bg-gradient-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
 }
 
 .stat-card {
@@ -776,9 +781,9 @@ export default {
 }
 
 .quick-action-card:hover {
-  border-color: #667eea;
+  border-color: #3b82f6;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
 }
 
 .action-icon {
@@ -817,7 +822,7 @@ export default {
 }
 
 .quick-action-card:hover .action-arrow {
-  color: #667eea;
+  color: #3b82f6;
 }
 
 .management-item {
@@ -832,9 +837,9 @@ export default {
 }
 
 .management-item:hover {
-  border-color: #667eea;
+  border-color: #3b82f6;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
 }
 
 .item-icon {

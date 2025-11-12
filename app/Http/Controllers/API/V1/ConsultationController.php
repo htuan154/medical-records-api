@@ -111,14 +111,19 @@ class ConsultationController extends Controller
     {
         try {
             $validated = $req->validate([
+                '_id' => 'nullable|string',
                 'patient_id'   => 'required|string',
                 'patient_info' => 'required|array',
                 'patient_info.name'  => 'required|string',
                 'patient_info.phone' => 'required|string',
                 'patient_info.avatar' => 'nullable|string',
             ]);
-
-            return response()->json($this->svc->create($validated), 201);
+            // Nếu có _id thì truyền xuống service, nếu không có thì service tự sinh
+            $data = $validated;
+            if ($req->has('_id')) {
+                $data['_id'] = $req->input('_id');
+            }
+            return response()->json($this->svc->create($data), 201);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (Throwable $e) {

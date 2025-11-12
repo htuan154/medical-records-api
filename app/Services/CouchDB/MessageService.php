@@ -96,32 +96,57 @@ JS
         return $this->repo->create($data);
     }
 
-    /** Update message (mainly for marking as read) */
+    /**
+     * Update message (mainly for marking as read)
+     * @param string $id Message ID
+     * @param array $data Data to update
+     * @return array Updated message
+     */
     public function update(string $id, array $data): array
     {
-        return $this->repo->update($id, $data);
+        // Merge với data cũ để không mất field
+        $message = $this->get($id);
+        $merged = array_merge($message, $data);
+        
+        return $this->repo->update($id, $merged);
     }
 
-    /** Delete message */
+    /**
+     * Delete message
+     * @param string $id Message ID
+     * @param string $rev Revision
+     * @return array Delete result
+     */
     public function delete(string $id, string $rev): array
     {
+        /** @var string $id @var string $rev */
         return $this->repo->delete($id, $rev);
     }
 
-    /** Mark message as read */
+    /**
+     * Mark message as read
+     * @param string $messageId Message ID
+     * @return array Updated message
+     */
     public function markAsRead(string $messageId): array
     {
+        /** @var string $messageId */
         $message = $this->get($messageId);
         
-        return $this->update($messageId, [
-            '_rev' => $message['_rev'],
-            'is_read' => true,
-        ]);
+        // Merge với data cũ
+        $message['is_read'] = true;
+        
+        return $this->repo->update($messageId, $message);
     }
 
-    /** Mark multiple messages as read */
+    /**
+     * Mark multiple messages as read
+     * @param array $messageIds Array of message IDs
+     * @return array Results
+     */
     public function markMultipleAsRead(array $messageIds): array
     {
+        /** @var array $messageIds */
         $results = [];
         foreach ($messageIds as $id) {
             try {
@@ -134,9 +159,18 @@ JS
         return $results;
     }
 
-    /** Get messages by consultation */
+    /**
+     * Get messages by consultation
+     * @param string $consultationId Consultation ID
+     * @param int $limit Limit
+     * @param int $skip Skip
+     * @return array Messages
+     */
     public function getByConsultation(string $consultationId, int $limit = 100, int $skip = 0): array
     {
+        /** @var string $consultationId */
+        /** @var int $limit */
+        /** @var int $skip */
         return $this->repo->byConsultation($consultationId, $limit, $skip);
     }
 }

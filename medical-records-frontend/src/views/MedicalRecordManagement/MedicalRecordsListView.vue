@@ -1,100 +1,181 @@
 <template>
-  <section class="container py-4">
-    <!-- Header + Tools -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="h5 mb-0">Hồ sơ khám</h2>
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-secondary" @click="reload" :disabled="loading">Tải lại</button>
-        <button class="btn btn-primary" @click="openCreate" :disabled="loading">+ Thêm mới</button>
+  <div>
+    <section class="medical-records-management">
+      <!-- Header Section -->
+      <div class="header-section">
+      <div class="header-content">
+        <div class="header-left">
+          <h1 class="page-title">
+            <i class="bi bi-file-medical"></i>
+            Quản lý Hồ sơ khám
+          </h1>
+          <p class="page-subtitle">Quản lý hồ sơ khám bệnh và điều trị</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-action btn-back" @click="$router.push('/')" title="Quay lại Trang chủ">
+            <i class="bi bi-arrow-left"></i>
+            Trang chủ
+          </button>
+          <div class="stats-badge">
+            <i class="bi bi-bar-chart-fill"></i>
+            <span>Tổng: <strong>{{ total }}</strong></span>
+          </div>
+          <div class="page-size-selector">
+            <select v-model.number="pageSize" @change="changePageSize" :disabled="loading">
+              <option :value="10">10 / trang</option>
+              <option :value="25">25 / trang</option>
+              <option :value="50">50 / trang</option>
+              <option :value="100">100 / trang</option>
+            </select>
+          </div>
+          <button class="btn-action btn-refresh" @click="reload" :disabled="loading" title="Tải lại">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+          <button class="btn-action btn-primary" @click="openCreate" :disabled="loading">
+            <i class="bi bi-plus-circle"></i>
+            Thêm mới
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="d-flex align-items-center mb-3" style="max-width: 520px">
-      <input v-model.trim="q" class="form-control me-2" placeholder="Tìm theo loại / lý do / bác sĩ / bệnh nhân…" @keyup.enter="search" />
-      <button class="btn btn-outline-secondary" @click="search">Tìm</button>
+    <!-- Search and Filter Section -->
+    <div class="search-section">
+      <div class="search-container">
+        <div class="search-input-group">
+          <i class="bi bi-search search-icon"></i>
+          <input
+            v-model.trim="q"
+            class="search-input"
+            placeholder="Tìm theo loại / lý do / bác sĩ / bệnh nhân…"
+            @keyup.enter="search"
+          />
+          <button class="search-btn" @click="search" :disabled="loading">
+            <i class="bi bi-search"></i>
+            Tìm kiếm
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
+    <!-- Content Section -->
+    <div class="content-section">
+      <div v-if="error" class="alert alert-error">
+        <i class="bi bi-exclamation-triangle"></i>
+        {{ error }}
+      </div>
 
-    <!-- LIST gọn: Ngày khám / BN / BS / Trạng thái -->
-    <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead>
-          <tr>
-            <th style="width:56px">#</th>
-            <th>Ngày khám</th>
-            <th>Bệnh nhân</th>
-            <th>Bác sĩ</th>
-            <th>Loại khám</th>
-            <th>Trạng thái</th>
-            <th style="width:160px">Hành động</th>
-          </tr>
-        </thead>
-        <tbody v-for="(r, idx) in filteredItems" :key="rowKey(r, idx)">
-          <tr>
-            <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
-              <td>{{ fmtDateTime(r.visit_date) }}</td>
-              <td>{{ displayName(patientsMap[r.patient_id]) || r.patient_id }}</td>
-              <td>{{ displayName(doctorsMap[r.doctor_id]) || r.doctor_id }}</td>
-              <td>{{ r.visit_type }}</td>
-              <td>
-                <span :class="['badge', statusClass(r.status)]">{{ r.status || '-' }}</span>
-              </td>
-              <td>
-                <div class="btn-group">
-                  <button class="btn btn-sm btn-outline-secondary" @click="toggleRow(r)" title="Xem chi tiết">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline-success"
-                    @click="createInvoiceFromRecord(r)"
-                    :disabled="loading"
-                    title="Tạo hóa đơn"
-                  >
-                    <i class="bi bi-receipt"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-primary" @click="openEdit(r)" title="Sửa">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger" @click="remove(r)" :disabled="loading" title="Xóa">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </td>
-          </tr>
+      <div v-if="loading" class="loading-state">
+        <div class="spinner"></div>
+        <span>Đang tải danh sách...</span>
+      </div>
 
-          <!-- DETAILS xổ khi bấm Xem -->
-          <tr v-if="isExpanded(r)">
-            <td :colspan="7">
-                <div class="detail-wrap">
-                  <div class="detail-title">Thông tin khám</div>
-                  <div class="detail-grid">
-                    <div><b>Loại:</b> {{ r.visit_type || '-' }}</div>
-                    <div><b>Ngày khám:</b> {{ fmtDateTime(r.visit_date) }}</div>
-                    <div><b>Lý do:</b> {{ r.chief_complaint || '-' }}</div>
-                    <div><b>Lịch hẹn:</b> {{ r.appointment_id || '-' }}</div>
-                  </div>
+      <template v-else>
+        <div class="table-container">
+          <table class="medical-records-table">
+            <thead>
+              <tr>
+                <th class="col-number">#</th>
+                <th class="col-date">Ngày khám</th>
+                <th class="col-patient">Bệnh nhân</th>
+                <th class="col-doctor">Bác sĩ</th>
+                <th class="col-type">Loại khám</th>
+                <th class="col-status">Trạng thái</th>
+                <th class="col-actions">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-for="(r, idx) in filteredItems" :key="rowKey(r, idx)">
+                <tr class="record-row" :class="{ 'expanded': isExpanded(r) }">
+                  <td class="cell-number">
+                    <span class="row-number">{{ idx + 1 + (page - 1) * pageSize }}</span>
+                  </td>
+                  <td class="cell-date">
+                    <div class="date-info">
+                      <i class="bi bi-calendar3"></i>
+                      <span>{{ fmtDateTime(r.visit_date) }}</span>
+                    </div>
+                  </td>
+                  <td class="cell-patient">
+                    <div class="patient-info">
+                      <i class="bi bi-person-fill"></i>
+                      <strong>{{ displayName(patientsMap[r.patient_id]) || r.patient_id }}</strong>
+                    </div>
+                  </td>
+                  <td class="cell-doctor">
+                    <div class="doctor-info">
+                      <i class="bi bi-person-badge"></i>
+                      <span>{{ displayName(doctorsMap[r.doctor_id]) || r.doctor_id }}</span>
+                    </div>
+                  </td>
+                  <td class="cell-type">
+                    <span class="type-text">{{ r.visit_type }}</span>
+                  </td>
+                  <td class="cell-status">
+                    <span class="status-badge" :class="statusClass(r.status)">
+                      <i :class="statusIcon(r.status)"></i>
+                      {{ r.status || '-' }}
+                    </span>
+                  </td>
+                  <td class="cell-actions">
+                    <div class="action-buttons">
+                      <button
+                        class="action-btn view-btn"
+                        @click="toggleRow(r)"
+                        :title="isExpanded(r) ? 'Ẩn chi tiết' : 'Xem chi tiết'"
+                      >
+                        <i :class="isExpanded(r) ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                      </button>
+                      <button
+                        class="action-btn invoice-btn"
+                        @click="createInvoiceFromRecord(r)"
+                        :disabled="loading"
+                        title="Tạo hóa đơn"
+                      >
+                        <i class="bi bi-receipt"></i>
+                      </button>
+                      <button class="action-btn edit-btn" @click="openEdit(r)" title="Sửa">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button class="action-btn delete-btn" @click="remove(r)" :disabled="loading" title="Xóa">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
 
-                  <div class="detail-title">Tình trạng</div>
-                  <div class="detail-grid">
-                    <div><b>Nhiệt độ:</b> {{ r.vital.temperature ?? '-' }} °C</div>
-                    <div><b>HA:</b> {{ r.vital.bp_systolic ?? '-' }}/{{ r.vital.bp_diastolic ?? '-' }} mmHg</div>
-                    <div><b>Mạch:</b> {{ r.vital.heart_rate ?? '-' }} bpm</div>
-                    <div><b>Nhịp thở:</b> {{ r.vital.respiratory_rate ?? '-' }} lần/phút</div>
-                    <div><b>Cân nặng:</b> {{ r.vital.weight ?? '-' }} kg</div>
-                    <div><b>Chiều cao:</b> {{ r.vital.height ?? '-' }} cm</div>
-                  </div>
+                <!-- DETAILS xổ khi bấm Xem -->
+                <tr v-if="isExpanded(r)" class="detail-row">
+                  <td :colspan="7">
+                    <div class="detail-wrap">
+                      <div class="detail-title">Thông tin khám</div>
+                      <div class="detail-grid">
+                        <div><b>Loại:</b> {{ r.visit_type || '-' }}</div>
+                        <div><b>Ngày khám:</b> {{ fmtDateTime(r.visit_date) }}</div>
+                        <div><b>Lý do:</b> {{ r.chief_complaint || '-' }}</div>
+                        <div><b>Lịch hẹn:</b> {{ r.appointment_id || '-' }}</div>
+                      </div>
 
-                  <div class="detail-title">Khám thực thể</div>
-                  <div class="detail-grid">
-                    <div class="col-span-2"><b>Toàn thân:</b> {{ r.physical.general || '-' }}</div>
-                    <div class="col-span-2"><b>Tim mạch:</b> {{ r.physical.cardiovascular || '-' }}</div>
-                    <div class="col-span-2"><b>Hô hấp:</b> {{ r.physical.respiratory || '-' }}</div>
-                    <div class="col-span-2"><b>Khác:</b> {{ r.physical.other_findings || '-' }}</div>
-                  </div>
+                      <div class="detail-title">Tình trạng</div>
+                      <div class="detail-grid">
+                        <div><b>Nhiệt độ:</b> {{ r.vital.temperature ?? '-' }} °C</div>
+                        <div><b>HA:</b> {{ r.vital.bp_systolic ?? '-' }}/{{ r.vital.bp_diastolic ?? '-' }} mmHg</div>
+                        <div><b>Mạch:</b> {{ r.vital.heart_rate ?? '-' }} bpm</div>
+                        <div><b>Nhịp thở:</b> {{ r.vital.respiratory_rate ?? '-' }} lần/phút</div>
+                        <div><b>Cân nặng:</b> {{ r.vital.weight ?? '-' }} kg</div>
+                        <div><b>Chiều cao:</b> {{ r.vital.height ?? '-' }} cm</div>
+                      </div>
 
-                  <div class="detail-title">Chẩn đoán</div>
-                  <div class="detail-grid">
+                      <div class="detail-title">Khám thực thể</div>
+                      <div class="detail-grid">
+                        <div class="col-span-2"><b>Toàn thân:</b> {{ r.physical.general || '-' }}</div>
+                        <div class="col-span-2"><b>Tim mạch:</b> {{ r.physical.cardiovascular || '-' }}</div>
+                        <div class="col-span-2"><b>Hô hấp:</b> {{ r.physical.respiratory || '-' }}</div>
+                        <div class="col-span-2"><b>Khác:</b> {{ r.physical.other_findings || '-' }}</div>
+                      </div>
+
+                      <div class="detail-title">Chẩn đoán</div>
+                      <div class="detail-grid">
                     <div><b>Chính:</b> ({{ r.dx_primary.code || '-' }}) {{ r.dx_primary.description || '-' }} <i v-if="r.dx_primary.severity">— {{ r.dx_primary.severity }}</i></div>
                     <div><b>Phụ:</b> {{ (r.dx_secondary || []).join(', ') || '-' }}</div>
                     <div><b>Phân biệt:</b> {{ (r.dx_differential || []).join(', ') || '-' }}</div>
@@ -147,34 +228,65 @@
                     <li v-if="!r.attachments || !r.attachments.length" class="text-muted">-</li>
                   </ul>
 
-                  <div class="text-muted small mt-2">
-                    Tạo: {{ fmtDateTime(r.created_at) }} | Cập nhật: {{ fmtDateTime(r.updated_at) }}
-                  </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
+                      <div class="text-muted small mt-2">
+                        Tạo: {{ fmtDateTime(r.created_at) }} | Cập nhật: {{ fmtDateTime(r.updated_at) }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
 
-        <tbody v-if="!filteredItems.length">
-          <tr>
-            <td colspan="7" class="text-center text-muted">Không có dữ liệu</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="d-flex justify-content-between align-items-center">
-        <div>Trang {{ page }} / {{ Math.max(1, Math.ceil((total || 0) / pageSize)) }}</div>
-        <div class="btn-group">
-          <button class="btn btn-outline-secondary" @click="prev" :disabled="page <= 1 || loading">‹ Trước</button>
-          <button class="btn btn-outline-secondary" @click="next" :disabled="!hasMore || loading">Sau ›</button>
+            <tbody v-if="!filteredItems.length">
+              <tr>
+                <td colspan="7" class="text-center text-muted">Không có dữ liệu</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
-    </div>
 
-    <!-- MODAL: form đầy đủ + combobox BN/BS -->
-    <div v-if="showModal" class="modal-backdrop" @mousedown.self="close">
-      <div class="modal-card">
-        <h3 class="h6 mb-3">{{ editingId ? 'Sửa hồ sơ' : 'Thêm hồ sơ' }}</h3>
+        <!-- Pagination Section -->
+        <div class="pagination-section">
+          <div class="pagination-info-row">
+            <span class="page-info">
+              <i class="bi bi-file-earmark-text"></i>
+              Trang <b>{{ page }} / {{ Math.ceil(total / pageSize) || 1 }}</b>
+              <span class="total-info">- Hiển thị {{ filteredItems.length }} trong tổng số {{ total }} hồ sơ</span>
+            </span>
+          </div>
+          <div class="pagination-controls">
+            <button class="pagination-btn" @click="prev" :disabled="page <= 1 || loading">
+              <i class="bi bi-chevron-left"></i>
+              Trước
+            </button>
+
+            <div class="page-numbers">
+              <button
+                v-for="p in visiblePages"
+                :key="p"
+                class="page-number-btn"
+                :class="{ 'active': p === page, 'ellipsis': p === '...' }"
+                @click="goToPage(p)"
+                :disabled="p === '...' || loading"
+              >
+                {{ p }}
+              </button>
+            </div>
+
+            <button class="pagination-btn" @click="next" :disabled="!hasMore || loading">
+              Sau
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </section>
+
+  <!-- MODAL: form đầy đủ + combobox BN/BS -->
+  <div v-if="showModal" class="modal-backdrop" @mousedown.self="close">
+    <div class="modal-card">
+      <h3 class="h6 mb-3">{{ editingId ? 'Sửa hồ sơ' : 'Thêm hồ sơ' }}</h3>
 
         <!-- ✅ SUC-08: Display previous medical records for follow-up visits -->
         <div v-if="previousRecords.length > 0" class="alert alert-info mb-3">
@@ -448,7 +560,7 @@
         </form>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -498,6 +610,35 @@ export default {
     }
   },
   created () { this.fetch() },
+  computed: {
+    visiblePages () {
+      const total = Math.max(1, Math.ceil((this.total || 0) / this.pageSize))
+      const current = this.page
+      const delta = 2
+      const range = []
+      const rangeWithDots = []
+
+      for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+        range.push(i)
+      }
+
+      if (current - delta > 2) {
+        rangeWithDots.push(1, '...')
+      } else {
+        rangeWithDots.push(1)
+      }
+
+      rangeWithDots.push(...range)
+
+      if (current + delta < total - 1) {
+        rangeWithDots.push('...', total)
+      } else if (total > 1) {
+        rangeWithDots.push(total)
+      }
+
+      return rangeWithDots
+    }
+  },
   watch: {
     items () {
       this.applyFilter()
@@ -523,17 +664,28 @@ export default {
       }
     },
     statusClass (s) {
-      if (s === 'completed') {
-        return 'bg-success-subtle text-success'
-      } else if (s === 'in_progress') {
-        return 'bg-warning-subtle text-warning'
-      } else if (s === 'canceled') {
-        return 'bg-danger-subtle text-danger'
-      } else {
-        return 'bg-secondary-subtle text-secondary'
-      }
+      if (s === 'completed') return 'status-completed'
+      if (s === 'in_progress') return 'status-in-progress'
+      if (s === 'canceled') return 'status-canceled'
+      return 'status-draft'
+    },
+    statusIcon (s) {
+      if (s === 'completed') return 'bi bi-check-circle-fill'
+      if (s === 'in_progress') return 'bi bi-clock-fill'
+      if (s === 'canceled') return 'bi bi-x-circle-fill'
+      return 'bi bi-file-earmark-fill'
     },
     displayName (o) { return o?.full_name || o?.name || o?.display_name || o?.code || o?.username },
+    changePageSize () {
+      this.page = 1
+      this.fetch()
+    },
+    goToPage (p) {
+      if (p !== this.page && p !== '...') {
+        this.page = p
+        this.fetch()
+      }
+    },
 
     // Flatten document nested -> flat fields cho list/details/form
     flattenRecord (d = {}) {
@@ -1471,24 +1623,699 @@ export default {
 </script>
 
 <style scoped>
-:deep(table.table) th, :deep(table.table) td { vertical-align: middle; }
+/* Base Styles */
+.medical-records-management {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+  padding-bottom: 2rem;
+}
 
-/* details */
-.detail-wrap { border-top: 1px solid #e5e7eb; padding: 10px 6px 0; }
-.detail-title { font-weight: 700; margin: 10px 0 6px; }
+/* Header Section */
+.header-section {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  padding: 2rem 2.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.page-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-title i {
+  font-size: 2.5rem;
+}
+
+.page-subtitle {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  height: 2.75rem;
+  padding: 0 1.25rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.btn-back {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-back:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-refresh {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  width: 2.75rem;
+  padding: 0;
+  justify-content: center;
+}
+
+.btn-refresh:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.btn-primary {
+  background: white;
+  color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.stats-badge {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.stats-badge strong {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.page-size-selector select {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.page-size-selector select:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Search Section */
+.search-section {
+  padding: 2rem 2.5rem;
+  background: transparent;
+}
+
+.search-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.search-input-group {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 800px;
+}
+
+.search-icon {
+  color: #9ca3af;
+  font-size: 1.25rem;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+.search-btn {
+  height: 2.5rem;
+  padding: 0 1.5rem;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.search-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.search-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Content Section */
+.content-section {
+  padding: 0 2.5rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.alert-error {
+  background: #fee2e2;
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 3rem 0;
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Table Styles */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.medical-records-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.medical-records-table thead {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.medical-records-table thead th {
+  padding: 1.25rem 1rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.col-number {
+  width: 70px;
+  text-align: center !important;
+}
+
+.col-date {
+  width: 180px;
+}
+
+.col-patient {
+  width: 200px;
+}
+
+.col-doctor {
+  width: 200px;
+}
+
+.col-type {
+  width: 150px;
+}
+
+.col-status {
+  width: 140px;
+}
+
+.col-actions {
+  width: 200px;
+  text-align: center !important;
+}
+
+.medical-records-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.record-row:hover {
+  background: #f8fafc;
+}
+
+.record-row.expanded {
+  background: #f0f9ff;
+}
+
+.medical-records-table tbody td {
+  padding: 1.25rem 1rem;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.cell-number {
+  text-align: center;
+}
+
+.row-number {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.date-info, .patient-info, .doctor-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.date-info i {
+  color: #3b82f6;
+  font-size: 1.1rem;
+}
+
+.patient-info i {
+  color: #10b981;
+  font-size: 1.1rem;
+}
+
+.doctor-info i {
+  color: #f59e0b;
+  font-size: 1.1rem;
+}
+
+.type-text {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.status-badge {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-transform: capitalize;
+}
+
+.status-completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-in-progress {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-canceled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-draft {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.view-btn {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+
+.view-btn:hover:not(:disabled) {
+  background: #3b82f6;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.invoice-btn {
+  background: #d1fae5;
+  color: #10b981;
+}
+
+.invoice-btn:hover:not(:disabled) {
+  background: #10b981;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.edit-btn {
+  background: #fef3c7;
+  color: #f59e0b;
+}
+
+.edit-btn:hover:not(:disabled) {
+  background: #f59e0b;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.delete-btn {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background: #ef4444;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Detail Row */
+.detail-row td {
+  background: #f0f9ff !important;
+  padding: 0 !important;
+}
+
+.detail-wrap {
+  padding: 2rem;
+  background: white;
+  margin: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.detail-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #374151;
+  margin: 1.5rem 0 1rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-title:first-child {
+  margin-top: 0;
+}
+
 .detail-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 6px 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem 1.5rem;
+  color: #374151;
+  font-size: 0.9rem;
 }
-.col-span-2 { grid-column: span 2; }
 
-/* modal */
-.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; z-index: 1050; }
-.modal-card { width: min(1000px, 96vw); background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 20px 50px rgba(0,0,0,.25); max-height: 92vh; overflow: auto; }
-.section-title { font-weight: 600; margin: 14px 0 8px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb; }
+.detail-grid b {
+  color: #64748b;
+  font-weight: 600;
+}
 
-/* ✅ SUC-08: Previous medical records styles */
+.col-span-2 {
+  grid-column: span 2;
+}
+
+/* Pagination Section */
+.pagination-section {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.pagination-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0 0.5rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 1.5rem;
+  background: transparent;
+  gap: 0.5rem;
+}
+
+.pagination-info {
+  text-align: center;
+  color: #64748b;
+}
+
+.page-info {
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.page-info b {
+  color: #374151;
+  font-weight: 700;
+}
+
+.total-info {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #e5e7eb;
+  padding: 0.15rem 0.5rem;
+  min-width: 120px;
+  max-width: 180px;
+  gap: 0;
+  height: 2.6rem;
+}
+
+.pagination-btn {
+  width: 2.4rem;
+  height: 2.4rem;
+  border: none;
+  background: transparent;
+  color: #b0b6be;
+  border-radius: 50%;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin: 0 0.1rem;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  color: #2563eb;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: transparent;
+  color: #e5e7eb;
+}
+
+.page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+}
+
+.page-number-btn {
+  width: 2.4rem;
+  height: 2.4rem;
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  border-radius: 50%;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin: 0 0.1rem;
+}
+
+.page-number-btn:hover:not(:disabled):not(.ellipsis) {
+  background: #f3f4f6;
+  color: #2563eb;
+}
+
+.page-number-btn.active {
+  background: #2563eb;
+  color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.10);
+  z-index: 1;
+}
+
+.page-number-btn.ellipsis {
+  border: none;
+  background: transparent;
+  cursor: default;
+  color: #b0b6be;
+  font-weight: 400;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  z-index: 1050;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.modal-card {
+  width: min(1000px, 95vw);
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.section-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #374151;
+  margin: 1.5rem 0 1rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Previous medical records styles */
 .previous-records-list {
   max-height: 300px;
   overflow-y: auto;
@@ -1498,7 +2325,7 @@ export default {
 .previous-record-item {
   padding: 0.75rem;
   background-color: #f8f9fa;
-  border-left: 3px solid #0d6efd;
+  border-left: 3px solid #3b82f6;
   border-radius: 0.25rem;
   margin-bottom: 0.5rem;
 }
@@ -1507,7 +2334,7 @@ export default {
   background-color: #e9ecef;
 }
 
-/* ✅ Medication autocomplete dropdown */
+/* Medication autocomplete dropdown */
 .autocomplete-dropdown {
   position: absolute;
   top: 100%;
@@ -1516,7 +2343,7 @@ export default {
   background: white;
   border: 1px solid #dee2e6;
   border-radius: 0.25rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   max-height: 350px;
   overflow-y: auto;
   z-index: 10000;

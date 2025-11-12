@@ -1,138 +1,316 @@
 <template>
-  <div class="container py-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="mb-0">Quản lý Bệnh nhân</h3>
-      <div class="d-flex gap-2">
-        <input
-          v-model.trim="keyword"
-          type="text"
-          class="form-control"
-          style="width: 340px"
-          placeholder="Tìm theo SĐT / tên / email"
-          @input="quickFilter"
-          @keyup.enter="reload"
-        />
-        <button class="btn btn-outline-secondary" @click="reload" :disabled="loading">
-          <i class="bi bi-search me-1"></i>Tìm
-        </button>
-        <button class="btn btn-outline-info" @click="refreshPage" :disabled="loading">
-          <i class="bi bi-arrow-clockwise me-1"></i>Tải lại
-        </button>
-        <button class="btn btn-primary" @click="openCreate">
-          <i class="bi bi-plus-circle me-1"></i>Thêm mới
-        </button>
+  <section class="patients-management">
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="header-content">
+        <div class="header-left">
+          <h1 class="page-title">
+            <i class="bi bi-people-fill"></i>
+            Quản lý Bệnh nhân
+          </h1>
+          <p class="page-subtitle">Quản lý thông tin bệnh nhân và hồ sơ y tế</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-action btn-back" @click="goHome" title="Quay lại Trang chủ">
+            <i class="bi bi-arrow-left"></i>
+            Trang chủ
+          </button>
+          <div class="stats-badge">
+            <i class="bi bi-bar-chart-fill"></i>
+            <span>Tổng: <strong>{{ items.length }}</strong></span>
+          </div>
+          <button class="btn-action btn-refresh" @click="refreshPage" :disabled="loading" title="Tải lại">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+          <button class="btn-action btn-primary" @click="openCreate" :disabled="loading">
+            <i class="bi bi-plus-circle"></i>
+            Thêm mới
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- LIST -->
-    <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead class="table-light">
-          <tr>
-            <th style="width: 56px">#</th>
-            <th>Họ tên</th>
-            <th>Điện thoại</th>
-            <th>Email</th>
-            <th>Giới tính</th>
-            <th>Trạng thái</th>
-            <th style="width: 220px" class="text-end">Tác vụ</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="(p, idx) in shownItems" :key="getId(p)">
-            <!-- Dòng chính -->
-            <tr>
-              <td>{{ idx + 1 }}</td>
-              <td>{{ p.personal_info?.full_name || '-' }}</td>
-              <td>{{ p.personal_info?.phone || '-' }}</td>
-              <td>{{ p.personal_info?.email || '-' }}</td>
-              <td class="text-capitalize">{{ p.personal_info?.gender || '-' }}</td>
-              <td>
-                <span :class="['badge', p.status === 'active' ? 'bg-success' : 'bg-secondary']">
-                  {{ p.status === 'active' ? 'Hoạt động' : 'Không hoạt động' }}
-                </span>
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <button class="btn btn-sm btn-outline-primary" @click="openEdit(p)">Sửa</button>
-                  <button class="btn btn-sm btn-outline-danger" @click="confirmRemove(p)">Xóa</button>
-                  <button class="btn btn-sm btn-outline-secondary" @click="toggleExpand(p)">
-                    {{ expandedId === getId(p) ? 'Ẩn' : 'Xem' }}
-                  </button>
-                </div>
-              </td>
-            </tr>
-
-            <!-- Hàng chi tiết (expand giống User) -->
-            <tr v-if="expandedId === getId(p)">
-              <td colspan="7" class="bg-body">
-                <div class="border-top pt-3">
-                  <!-- Header nhỏ như ảnh user -->
-                  <div class="small text-muted mb-2">Thông tin tài khoản</div>
-                  <div class="row g-3 mb-3">
-                    <div class="col-md-3">
-                      <div><span class="fw-semibold">Họ tên:</span> {{ p.personal_info?.full_name || '-' }}</div>
-                      <div><span class="fw-semibold">Giới tính:</span> {{ p.personal_info?.gender || '-' }}</div>
-                      <div><span class="fw-semibold">Ngày sinh:</span> {{ p.personal_info?.birth_date || '-' }}</div>
-                    </div>
-                    <div class="col-md-3">
-                      <div><span class="fw-semibold">Điện thoại:</span> {{ p.personal_info?.phone || '-' }}</div>
-                      <div><span class="fw-semibold">Email:</span> {{ p.personal_info?.email || '-' }}</div>
-                      <div><span class="fw-semibold">CMND/CCCD:</span> {{ p.personal_info?.id_number || '-' }}</div>
-                    </div>
-                    <div class="col-md-3">
-                      <div><span class="fw-semibold">Trạng thái:</span> {{ p.status || '-' }}</div>
-                      <div><span class="fw-semibold">ID:</span> {{ p._id || '-' }}</div>
-                      <div><span class="fw-semibold">Rev:</span> {{ p._rev || '-' }}</div>
-                    </div>
-                    <div class="col-md-3 text-end">
-                      <button class="btn btn-sm btn-outline-primary me-2" @click="openEdit(p)">Sửa</button>
-                      <button class="btn btn-sm btn-outline-secondary" @click="toggleExpand(p)">Ẩn</button>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <!-- Khối địa chỉ -->
-                    <div class="col-md-6">
-                      <div class="border rounded p-3 h-100">
-                        <div class="fw-semibold mb-2">Địa chỉ</div>
-                        <div>{{ p.address?.street || '-' }}</div>
-                        <div>
-                          {{ p.address?.ward || '-' }}
-                          <span v-if="p.address?.district">, {{ p.address?.district }}</span>
-                        </div>
-                        <div>
-                          {{ p.address?.city || '-' }}
-                          <span v-if="p.address?.postal_code"> ({{ p.address?.postal_code }})</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Khối y tế -->
-                    <div class="col-md-6">
-                      <div class="border rounded p-3 h-100">
-                        <div class="fw-semibold mb-2">Thông tin y tế</div>
-                        <div><b>Nhóm máu:</b> {{ p.medical_info?.blood_type || '-' }}</div>
-                        <div><b>Dị ứng:</b> {{ (p.medical_info?.allergies || []).join(', ') || '-' }}</div>
-                        <div><b>Bệnh mạn:</b> {{ (p.medical_info?.chronic_conditions || []).join(', ') || '-' }}</div>
-                        <div class="mt-2"><b>Bảo hiểm:</b> {{ p.medical_info?.insurance?.provider || '-' }}</div>
-                        <div><b>Số thẻ:</b> {{ p.medical_info?.insurance?.policy_number || '-' }}</div>
-                        <div><b>Hết hạn:</b> {{ p.medical_info?.insurance?.valid_until || '-' }}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </template>
-
-          <tr v-if="!loading && !shownItems.length">
-            <td colspan="7" class="text-center text-muted py-4">Không có dữ liệu</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Search and Filter Section -->
+    <div class="search-section">
+      <div class="search-container">
+        <div class="search-input-group">
+          <i class="bi bi-search search-icon"></i>
+          <input
+            v-model.trim="keyword"
+            class="search-input"
+            placeholder="Tìm theo SĐT / tên / email..."
+            @input="quickFilter"
+            @keyup.enter="reload"
+          />
+          <button class="search-btn" @click="reload" :disabled="loading">
+            <i class="bi bi-search"></i>
+            Tìm kiếm
+          </button>
+        </div>
+      </div>
     </div>
+
+    <!-- Content Section -->
+    <div class="content-section">
+      <div v-if="loading" class="loading-state">
+        <div class="spinner"></div>
+        <span>Đang tải danh sách...</span>
+      </div>
+
+      <template v-else>
+        <div class="table-container">
+          <table class="patients-table">
+            <thead>
+              <tr>
+                <th class="col-number">#</th>
+                <th class="col-name">Họ tên</th>
+                <th class="col-phone">Điện thoại</th>
+                <th class="col-email">Email</th>
+                <th class="col-gender">Giới tính</th>
+                <th class="col-status">Trạng thái</th>
+                <th class="col-actions">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-for="(p, idx) in shownItems" :key="getId(p)">
+                <tr class="patient-row" :class="{ 'expanded': expandedId === getId(p) }">
+                  <td class="cell-number">
+                    <span class="row-number">{{ idx + 1 + (page - 1) * pageSize }}</span>
+                  </td>
+                  <td class="cell-name">
+                    <div class="patient-name">
+                      <strong>{{ p.personal_info?.full_name || '-' }}</strong>
+                    </div>
+                  </td>
+                  <td class="cell-phone">{{ p.personal_info?.phone || '-' }}</td>
+                  <td class="cell-email">{{ p.personal_info?.email || '-' }}</td>
+                  <td class="cell-gender">{{ p.personal_info?.gender === 'male' ? 'Nam' : (p.personal_info?.gender === 'female' ? 'Nữ' : '-') }}</td>
+                  <td class="cell-status">
+                    <span class="status-badge" :class="p.status === 'active' ? 'status-active' : 'status-inactive'">
+                      <i :class="p.status === 'active' ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"></i>
+                      {{ p.status === 'active' ? 'Hoạt động' : 'Không hoạt động' }}
+                    </span>
+                  </td>
+                  <td class="cell-actions">
+                    <div class="action-buttons">
+                      <button
+                        class="action-btn view-btn"
+                        @click="toggleExpand(p)"
+                        :title="expandedId === getId(p) ? 'Ẩn chi tiết' : 'Xem chi tiết'"
+                      >
+                        <i :class="expandedId === getId(p) ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                      </button>
+                      <button
+                        class="action-btn edit-btn"
+                        @click="openEdit(p)"
+                        title="Chỉnh sửa"
+                      >
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button
+                        class="action-btn delete-btn"
+                        @click="confirmRemove(p)"
+                        :disabled="loading"
+                        title="Xóa bệnh nhân"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Detail Row -->
+                <tr v-if="expandedId === getId(p)" class="detail-row">
+                  <td colspan="7" class="detail-cell">
+                    <div class="patient-detail-card">
+                      <div class="detail-header">
+                        <h4 class="detail-title">
+                          <i class="bi bi-info-circle"></i>
+                          Chi tiết bệnh nhân: {{ p.personal_info?.full_name }}
+                        </h4>
+                      </div>
+
+                      <div class="detail-content">
+                        <div class="detail-section">
+                          <h5 class="section-title">
+                            <i class="bi bi-info-square"></i>
+                            Thông tin cơ bản
+                          </h5>
+                          <div class="info-grid">
+                            <div class="info-item">
+                              <label>Họ tên:</label>
+                              <span class="info-value">{{ p.personal_info?.full_name || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Giới tính:</label>
+                              <span class="info-value">{{ p.personal_info?.gender === 'male' ? 'Nam' : (p.personal_info?.gender === 'female' ? 'Nữ' : '-') }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Ngày sinh:</label>
+                              <span class="info-value">{{ p.personal_info?.birth_date || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Điện thoại:</label>
+                              <span class="info-value">{{ p.personal_info?.phone || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Email:</label>
+                              <span class="info-value">{{ p.personal_info?.email || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>CMND/CCCD:</label>
+                              <span class="info-value">{{ p.personal_info?.id_number || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Trạng thái:</label>
+                              <span class="status-badge" :class="p.status === 'active' ? 'status-active' : 'status-inactive'">
+                                <i :class="p.status === 'active' ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"></i>
+                                {{ p.status === 'active' ? 'Hoạt động' : 'Không hoạt động' }}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="detail-section">
+                          <h5 class="section-title">
+                            <i class="bi bi-geo-alt"></i>
+                            Địa chỉ
+                          </h5>
+                          <div class="info-grid">
+                            <div class="info-item full-width">
+                              <label>Địa chỉ:</label>
+                              <span class="info-value">{{ p.address?.street || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Phường/Xã:</label>
+                              <span class="info-value">{{ p.address?.ward || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Quận/Huyện:</label>
+                              <span class="info-value">{{ p.address?.district || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Tỉnh/TP:</label>
+                              <span class="info-value">{{ p.address?.city || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Mã bưu điện:</label>
+                              <span class="info-value">{{ p.address?.postal_code || '-' }}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="detail-section">
+                          <h5 class="section-title">
+                            <i class="bi bi-heart-pulse"></i>
+                            Thông tin y tế
+                          </h5>
+                          <div class="info-grid">
+                            <div class="info-item">
+                              <label>Nhóm máu:</label>
+                              <span class="info-value">{{ p.medical_info?.blood_type || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Nhà cung cấp BH:</label>
+                              <span class="info-value">{{ p.medical_info?.insurance?.provider || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Số thẻ BH:</label>
+                              <span class="info-value">{{ p.medical_info?.insurance?.policy_number || '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                              <label>Hạn BH:</label>
+                              <span class="info-value">{{ p.medical_info?.insurance?.valid_until || '-' }}</span>
+                            </div>
+                            <div class="info-item full-width">
+                              <label>Dị ứng:</label>
+                              <span class="info-value">{{ (p.medical_info?.allergies || []).join(', ') || '-' }}</span>
+                            </div>
+                            <div class="info-item full-width">
+                              <label>Bệnh mạn tính:</label>
+                              <span class="info-value">{{ (p.medical_info?.chronic_conditions || []).join(', ') || '-' }}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="detail-section">
+                          <h5 class="section-title">
+                            <i class="bi bi-clock"></i>
+                            Thời gian
+                          </h5>
+                          <div class="info-grid">
+                            <div class="info-item">
+                              <label>ID:</label>
+                              <span class="info-value"><code>{{ p._id || '-' }}</code></span>
+                            </div>
+                            <div class="info-item">
+                              <label>Rev:</label>
+                              <span class="info-value"><code>{{ p._rev || '-' }}</code></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+
+              <tr v-if="!loading && !shownItems.length" class="empty-row">
+                <td colspan="7" class="empty-cell">
+                  <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <h3>Không có dữ liệu</h3>
+                    <p>Chưa có bệnh nhân nào hoặc không tìm thấy kết quả phù hợp</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Section -->
+        <div class="pagination-section">
+          <div class="pagination-info-row">
+            <span class="page-info">
+              <i class="bi bi-file-earmark-text"></i>
+              Trang <b>{{ page }} / {{ totalPages }}</b>
+              <span class="total-info">- Hiển thị {{ shownItems.length }} trong tổng số {{ (filtered.length || items.length) }} bệnh nhân</span>
+            </span>
+          </div>
+          <div class="pagination-controls-center">
+            <button
+              class="pagination-btn prev-btn"
+              @click="prevPage"
+              :disabled="page <= 1"
+              title="Trang trước"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <div class="page-numbers">
+              <button
+                v-for="pageNum in getPageNumbers()"
+                :key="pageNum"
+                class="page-number-btn"
+                :class="{ 'active': pageNum === page, 'ellipsis': pageNum === '...' }"
+                @click="goToPage(pageNum)"
+                :disabled="pageNum === '...' || pageNum === page"
+              >
+                {{ pageNum }}
+              </button>
+            </div>
+            <button
+              class="pagination-btn next-btn"
+              @click="nextPage"
+              :disabled="page >= totalPages"
+              title="Trang sau"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </template>
+    </div>
+    <!-- End Content Section -->
 
     <!-- MODAL: CREATE/EDIT -->
     <div class="modal fade" id="patientModal" tabindex="-1" aria-hidden="true" ref="modalEl">
@@ -320,7 +498,7 @@
       </div>
     </div>
 
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -492,6 +670,10 @@ const saving = ref(false)
 const isEdit = ref(false)
 const expandedId = ref(null)
 
+// Pagination
+const page = ref(1)
+const pageSize = ref(25)
+
 // Modal refs
 const modalEl = ref(null)
 const confirmEl = ref(null)
@@ -511,11 +693,66 @@ const toastType = ref('success') // 'success' | 'error'
 
 const form = reactive(toFormFn({}))
 
-/* Computed: danh sách hiển thị (ưu tiên filter client-side nếu đang gõ số) */
-const shownItems = computed(() => filtered.value.length ? filtered.value : items.value)
+/* Computed: danh sách hiển thị với phân trang */
+const shownItems = computed(() => {
+  const source = filtered.value.length ? filtered.value : items.value
+  const start = (page.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return source.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  const source = filtered.value.length ? filtered.value : items.value
+  return Math.ceil(source.length / pageSize.value) || 1
+})
 
 /* Utils */
 const getId = (p) => p._id || p.id || p?.doc?._id
+
+/* Navigate home */
+function goHome () {
+  window.location.href = '/#/home'
+}
+
+/* Pagination helpers */
+function getPageNumbers () {
+  const totalPagesValue = totalPages.value
+  const current = page.value
+  const pages = []
+
+  if (totalPagesValue <= 7) {
+    for (let i = 1; i <= totalPagesValue; i++) {
+      pages.push(i)
+    }
+  } else {
+    if (current <= 4) {
+      pages.push(1, 2, 3, 4, 5, '...', totalPagesValue)
+    } else if (current >= totalPagesValue - 3) {
+      pages.push(1, '...', totalPagesValue - 4, totalPagesValue - 3, totalPagesValue - 2, totalPagesValue - 1, totalPagesValue)
+    } else {
+      pages.push(1, '...', current - 1, current, current + 1, '...', totalPagesValue)
+    }
+  }
+  return pages
+}
+
+function goToPage (pageNum) {
+  if (pageNum !== '...' && pageNum !== page.value) {
+    page.value = pageNum
+  }
+}
+
+function nextPage () {
+  if (page.value < totalPages.value) {
+    page.value++
+  }
+}
+
+function prevPage () {
+  if (page.value > 1) {
+    page.value--
+  }
+}
 
 /* Toast notifications */
 function showToast (message, type = 'success') {
@@ -607,6 +844,7 @@ function quickFilter () {
   if (!kw || !isPhone) { filtered.value = []; return }
   const norm = kw.replace(/\D/g, '')
   filtered.value = items.value.filter(p => (p.personal_info?.phone || '').replace(/\D/g, '').includes(norm))
+  page.value = 1 // Reset về trang đầu khi filter
 }
 
 /* Expand row */
@@ -834,7 +1072,685 @@ function onPhoneInput (e) {
 </script>
 
 <style scoped>
-.table td, .table th { vertical-align: middle; }
-.card-header { background: #f8f9fa; }
-.bg-body { background-color: #fff; }
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+/* Main Container */
+.patients-management {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 0;
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header Section */
+.header-section {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  padding: 2rem 3rem;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header-left .page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-left .page-title i {
+  font-size: 1.75rem;
+  color: #dbeafe;
+}
+
+.header-left .page-subtitle {
+  font-size: 1rem;
+  color: #bfdbfe;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stats-badge {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-badge i {
+  font-size: 1.1rem;
+  color: #dbeafe;
+}
+
+.btn-action {
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-refresh {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem;
+}
+
+.btn-refresh:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-back {
+  background: linear-gradient(135deg, #64748b 0%, #3b82f6 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-back:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.18);
+}
+
+/* Search Section */
+.search-section {
+  background: white;
+  padding: 2rem 3rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.search-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.search-input-group {
+  max-width: 600px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.search-input-group:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: white;
+}
+
+.search-icon {
+  color: #64748b;
+  font-size: 1.1rem;
+  margin: 0 1rem;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 1rem 0.5rem;
+  font-size: 1rem;
+  color: #1e293b;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #64748b;
+}
+
+.search-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.search-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+}
+
+/* Content Section */
+.content-section {
+  padding: 2rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem;
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Table Container */
+.table-container {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.patients-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.patients-table thead {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.patients-table th {
+  padding: 1.25rem 1rem;
+  text-align: left;
+  font-weight: 700;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.col-number { width: 80px; text-align: center; }
+.col-name { width: 200px; }
+.col-phone { width: 140px; }
+.col-email { width: 200px; }
+.col-gender { width: 100px; }
+.col-status { width: 150px; text-align: center; }
+.col-actions { width: 140px; text-align: center; }
+
+.patient-row {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.patient-row:hover {
+  background: #f8fafc;
+}
+
+.patient-row.expanded {
+  background: #eff6ff;
+}
+
+.patients-table td {
+  padding: 1.25rem 1rem;
+  vertical-align: middle;
+  color: #374151;
+}
+
+.cell-number {
+  text-align: center;
+}
+
+.row-number {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: inline-block;
+  min-width: 2.5rem;
+}
+
+.patient-name strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid;
+  display: inline-flex;
+}
+
+.status-active {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.status-inactive {
+  background: #f8fafc;
+  color: #64748b;
+  border-color: #e2e8f0;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 8px;
+  border: 1px solid;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.view-btn {
+  color: #3b82f6;
+  border-color: #bfdbfe;
+}
+
+.view-btn:hover:not(:disabled) {
+  background: #eff6ff;
+  color: #1d4ed8;
+  transform: scale(1.1);
+}
+
+.edit-btn {
+  color: #f59e0b;
+  border-color: #fed7aa;
+}
+
+.edit-btn:hover:not(:disabled) {
+  background: #fffbeb;
+  color: #d97706;
+  transform: scale(1.1);
+}
+
+.delete-btn {
+  color: #ef4444;
+  border-color: #fecaca;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background: #fef2f2;
+  color: #dc2626;
+  transform: scale(1.1);
+}
+
+.delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Detail Row */
+.detail-row td {
+  padding: 0;
+  background: #eff6ff;
+  border-top: 2px solid #bfdbfe;
+}
+
+.detail-cell {
+  padding: 0 !important;
+}
+
+.patient-detail-card {
+  margin: 2rem;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.detail-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  padding: 1.5rem 2rem;
+}
+
+.detail-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.detail-content {
+  padding: 2rem;
+}
+
+.detail-section {
+  margin-bottom: 2rem;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  color: #374151;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.section-title i {
+  color: #3b82f6;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-item label {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.info-value code {
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* Empty State */
+.empty-row td {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.empty-state {
+  color: #64748b;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Pagination Section */
+.pagination-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0 0.5rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 1.5rem;
+  background: transparent;
+  gap: 0.5rem;
+}
+
+.pagination-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.04rem;
+  color: #374151;
+  margin-bottom: 0.15rem;
+  font-weight: 500;
+}
+
+.page-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.page-info i {
+  color: #3b82f6;
+}
+
+.total-info {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 400;
+  margin-left: 0.5rem;
+}
+
+.pagination-controls-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #e5e7eb;
+  padding: 0.15rem 0.5rem;
+  min-width: 120px;
+  max-width: 180px;
+  gap: 0;
+  height: 2.6rem;
+}
+
+.pagination-btn {
+  width: 2.4rem;
+  height: 2.4rem;
+  border: none;
+  background: transparent;
+  color: #b0b6be;
+  border-radius: 50%;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin: 0 0.1rem;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  color: #2563eb;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: transparent;
+  color: #e5e7eb;
+}
+
+.page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+}
+
+.page-number-btn {
+  width: 2.4rem;
+  height: 2.4rem;
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  border-radius: 50%;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin: 0 0.1rem;
+}
+
+.page-number-btn:hover:not(:disabled):not(.ellipsis) {
+  background: #f3f4f6;
+  color: #2563eb;
+}
+
+.page-number-btn.active {
+  background: #2563eb;
+  color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.10);
+  z-index: 1;
+}
+
+.page-number-btn.ellipsis {
+  border: none;
+  background: transparent;
+  cursor: default;
+  color: #b0b6be;
+  font-weight: 400;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .header-content {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    align-self: stretch;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .search-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .content-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .patients-table {
+    font-size: 0.85rem;
+  }
+
+  .patients-table th,
+  .patients-table td {
+    padding: 1rem 0.5rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
 </style>
