@@ -19,6 +19,9 @@ const TreatmentsListView = () => import('@/views/TreatmentManagement/TreatmentsL
 const AppointmentsListView = () => import('@/views/AppointmentManagement/AppointmentsListView.vue')
 const InvoicesListView = () => import('@/views/InvoiceManagement/InvoicesListView.vue')
 const ConsultationChatView = () => import('@/views/ConsultationManagement/ConsultationChatView.vue')
+const ReportsView = () => import('@/views/ReportManagement/ReportsView.vue')
+const ProfileView = () => import('@/views/UserProfile/ProfileView.vue')
+const SimpleProfileTest = () => import('@/views/UserProfile/SimpleProfileTest.vue')
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
@@ -40,8 +43,17 @@ const router = createRouter({
     { path: '/appointments', name: 'appointments', component: AppointmentsListView, meta: { requiresAuth: true } },
     { path: '/invoices', name: 'invoices', component: InvoicesListView, meta: { requiresAuth: true } },
 
+    // Báo cáo (temporarily remove admin requirement for testing)
+    { path: '/reports', name: 'reports', component: ReportsView, meta: { requiresAuth: true } },
+
     // Consultation Chat (cho staff, admin, doctor)
     { path: '/consultations', name: 'consultations', component: ConsultationChatView, meta: { requiresAuth: true, roles: ['admin', 'staff', 'nurse', 'receptionist', 'doctor'] } },
+
+    // Profile (tất cả user đã đăng nhập)
+    { path: '/profile', name: 'profile', component: ProfileView, meta: { requiresAuth: true } },
+
+    // Test profile (for debugging)
+    { path: '/test-profile', name: 'test-profile', component: SimpleProfileTest, meta: { requiresAuth: true } },
 
     // bắt các đường dẫn lạ
     { path: '/:pathMatch(.*)*', redirect: '/' }

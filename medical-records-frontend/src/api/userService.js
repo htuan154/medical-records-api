@@ -35,6 +35,20 @@ const UserService = {
   changePassword (id, payload) {
     return api.post(`/users/${id}/change-password`, payload).then((r) => r.data)
   },
+
+  // Profile management
+  updateProfile (payload) {
+    return api.put('/auth/profile', payload).then((r) => r.data)
+  },
+
+  changeMyPassword (payload) {
+    return api.post('/auth/change-password', payload).then((r) => r.data)
+  },
+
+  getProfile () {
+    return api.get('/auth/me').then((r) => r.data)
+  },
+
   assignRoles (id, roles = []) {
     return api.post(`/users/${id}/roles`, { roles }).then((r) => r.data)
   },
