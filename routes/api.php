@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\PatientController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\API\V1\TreatmentController;
 use App\Http\Controllers\API\V1\StaffController;
 use App\Http\Controllers\API\V1\ConsultationController;
 use App\Http\Controllers\API\V1\MessageController;
+use App\Http\Controllers\API\V1\ReportController;
 
 Route::prefix('v1')->group(function () {
     // PUBLIC AUTH routes (không cần authentication)
@@ -49,6 +51,23 @@ Route::prefix('v1')->group(function () {
         // AUTH routes (cần authentication)
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/logout', [AuthController::class, 'logout']);
+        
+        // Test route for debugging
+        Route::get('/test-auth', function (Request $request) {
+            $auth = $request->attributes->get('auth');
+            return response()->json([
+                'message' => 'Authentication working',
+                'auth_data' => $auth,
+                'user_id' => $auth['sub'] ?? null
+            ]);
+        });
+        
+        // PROFILE routes (người dùng quản lý profile của chính mình)
+        Route::prefix('auth')->group(function () {
+            Route::get('/profile', [AuthController::class, 'me']);
+            Route::put('/profile', [AuthController::class, 'updateProfile']);
+            Route::post('/change-password', [AuthController::class, 'changePassword']);
+        });
 
         // PATIENTS - giữ nguyên routes gốc + report (POST đã chuyển ra ngoài để public)
         Route::get('/patients-report', [PatientController::class, 'report']);
@@ -149,6 +168,16 @@ Route::prefix('v1')->group(function () {
         Route::delete('/messages/{id}',                      [MessageController::class, 'destroy']);
         Route::post('/messages/mark-read',                   [MessageController::class, 'markAsRead']);
         Route::get('/consultations/{consultationId}/messages', [MessageController::class, 'byConsultation']);
+
+        // 📊 REPORTS routes - Admin only
+        Route::prefix('reports')->group(function () {
+            Route::get('/dashboard',          [ReportController::class, 'getDashboardStats']);
+            Route::get('/patient-stats',      [ReportController::class, 'getPatientStats']);
+            Route::get('/revenue-stats',      [ReportController::class, 'getRevenueStats']);
+            Route::get('/appointment-stats',  [ReportController::class, 'getAppointmentStats']);
+            Route::get('/medication-stats',   [ReportController::class, 'getMedicationStats']);
+            Route::get('/disease-stats',      [ReportController::class, 'getDiseaseStats']);
+        });
     });
     Route::get('/docs', fn () => redirect('/api/documentation'));
 });

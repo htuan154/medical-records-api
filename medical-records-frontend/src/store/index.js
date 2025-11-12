@@ -115,10 +115,20 @@ export default createStore({
     async fetchMe ({ commit }) {
       if (!tokenStore.access) return null
       try {
-        const me = await AuthService.me()
-        commit('SET_USER', me)
-        return me
+        const response = await AuthService.me()
+        console.log('🔍 /me response:', response)
+
+        // Backend /me now returns {ok: true, user: {...full user with _id and _rev}, token: {...}}
+        const userData = response?.user || response?.token?.u || response
+
+        console.log('🔍 Extracted user data:', userData)
+        console.log('🔍 User _id:', userData._id)
+        console.log('🔍 User _rev:', userData._rev)
+
+        commit('SET_USER', userData)
+        return userData
       } catch (e) {
+        console.error('❌ fetchMe error:', e)
         await this.dispatch('logout')
         return null
       }
