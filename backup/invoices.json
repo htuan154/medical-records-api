@@ -32,21 +32,21 @@
       }
     },
     {
-      "id": "invoice_2024_001",
-      "key": "invoice_2024_001",
+      "id": "invoice_2025_001",
+      "key": "invoice_2025_001",
       "value": {
         "rev": "1-df53283c10901af9795094fec95ede37"
       },
       "doc": {
-        "_id": "invoice_2024_001",
+        "_id": "invoice_2025_001",
         "_rev": "1-df53283c10901af9795094fec95ede37",
         "type": "invoice",
-        "patient_id": "patient_2024_001",
-        "medical_record_id": "record_2024_001",
+        "patient_id": "patient_2025_001",
+        "medical_record_id": "record_2025_001",
         "invoice_info": {
-          "invoice_number": "INV-2024-001",
-          "invoice_date": "2024-01-20T00:00:00Z",
-          "due_date": "2024-02-20T00:00:00Z"
+          "invoice_number": "INV-2025-001",
+          "invoice_date": "2025-01-20T00:00:00Z",
+          "due_date": "2025-02-20T00:00:00Z"
         },
         "services": [
           {
@@ -75,9 +75,9 @@
         },
         "payment_status": "paid",
         "payment_method": "cash",
-        "paid_date": "2024-01-20T11:00:00Z",
-        "created_at": "2024-01-20T10:45:00Z",
-        "updated_at": "2024-01-20T11:00:00Z"
+        "paid_date": "2025-01-20T11:00:00Z",
+        "created_at": "2025-01-20T10:45:00Z",
+        "updated_at": "2025-01-20T11:00:00Z"
       }
     }
   ]

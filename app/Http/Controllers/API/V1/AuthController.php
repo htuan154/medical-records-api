@@ -231,6 +231,10 @@ class AuthController extends Controller
     {
         try {
             $auth = $req->attributes->get('auth');
+            // Đảm bảo $auth là array
+            if (is_object($auth)) {
+                $auth = json_decode(json_encode($auth), true);
+            }
             $userId = $auth['sub'] ?? null;
             
             if (!$userId) {
@@ -239,6 +243,11 @@ class AuthController extends Controller
             
             // Lấy user đầy đủ từ database (bao gồm _id và _rev)
             $user = $this->users->get($userId);
+            
+            // Đảm bảo $user là array
+            if (is_object($user)) {
+                $user = json_decode(json_encode($user), true);
+            }
             
             if (isset($user['error'])) {
                 return response()->json(['error' => 'user_not_found'], 404);

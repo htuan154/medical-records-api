@@ -13,8 +13,20 @@ abstract class BaseCouchRepository
         $this->client = $client->db($this->db);
     }
 
-    public function all(array $params = []): array   { return $this->client->allDocs($params); }
-    public function get(string $id): array           { return $this->client->get($id); }
+    public function all(array $params = []): array   { 
+        $result = $this->client->allDocs($params);
+        if (is_object($result)) {
+            $result = json_decode(json_encode($result), true);
+        }
+        return $result;
+    }
+    public function get(string $id): array           { 
+        $result = $this->client->get($id);
+        if (is_object($result)) {
+            $result = json_decode(json_encode($result), true);
+        }
+        return $result;
+    }
     public function create(array $doc): array        { return $this->client->create($doc); }
     public function update(string $id, array $doc): array { return $this->client->put($id, $doc); }
 
@@ -28,5 +40,12 @@ abstract class BaseCouchRepository
     }
 
     public function view(string $design, string $view, array $params = []): array
-    { return $this->client->view($design, $view, $params); }
+    { 
+        $result = $this->client->view($design, $view, $params);
+        // Đảm bảo luôn trả về array, không phải object
+        if (is_object($result)) {
+            $result = json_decode(json_encode($result), true);
+        }
+        return $result;
+    }
 }

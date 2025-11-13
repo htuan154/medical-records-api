@@ -29,24 +29,24 @@
       }
     },
     {
-      "id": "test_2024_001",
-      "key": "test_2024_001",
+      "id": "test_2025_001",
+      "key": "test_2025_001",
       "value": {
         "rev": "1-2ff3f35a7631d6890c5ffa6a6781d9a1"
       },
       "doc": {
-        "_id": "test_2024_001",
+        "_id": "test_2025_001",
         "_rev": "1-2ff3f35a7631d6890c5ffa6a6781d9a1",
         "type": "medical_test",
-        "patient_id": "patient_2024_001",
-        "doctor_id": "doctor_2024_001",
-        "medical_record_id": "record_2024_001",
+        "patient_id": "patient_2025_001",
+        "doctor_id": "doctor_2025_001",
+        "medical_record_id": "record_2025_001",
         "test_info": {
           "test_type": "blood_work",
           "test_name": "Tổng phân tích máu",
-          "ordered_date": "2024-01-20T10:45:00Z",
-          "sample_collected_date": "2024-01-21T08:00:00Z",
-          "result_date": "2024-01-21T16:00:00Z",
+          "ordered_date": "2025-01-20T10:45:00Z",
+          "sample_collected_date": "2025-01-21T08:00:00Z",
+          "result_date": "2025-01-21T16:00:00Z",
           "unit_price": 150000
         },
         "results": {
@@ -78,8 +78,8 @@
         "interpretation": "Các chỉ số xét nghiệm trong giới hạn bình thường",
         "status": "completed",
         "lab_technician": "tech_001",
-        "created_at": "2024-01-20T10:45:00Z",
-        "updated_at": "2024-01-21T16:30:00Z"
+        "created_at": "2025-01-20T10:45:00Z",
+        "updated_at": "2025-01-21T16:30:00Z"
       }
     }
   ]
