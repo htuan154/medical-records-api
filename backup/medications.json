@@ -1,5 +1,5 @@
 {
-  "total_rows": 115,
+  "total_rows": 135,
   "offset": 0,
   "rows": [
     {
@@ -5722,6 +5722,946 @@
         "status": "active",
         "created_at": "2025-01-01T00:00:00Z",
         "updated_at": "2025-11-10T15:55:46Z"
+      }
+    },
+    {
+      "id": "med_2025_11_001",
+      "key": "med_2025_11_001",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_001",
+        "type": "medication",
+        "medication_info": {
+          "name": "CardioSafe",
+          "generic_name": "CardioSafe",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000101",
+          "inventory": {
+            "unit_cost": 46500
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Beta blocker",
+          "indications": [
+            "Tăng huyết áp nguyên phát"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 192,
+          "unit_cost": 46500,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-02T09:00:00Z",
+        "updated_at": "2025-11-02T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_002",
+      "key": "med_2025_11_002",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_002",
+        "type": "medication",
+        "medication_info": {
+          "name": "GlucoBalance",
+          "generic_name": "GlucoBalance",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000102",
+          "inventory": {
+            "unit_cost": 48000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Biguanide",
+          "indications": [
+            "Đái tháo đường type 2"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 204,
+          "unit_cost": 48000,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-03T09:00:00Z",
+        "updated_at": "2025-11-03T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_003",
+      "key": "med_2025_11_003",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_003",
+        "type": "medication",
+        "medication_info": {
+          "name": "LipoGuard",
+          "generic_name": "LipoGuard",
+          "strength": "20mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000103",
+          "inventory": {
+            "unit_cost": 49500
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Statin",
+          "indications": [
+            "Hen phế quản"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 216,
+          "unit_cost": 49500,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-04T09:00:00Z",
+        "updated_at": "2025-11-04T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_004",
+      "key": "med_2025_11_004",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_004",
+        "type": "medication",
+        "medication_info": {
+          "name": "NeuroCalm",
+          "generic_name": "NeuroCalm",
+          "strength": "75mg",
+          "dosage_form": "capsule",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000104",
+          "inventory": {
+            "unit_cost": 51000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Neuropathic agent",
+          "indications": [
+            "Trào ngược dạ dày thực quản"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 228,
+          "unit_cost": 51000,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-05T09:00:00Z",
+        "updated_at": "2025-11-05T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_005",
+      "key": "med_2025_11_005",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_005",
+        "type": "medication",
+        "medication_info": {
+          "name": "GastroShield",
+          "generic_name": "GastroShield",
+          "strength": "40mg",
+          "dosage_form": "capsule",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000105",
+          "inventory": {
+            "unit_cost": 52500
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Proton pump inhibitor",
+          "indications": [
+            "Rối loạn mỡ máu"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 240,
+          "unit_cost": 52500,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-06T09:00:00Z",
+        "updated_at": "2025-11-06T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_006",
+      "key": "med_2025_11_006",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_006",
+        "type": "medication",
+        "medication_info": {
+          "name": "PulmoEase",
+          "generic_name": "PulmoEase",
+          "strength": "5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000106",
+          "inventory": {
+            "unit_cost": 54000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Leukotriene receptor antagonist",
+          "indications": [
+            "Đau thắt lưng mạn tính"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 252,
+          "unit_cost": 54000,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-07T09:00:00Z",
+        "updated_at": "2025-11-07T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_007",
+      "key": "med_2025_11_007",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_007",
+        "type": "medication",
+        "medication_info": {
+          "name": "JointFlex",
+          "generic_name": "JointFlex",
+          "strength": "1500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000107",
+          "inventory": {
+            "unit_cost": 55500
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Chondroprotective",
+          "indications": [
+            "Đau nửa đầu"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 264,
+          "unit_cost": 55500,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-08T09:00:00Z",
+        "updated_at": "2025-11-08T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_008",
+      "key": "med_2025_11_008",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_008",
+        "type": "medication",
+        "medication_info": {
+          "name": "RenalCare",
+          "generic_name": "RenalCare",
+          "strength": "25mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000108",
+          "inventory": {
+            "unit_cost": 57000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "ACE inhibitor",
+          "indications": [
+            "Bệnh mạch vành"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 276,
+          "unit_cost": 57000,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-09T09:00:00Z",
+        "updated_at": "2025-11-09T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_009",
+      "key": "med_2025_11_009",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_009",
+        "type": "medication",
+        "medication_info": {
+          "name": "ImmunoPlus",
+          "generic_name": "ImmunoPlus",
+          "strength": "1g",
+          "dosage_form": "vial",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000109",
+          "inventory": {
+            "unit_cost": 58500
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Immunoglobulin",
+          "indications": [
+            "Suy thận mạn"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 288,
+          "unit_cost": 58500,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-10T09:00:00Z",
+        "updated_at": "2025-11-10T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_010",
+      "key": "med_2025_11_010",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_010",
+        "type": "medication",
+        "medication_info": {
+          "name": "Dermasoft",
+          "generic_name": "Dermasoft",
+          "strength": "1%",
+          "dosage_form": "ointment",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000110",
+          "inventory": {
+            "unit_cost": 60000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Topical steroid",
+          "indications": [
+            "Thoái hóa khớp đa ổ"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 300,
+          "unit_cost": 60000,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-11T09:00:00Z",
+        "updated_at": "2025-11-11T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_011",
+      "key": "med_2025_11_011",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_011",
+        "type": "medication",
+        "medication_info": {
+          "name": "CardioSafe",
+          "generic_name": "CardioSafe",
+          "strength": "10mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000111",
+          "inventory": {
+            "unit_cost": 61500
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Beta blocker",
+          "indications": [
+            "Tăng huyết áp nguyên phát"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 312,
+          "unit_cost": 61500,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-12T09:00:00Z",
+        "updated_at": "2025-11-12T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_012",
+      "key": "med_2025_11_012",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_012",
+        "type": "medication",
+        "medication_info": {
+          "name": "GlucoBalance",
+          "generic_name": "GlucoBalance",
+          "strength": "500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000112",
+          "inventory": {
+            "unit_cost": 63000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Biguanide",
+          "indications": [
+            "Đái tháo đường type 2"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 324,
+          "unit_cost": 63000,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-13T09:00:00Z",
+        "updated_at": "2025-11-13T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_013",
+      "key": "med_2025_11_013",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_013",
+        "type": "medication",
+        "medication_info": {
+          "name": "LipoGuard",
+          "generic_name": "LipoGuard",
+          "strength": "20mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000113",
+          "inventory": {
+            "unit_cost": 64500
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Statin",
+          "indications": [
+            "Hen phế quản"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 336,
+          "unit_cost": 64500,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-14T09:00:00Z",
+        "updated_at": "2025-11-14T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_014",
+      "key": "med_2025_11_014",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_014",
+        "type": "medication",
+        "medication_info": {
+          "name": "NeuroCalm",
+          "generic_name": "NeuroCalm",
+          "strength": "75mg",
+          "dosage_form": "capsule",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000114",
+          "inventory": {
+            "unit_cost": 66000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Neuropathic agent",
+          "indications": [
+            "Trào ngược dạ dày thực quản"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 348,
+          "unit_cost": 66000,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-15T09:00:00Z",
+        "updated_at": "2025-11-15T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_015",
+      "key": "med_2025_11_015",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_015",
+        "type": "medication",
+        "medication_info": {
+          "name": "GastroShield",
+          "generic_name": "GastroShield",
+          "strength": "40mg",
+          "dosage_form": "capsule",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000115",
+          "inventory": {
+            "unit_cost": 67500
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Proton pump inhibitor",
+          "indications": [
+            "Rối loạn mỡ máu"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 360,
+          "unit_cost": 67500,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-16T09:00:00Z",
+        "updated_at": "2025-11-16T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_016",
+      "key": "med_2025_11_016",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_016",
+        "type": "medication",
+        "medication_info": {
+          "name": "PulmoEase",
+          "generic_name": "PulmoEase",
+          "strength": "5mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000116",
+          "inventory": {
+            "unit_cost": 69000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Leukotriene receptor antagonist",
+          "indications": [
+            "Đau thắt lưng mạn tính"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 372,
+          "unit_cost": 69000,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-17T09:00:00Z",
+        "updated_at": "2025-11-17T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_017",
+      "key": "med_2025_11_017",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_017",
+        "type": "medication",
+        "medication_info": {
+          "name": "JointFlex",
+          "generic_name": "JointFlex",
+          "strength": "1500mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000117",
+          "inventory": {
+            "unit_cost": 70500
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Chondroprotective",
+          "indications": [
+            "Đau nửa đầu"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 384,
+          "unit_cost": 70500,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-18T09:00:00Z",
+        "updated_at": "2025-11-18T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_018",
+      "key": "med_2025_11_018",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_018",
+        "type": "medication",
+        "medication_info": {
+          "name": "RenalCare",
+          "generic_name": "RenalCare",
+          "strength": "25mg",
+          "dosage_form": "tablet",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000118",
+          "inventory": {
+            "unit_cost": 72000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "ACE inhibitor",
+          "indications": [
+            "Bệnh mạch vành"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 396,
+          "unit_cost": 72000,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-19T09:00:00Z",
+        "updated_at": "2025-11-19T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_019",
+      "key": "med_2025_11_019",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_019",
+        "type": "medication",
+        "medication_info": {
+          "name": "ImmunoPlus",
+          "generic_name": "ImmunoPlus",
+          "strength": "1g",
+          "dosage_form": "vial",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000119",
+          "inventory": {
+            "unit_cost": 73500
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Immunoglobulin",
+          "indications": [
+            "Suy thận mạn"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 408,
+          "unit_cost": 73500,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-20T09:00:00Z",
+        "updated_at": "2025-11-20T11:00:00Z"
+      }
+    },
+    {
+      "id": "med_2025_11_020",
+      "key": "med_2025_11_020",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "med_2025_11_020",
+        "type": "medication",
+        "medication_info": {
+          "name": "Dermasoft",
+          "generic_name": "Dermasoft",
+          "strength": "1%",
+          "dosage_form": "ointment",
+          "manufacturer": "Medicare Pharma",
+          "barcode": "8936000120",
+          "inventory": {
+            "unit_cost": 75000
+          }
+        },
+        "clinical_info": {
+          "therapeutic_class": "Topical steroid",
+          "indications": [
+            "Thoái hóa khớp đa ổ"
+          ],
+          "contraindications": [
+            "Hypersensitivity"
+          ],
+          "side_effects": [
+            "Chóng mặt nhẹ",
+            "Buồn nôn"
+          ],
+          "drug_interactions": [
+            "Alcohol"
+          ]
+        },
+        "inventory": {
+          "current_stock": 420,
+          "unit_cost": 75000,
+          "expiry_date": "2027-12-31",
+          "supplier": "VietPharma Distribution"
+        },
+        "status": "active",
+        "created_at": "2025-11-21T09:00:00Z",
+        "updated_at": "2025-11-21T11:00:00Z"
       }
     }
   ]

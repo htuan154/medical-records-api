@@ -38,6 +38,12 @@ const ReportService = {
     return api.get(`/reports/revenue-stats${qs ? `?${qs}` : ''}`).then((r) => r.data)
   },
 
+  // Advanced revenue statistics (date range + age filter)
+  getAdvancedRevenueStats (params = {}) {
+    const qs = buildQuery(params)
+    return api.get(`/reports/revenue-advanced${qs ? `?${qs}` : ''}`).then((r) => r.data)
+  },
+
   // Appointment statistics
   getAppointmentStats (params = {}) {
     const qs = buildQuery(params)

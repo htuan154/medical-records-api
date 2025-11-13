@@ -1,5 +1,5 @@
 {
-  "total_rows": 6,
+  "total_rows": 26,
   "offset": 0,
   "rows": [
     {
@@ -167,6 +167,446 @@
         "status": "active",
         "created_at": "2025-08-19T10:00:00Z",
         "updated_at": "2025-08-19T10:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_001",
+      "key": "role_support_2025_11_001",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_001",
+        "type": "role",
+        "name": "care_team_001",
+        "display_name": "Nhóm chăm sóc 01",
+        "permissions": [
+          "patient:read",
+          "appointment:write",
+          "consultation:write"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-02T08:00:00Z",
+        "updated_at": "2025-11-02T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_002",
+      "key": "role_support_2025_11_002",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_002",
+        "type": "role",
+        "name": "care_team_002",
+        "display_name": "Nhóm chăm sóc 02",
+        "permissions": [
+          "patient:read",
+          "record:read",
+          "record:write"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-03T08:00:00Z",
+        "updated_at": "2025-11-03T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_003",
+      "key": "role_support_2025_11_003",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_003",
+        "type": "role",
+        "name": "care_team_003",
+        "display_name": "Nhóm chăm sóc 03",
+        "permissions": [
+          "treatment:read",
+          "treatment:write",
+          "medication:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-04T08:00:00Z",
+        "updated_at": "2025-11-04T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_004",
+      "key": "role_support_2025_11_004",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_004",
+        "type": "role",
+        "name": "care_team_004",
+        "display_name": "Nhóm chăm sóc 04",
+        "permissions": [
+          "invoice:read",
+          "invoice:write",
+          "report:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-05T08:00:00Z",
+        "updated_at": "2025-11-05T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_005",
+      "key": "role_support_2025_11_005",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_005",
+        "type": "role",
+        "name": "care_team_005",
+        "display_name": "Nhóm chăm sóc 05",
+        "permissions": [
+          "patient:read",
+          "appointment:read",
+          "consultation:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-06T08:00:00Z",
+        "updated_at": "2025-11-06T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_006",
+      "key": "role_support_2025_11_006",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_006",
+        "type": "role",
+        "name": "care_team_006",
+        "display_name": "Nhóm chăm sóc 06",
+        "permissions": [
+          "patient:read",
+          "appointment:write",
+          "consultation:write"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-07T08:00:00Z",
+        "updated_at": "2025-11-07T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_007",
+      "key": "role_support_2025_11_007",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_007",
+        "type": "role",
+        "name": "care_team_007",
+        "display_name": "Nhóm chăm sóc 07",
+        "permissions": [
+          "patient:read",
+          "record:read",
+          "record:write"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-08T08:00:00Z",
+        "updated_at": "2025-11-08T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_008",
+      "key": "role_support_2025_11_008",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_008",
+        "type": "role",
+        "name": "care_team_008",
+        "display_name": "Nhóm chăm sóc 08",
+        "permissions": [
+          "treatment:read",
+          "treatment:write",
+          "medication:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-09T08:00:00Z",
+        "updated_at": "2025-11-09T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_009",
+      "key": "role_support_2025_11_009",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_009",
+        "type": "role",
+        "name": "care_team_009",
+        "display_name": "Nhóm chăm sóc 09",
+        "permissions": [
+          "invoice:read",
+          "invoice:write",
+          "report:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-10T08:00:00Z",
+        "updated_at": "2025-11-10T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_010",
+      "key": "role_support_2025_11_010",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_010",
+        "type": "role",
+        "name": "care_team_010",
+        "display_name": "Nhóm chăm sóc 10",
+        "permissions": [
+          "patient:read",
+          "appointment:read",
+          "consultation:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-11T08:00:00Z",
+        "updated_at": "2025-11-11T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_011",
+      "key": "role_support_2025_11_011",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_011",
+        "type": "role",
+        "name": "care_team_011",
+        "display_name": "Nhóm chăm sóc 11",
+        "permissions": [
+          "patient:read",
+          "appointment:write",
+          "consultation:write"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-12T08:00:00Z",
+        "updated_at": "2025-11-12T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_012",
+      "key": "role_support_2025_11_012",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_012",
+        "type": "role",
+        "name": "care_team_012",
+        "display_name": "Nhóm chăm sóc 12",
+        "permissions": [
+          "patient:read",
+          "record:read",
+          "record:write"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-13T08:00:00Z",
+        "updated_at": "2025-11-13T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_013",
+      "key": "role_support_2025_11_013",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_013",
+        "type": "role",
+        "name": "care_team_013",
+        "display_name": "Nhóm chăm sóc 13",
+        "permissions": [
+          "treatment:read",
+          "treatment:write",
+          "medication:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-14T08:00:00Z",
+        "updated_at": "2025-11-14T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_014",
+      "key": "role_support_2025_11_014",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_014",
+        "type": "role",
+        "name": "care_team_014",
+        "display_name": "Nhóm chăm sóc 14",
+        "permissions": [
+          "invoice:read",
+          "invoice:write",
+          "report:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-15T08:00:00Z",
+        "updated_at": "2025-11-15T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_015",
+      "key": "role_support_2025_11_015",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_015",
+        "type": "role",
+        "name": "care_team_015",
+        "display_name": "Nhóm chăm sóc 15",
+        "permissions": [
+          "patient:read",
+          "appointment:read",
+          "consultation:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-16T08:00:00Z",
+        "updated_at": "2025-11-16T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_016",
+      "key": "role_support_2025_11_016",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_016",
+        "type": "role",
+        "name": "care_team_016",
+        "display_name": "Nhóm chăm sóc 16",
+        "permissions": [
+          "patient:read",
+          "appointment:write",
+          "consultation:write"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-17T08:00:00Z",
+        "updated_at": "2025-11-17T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_017",
+      "key": "role_support_2025_11_017",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_017",
+        "type": "role",
+        "name": "care_team_017",
+        "display_name": "Nhóm chăm sóc 17",
+        "permissions": [
+          "patient:read",
+          "record:read",
+          "record:write"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-18T08:00:00Z",
+        "updated_at": "2025-11-18T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_018",
+      "key": "role_support_2025_11_018",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_018",
+        "type": "role",
+        "name": "care_team_018",
+        "display_name": "Nhóm chăm sóc 18",
+        "permissions": [
+          "treatment:read",
+          "treatment:write",
+          "medication:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-19T08:00:00Z",
+        "updated_at": "2025-11-19T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_019",
+      "key": "role_support_2025_11_019",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_019",
+        "type": "role",
+        "name": "care_team_019",
+        "display_name": "Nhóm chăm sóc 19",
+        "permissions": [
+          "invoice:read",
+          "invoice:write",
+          "report:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-20T08:00:00Z",
+        "updated_at": "2025-11-20T09:00:00Z"
+      }
+    },
+    {
+      "id": "role_support_2025_11_020",
+      "key": "role_support_2025_11_020",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "role_support_2025_11_020",
+        "type": "role",
+        "name": "care_team_020",
+        "display_name": "Nhóm chăm sóc 20",
+        "permissions": [
+          "patient:read",
+          "appointment:read",
+          "consultation:read"
+        ],
+        "description": "Vai trò hỗ trợ vận hành chiến dịch tháng 11/2025",
+        "status": "active",
+        "created_at": "2025-11-21T08:00:00Z",
+        "updated_at": "2025-11-21T09:00:00Z"
       }
     }
   ]

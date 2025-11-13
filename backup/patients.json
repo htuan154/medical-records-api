@@ -252,6 +252,826 @@
       "status": "active",
       "created_at": "2025-01-18T08:40:00Z",
       "updated_at": "2025-01-18T08:40:00Z"
+    },
+    {
+      "_id": "patient_2025_11_001",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Trần Thị Huy",
+        "birth_date": "1956-04-06",
+        "gender": "male",
+        "id_number": "0790010311",
+        "phone": "0907913579",
+        "email": "patient001@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Hoàng Quang Khoa",
+          "relationship": "family",
+          "phone": "0917913579"
+        }
+      },
+      "address": {
+        "street": "25 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "A-",
+        "allergies": [
+          "Seafood"
+        ],
+        "chronic_conditions": [
+          "Đái tháo đường type 2"
+        ],
+        "insurance": {
+          "provider": "PTI",
+          "policy_number": "PTI-2025001",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-02T08:15:00Z",
+      "updated_at": "2025-11-02T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_002",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Lê Hữu Hà",
+        "birth_date": "1957-07-11",
+        "gender": "female",
+        "id_number": "0790020411",
+        "phone": "0904826048",
+        "email": "patient002@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Đặng Ngọc Trung",
+          "relationship": "family",
+          "phone": "0914826048"
+        }
+      },
+      "address": {
+        "street": "30 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "B+",
+        "allergies": [
+          "Peanuts"
+        ],
+        "chronic_conditions": [
+          "Hen phế quản"
+        ],
+        "insurance": {
+          "provider": "BaoViet",
+          "policy_number": "BaoViet-2025002",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-03T08:15:00Z",
+      "updated_at": "2025-11-03T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_003",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Phạm Quang Thắng",
+        "birth_date": "1958-10-16",
+        "gender": "male",
+        "id_number": "0790030511",
+        "phone": "0901739517",
+        "email": "patient003@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Đỗ Gia Nhân",
+          "relationship": "family",
+          "phone": "0911739517"
+        }
+      },
+      "address": {
+        "street": "35 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "B-",
+        "allergies": [
+          "Dust"
+        ],
+        "chronic_conditions": [
+          "Trào ngược dạ dày thực quản"
+        ],
+        "insurance": {
+          "provider": "Prudential",
+          "policy_number": "Prudential-2025003",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-04T08:15:00Z",
+      "updated_at": "2025-11-04T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_004",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Hoàng Ngọc Trang",
+        "birth_date": "1959-01-21",
+        "gender": "female",
+        "id_number": "0790040611",
+        "phone": "0908642086",
+        "email": "patient004@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Vũ Minh Phúc",
+          "relationship": "family",
+          "phone": "0918642086"
+        }
+      },
+      "address": {
+        "street": "40 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "AB+",
+        "allergies": [
+          "Latex"
+        ],
+        "chronic_conditions": [
+          "Rối loạn mỡ máu"
+        ],
+        "insurance": {
+          "provider": "BHYT",
+          "policy_number": "BHYT-2025004",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-05T08:15:00Z",
+      "updated_at": "2025-11-05T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_005",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Đặng Gia Khoa",
+        "birth_date": "1960-04-01",
+        "gender": "male",
+        "id_number": "0790050711",
+        "phone": "0905555555",
+        "email": "patient005@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Bùi Thanh Long",
+          "relationship": "family",
+          "phone": "0915555555"
+        }
+      },
+      "address": {
+        "street": "45 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "AB-",
+        "allergies": [
+          "NSAIDs"
+        ],
+        "chronic_conditions": [
+          "Đau thắt lưng mạn tính"
+        ],
+        "insurance": {
+          "provider": "PTI",
+          "policy_number": "PTI-2025005",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-06T08:15:00Z",
+      "updated_at": "2025-11-06T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_006",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Đỗ Minh Vy",
+        "birth_date": "1961-07-06",
+        "gender": "female",
+        "id_number": "0790060811",
+        "phone": "0902468024",
+        "email": "patient006@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Đinh Thùy Minh",
+          "relationship": "family",
+          "phone": "0912468024"
+        }
+      },
+      "address": {
+        "street": "50 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "O+",
+        "allergies": [
+          "Penicillin"
+        ],
+        "chronic_conditions": [
+          "Đau nửa đầu"
+        ],
+        "insurance": {
+          "provider": "BaoViet",
+          "policy_number": "BaoViet-2025006",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-07T08:15:00Z",
+      "updated_at": "2025-11-07T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_007",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Vũ Thanh Nhân",
+        "birth_date": "1962-10-11",
+        "gender": "male",
+        "id_number": "0790070911",
+        "phone": "0909371593",
+        "email": "patient007@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Phan Phương Huy",
+          "relationship": "family",
+          "phone": "0919371593"
+        }
+      },
+      "address": {
+        "street": "55 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "O-",
+        "allergies": [
+          "Seafood"
+        ],
+        "chronic_conditions": [
+          "Bệnh mạch vành"
+        ],
+        "insurance": {
+          "provider": "Prudential",
+          "policy_number": "Prudential-2025007",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-08T08:15:00Z",
+      "updated_at": "2025-11-08T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_008",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Bùi Thùy Quỳnh",
+        "birth_date": "1963-01-16",
+        "gender": "female",
+        "id_number": "0790081011",
+        "phone": "0906284062",
+        "email": "patient008@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Huỳnh Văn Khôi",
+          "relationship": "family",
+          "phone": "0916284062"
+        }
+      },
+      "address": {
+        "street": "60 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "A+",
+        "allergies": [
+          "Peanuts"
+        ],
+        "chronic_conditions": [
+          "Suy thận mạn"
+        ],
+        "insurance": {
+          "provider": "BHYT",
+          "policy_number": "BHYT-2025008",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-09T08:15:00Z",
+      "updated_at": "2025-11-09T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_009",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Đinh Phương Long",
+        "birth_date": "1964-04-21",
+        "gender": "male",
+        "id_number": "0790091111",
+        "phone": "0903197531",
+        "email": "patient009@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Võ Thị Thắng",
+          "relationship": "family",
+          "phone": "0913197531"
+        }
+      },
+      "address": {
+        "street": "65 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "A-",
+        "allergies": [
+          "Dust"
+        ],
+        "chronic_conditions": [
+          "Thoái hóa khớp đa ổ"
+        ],
+        "insurance": {
+          "provider": "PTI",
+          "policy_number": "PTI-2025009",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-10T08:15:00Z",
+      "updated_at": "2025-11-10T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_010",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Phan Văn Lan",
+        "birth_date": "1965-07-01",
+        "gender": "female",
+        "id_number": "0790101211",
+        "phone": "0900000000",
+        "email": "patient010@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Dương Hữu Dũng",
+          "relationship": "family",
+          "phone": "0910000000"
+        }
+      },
+      "address": {
+        "street": "70 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "B+",
+        "allergies": [
+          "Latex"
+        ],
+        "chronic_conditions": [
+          "Tăng huyết áp nguyên phát"
+        ],
+        "insurance": {
+          "provider": "BaoViet",
+          "policy_number": "BaoViet-2025010",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-11T08:15:00Z",
+      "updated_at": "2025-11-11T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_011",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Huỳnh Thị Huy",
+        "birth_date": "1966-10-06",
+        "gender": "male",
+        "id_number": "0790111311",
+        "phone": "0907913579",
+        "email": "patient011@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Cao Quang Khoa",
+          "relationship": "family",
+          "phone": "0917913579"
+        }
+      },
+      "address": {
+        "street": "75 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "B-",
+        "allergies": [
+          "NSAIDs"
+        ],
+        "chronic_conditions": [
+          "Đái tháo đường type 2"
+        ],
+        "insurance": {
+          "provider": "Prudential",
+          "policy_number": "Prudential-2025011",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-12T08:15:00Z",
+      "updated_at": "2025-11-12T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_012",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Võ Hữu Hà",
+        "birth_date": "1967-01-11",
+        "gender": "female",
+        "id_number": "0790121411",
+        "phone": "0904826048",
+        "email": "patient012@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Tạ Ngọc Trung",
+          "relationship": "family",
+          "phone": "0914826048"
+        }
+      },
+      "address": {
+        "street": "80 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "AB+",
+        "allergies": [
+          "Penicillin"
+        ],
+        "chronic_conditions": [
+          "Hen phế quản"
+        ],
+        "insurance": {
+          "provider": "BHYT",
+          "policy_number": "BHYT-2025012",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-13T08:15:00Z",
+      "updated_at": "2025-11-13T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_013",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Dương Quang Thắng",
+        "birth_date": "1968-04-16",
+        "gender": "male",
+        "id_number": "0790131511",
+        "phone": "0901739517",
+        "email": "patient013@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Mai Gia Nhân",
+          "relationship": "family",
+          "phone": "0911739517"
+        }
+      },
+      "address": {
+        "street": "85 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "AB-",
+        "allergies": [
+          "Seafood"
+        ],
+        "chronic_conditions": [
+          "Trào ngược dạ dày thực quản"
+        ],
+        "insurance": {
+          "provider": "PTI",
+          "policy_number": "PTI-2025013",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-14T08:15:00Z",
+      "updated_at": "2025-11-14T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_014",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Cao Ngọc Trang",
+        "birth_date": "1969-07-21",
+        "gender": "female",
+        "id_number": "0790141611",
+        "phone": "0908642086",
+        "email": "patient014@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Ngô Minh Phúc",
+          "relationship": "family",
+          "phone": "0918642086"
+        }
+      },
+      "address": {
+        "street": "90 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "O+",
+        "allergies": [
+          "Peanuts"
+        ],
+        "chronic_conditions": [
+          "Rối loạn mỡ máu"
+        ],
+        "insurance": {
+          "provider": "BaoViet",
+          "policy_number": "BaoViet-2025014",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-15T08:15:00Z",
+      "updated_at": "2025-11-15T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_015",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Tạ Gia Khoa",
+        "birth_date": "1955-10-01",
+        "gender": "male",
+        "id_number": "0790151711",
+        "phone": "0905555555",
+        "email": "patient015@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Châu Thanh Long",
+          "relationship": "family",
+          "phone": "0915555555"
+        }
+      },
+      "address": {
+        "street": "95 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "O-",
+        "allergies": [
+          "Dust"
+        ],
+        "chronic_conditions": [
+          "Đau thắt lưng mạn tính"
+        ],
+        "insurance": {
+          "provider": "Prudential",
+          "policy_number": "Prudential-2025015",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-16T08:15:00Z",
+      "updated_at": "2025-11-16T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_016",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Mai Minh Vy",
+        "birth_date": "1956-01-06",
+        "gender": "female",
+        "id_number": "0790161811",
+        "phone": "0902468024",
+        "email": "patient016@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Tô Thùy Minh",
+          "relationship": "family",
+          "phone": "0912468024"
+        }
+      },
+      "address": {
+        "street": "100 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "A+",
+        "allergies": [
+          "Latex"
+        ],
+        "chronic_conditions": [
+          "Đau nửa đầu"
+        ],
+        "insurance": {
+          "provider": "BHYT",
+          "policy_number": "BHYT-2025016",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-17T08:15:00Z",
+      "updated_at": "2025-11-17T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_017",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Ngô Thanh Nhân",
+        "birth_date": "1957-04-11",
+        "gender": "male",
+        "id_number": "0790171911",
+        "phone": "0909371593",
+        "email": "patient017@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Nguyễn Phương Huy",
+          "relationship": "family",
+          "phone": "0919371593"
+        }
+      },
+      "address": {
+        "street": "105 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "A-",
+        "allergies": [
+          "NSAIDs"
+        ],
+        "chronic_conditions": [
+          "Bệnh mạch vành"
+        ],
+        "insurance": {
+          "provider": "PTI",
+          "policy_number": "PTI-2025017",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-18T08:15:00Z",
+      "updated_at": "2025-11-18T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_018",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Châu Thùy Quỳnh",
+        "birth_date": "1958-07-16",
+        "gender": "female",
+        "id_number": "0790182011",
+        "phone": "0906284062",
+        "email": "patient018@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Trần Văn Khôi",
+          "relationship": "family",
+          "phone": "0916284062"
+        }
+      },
+      "address": {
+        "street": "110 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "B+",
+        "allergies": [
+          "Penicillin"
+        ],
+        "chronic_conditions": [
+          "Suy thận mạn"
+        ],
+        "insurance": {
+          "provider": "BaoViet",
+          "policy_number": "BaoViet-2025018",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-19T08:15:00Z",
+      "updated_at": "2025-11-19T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_019",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Tô Phương Long",
+        "birth_date": "1959-10-21",
+        "gender": "male",
+        "id_number": "0790192111",
+        "phone": "0903197531",
+        "email": "patient019@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Lê Thị Thắng",
+          "relationship": "family",
+          "phone": "0913197531"
+        }
+      },
+      "address": {
+        "street": "115 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "B-",
+        "allergies": [
+          "Seafood"
+        ],
+        "chronic_conditions": [
+          "Thoái hóa khớp đa ổ"
+        ],
+        "insurance": {
+          "provider": "Prudential",
+          "policy_number": "Prudential-2025019",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-20T08:15:00Z",
+      "updated_at": "2025-11-20T10:45:00Z"
+    },
+    {
+      "_id": "patient_2025_11_020",
+      "type": "patient",
+      "personal_info": {
+        "full_name": "Nguyễn Văn Lan",
+        "birth_date": "1960-01-01",
+        "gender": "female",
+        "id_number": "0790202211",
+        "phone": "0900000000",
+        "email": "patient020@demo-clinic.com",
+        "emergency_contact": {
+          "name": "Phạm Hữu Dũng",
+          "relationship": "family",
+          "phone": "0910000000"
+        }
+      },
+      "address": {
+        "street": "120 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "city": "TP. Hồ Chí Minh",
+        "postal_code": "700000"
+      },
+      "medical_info": {
+        "blood_type": "AB+",
+        "allergies": [
+          "Peanuts"
+        ],
+        "chronic_conditions": [
+          "Tăng huyết áp nguyên phát"
+        ],
+        "insurance": {
+          "provider": "BHYT",
+          "policy_number": "BHYT-2025020",
+          "valid_until": "2026-12-31"
+        }
+      },
+      "status": "active",
+      "created_at": "2025-11-21T08:15:00Z",
+      "updated_at": "2025-11-21T10:45:00Z"
     }
   ]
 }

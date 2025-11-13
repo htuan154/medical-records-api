@@ -239,6 +239,506 @@
           "map": "function (doc) { if (doc.type === 'appointment' && doc.status) { emit(doc.status, null); } }"
         }
       }
+    },
+    {
+      "_id": "appointment_2025_11_001",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_001",
+      "doctor_id": "doctor_2025_11_001",
+      "appointment_info": {
+        "scheduled_date": "2025-11-02T10:00:00Z",
+        "duration": 45,
+        "type": "follow_up",
+        "priority": "high"
+      },
+      "reason": "Theo dõi điều trị tăng huyết áp",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-01T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-02T12:00:00Z",
+      "updated_at": "2025-11-02T11:00:00Z",
+      "created_by": "staff_2025_11_001"
+    },
+    {
+      "_id": "appointment_2025_11_002",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_002",
+      "doctor_id": "doctor_2025_11_002",
+      "appointment_info": {
+        "scheduled_date": "2025-11-03T11:00:00Z",
+        "duration": 60,
+        "type": "telehealth",
+        "priority": "urgent"
+      },
+      "reason": "Điều chỉnh toa thuốc tiểu đường",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-02T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-01T12:00:00Z",
+      "updated_at": "2025-11-03T11:00:00Z",
+      "created_by": "staff_2025_11_002"
+    },
+    {
+      "_id": "appointment_2025_11_003",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_003",
+      "doctor_id": "doctor_2025_11_003",
+      "appointment_info": {
+        "scheduled_date": "2025-11-04T12:00:00Z",
+        "duration": 30,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Tư vấn cải thiện giấc ngủ",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-03T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-02T12:00:00Z",
+      "updated_at": "2025-11-04T11:00:00Z",
+      "created_by": "staff_2025_11_003"
+    },
+    {
+      "_id": "appointment_2025_11_004",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_004",
+      "doctor_id": "doctor_2025_11_004",
+      "appointment_info": {
+        "scheduled_date": "2025-11-05T13:00:00Z",
+        "duration": 45,
+        "type": "follow_up",
+        "priority": "high"
+      },
+      "reason": "Đau dạ dày kéo dài",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-04T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-03T12:00:00Z",
+      "updated_at": "2025-11-05T11:00:00Z",
+      "created_by": "staff_2025_11_004"
+    },
+    {
+      "_id": "appointment_2025_11_005",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_005",
+      "doctor_id": "doctor_2025_11_005",
+      "appointment_info": {
+        "scheduled_date": "2025-11-06T09:00:00Z",
+        "duration": 60,
+        "type": "telehealth",
+        "priority": "urgent"
+      },
+      "reason": "Tái khám sau phẫu thuật",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-05T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-04T12:00:00Z",
+      "updated_at": "2025-11-06T11:00:00Z",
+      "created_by": "staff_2025_11_005"
+    },
+    {
+      "_id": "appointment_2025_11_006",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_006",
+      "doctor_id": "doctor_2025_11_006",
+      "appointment_info": {
+        "scheduled_date": "2025-11-07T10:00:00Z",
+        "duration": 30,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Đánh giá dị ứng thời tiết",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-06T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-05T12:00:00Z",
+      "updated_at": "2025-11-07T11:00:00Z",
+      "created_by": "staff_2025_11_006"
+    },
+    {
+      "_id": "appointment_2025_11_007",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_007",
+      "doctor_id": "doctor_2025_11_007",
+      "appointment_info": {
+        "scheduled_date": "2025-11-08T11:00:00Z",
+        "duration": 45,
+        "type": "follow_up",
+        "priority": "high"
+      },
+      "reason": "Kiểm tra chức năng gan",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-07T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-06T12:00:00Z",
+      "updated_at": "2025-11-08T11:00:00Z",
+      "created_by": "staff_2025_11_007"
+    },
+    {
+      "_id": "appointment_2025_11_008",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_008",
+      "doctor_id": "doctor_2025_11_008",
+      "appointment_info": {
+        "scheduled_date": "2025-11-09T12:00:00Z",
+        "duration": 60,
+        "type": "telehealth",
+        "priority": "urgent"
+      },
+      "reason": "Đánh giá viêm khớp gối",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-08T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-07T12:00:00Z",
+      "updated_at": "2025-11-09T11:00:00Z",
+      "created_by": "staff_2025_11_008"
+    },
+    {
+      "_id": "appointment_2025_11_009",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_009",
+      "doctor_id": "doctor_2025_11_009",
+      "appointment_info": {
+        "scheduled_date": "2025-11-10T13:00:00Z",
+        "duration": 30,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Khó thở về đêm",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-09T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-08T12:00:00Z",
+      "updated_at": "2025-11-10T11:00:00Z",
+      "created_by": "staff_2025_11_009"
+    },
+    {
+      "_id": "appointment_2025_11_010",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_010",
+      "doctor_id": "doctor_2025_11_010",
+      "appointment_info": {
+        "scheduled_date": "2025-11-11T09:00:00Z",
+        "duration": 45,
+        "type": "follow_up",
+        "priority": "high"
+      },
+      "reason": "Khám định kỳ kiểm tra sức khỏe",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-10T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-09T12:00:00Z",
+      "updated_at": "2025-11-11T11:00:00Z",
+      "created_by": "staff_2025_11_010"
+    },
+    {
+      "_id": "appointment_2025_11_011",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_011",
+      "doctor_id": "doctor_2025_11_011",
+      "appointment_info": {
+        "scheduled_date": "2025-11-12T10:00:00Z",
+        "duration": 60,
+        "type": "telehealth",
+        "priority": "urgent"
+      },
+      "reason": "Theo dõi điều trị tăng huyết áp",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-11T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-10T12:00:00Z",
+      "updated_at": "2025-11-12T11:00:00Z",
+      "created_by": "staff_2025_11_011"
+    },
+    {
+      "_id": "appointment_2025_11_012",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_012",
+      "doctor_id": "doctor_2025_11_012",
+      "appointment_info": {
+        "scheduled_date": "2025-11-13T11:00:00Z",
+        "duration": 30,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Điều chỉnh toa thuốc tiểu đường",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-12T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-11T12:00:00Z",
+      "updated_at": "2025-11-13T11:00:00Z",
+      "created_by": "staff_2025_11_012"
+    },
+    {
+      "_id": "appointment_2025_11_013",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_013",
+      "doctor_id": "doctor_2025_11_013",
+      "appointment_info": {
+        "scheduled_date": "2025-11-14T12:00:00Z",
+        "duration": 45,
+        "type": "follow_up",
+        "priority": "high"
+      },
+      "reason": "Tư vấn cải thiện giấc ngủ",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-13T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-12T12:00:00Z",
+      "updated_at": "2025-11-14T11:00:00Z",
+      "created_by": "staff_2025_11_013"
+    },
+    {
+      "_id": "appointment_2025_11_014",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_014",
+      "doctor_id": "doctor_2025_11_014",
+      "appointment_info": {
+        "scheduled_date": "2025-11-15T13:00:00Z",
+        "duration": 60,
+        "type": "telehealth",
+        "priority": "urgent"
+      },
+      "reason": "Đau dạ dày kéo dài",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-14T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-13T12:00:00Z",
+      "updated_at": "2025-11-15T11:00:00Z",
+      "created_by": "staff_2025_11_014"
+    },
+    {
+      "_id": "appointment_2025_11_015",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_015",
+      "doctor_id": "doctor_2025_11_015",
+      "appointment_info": {
+        "scheduled_date": "2025-11-16T09:00:00Z",
+        "duration": 30,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Tái khám sau phẫu thuật",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-15T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-14T12:00:00Z",
+      "updated_at": "2025-11-16T11:00:00Z",
+      "created_by": "staff_2025_11_015"
+    },
+    {
+      "_id": "appointment_2025_11_016",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_016",
+      "doctor_id": "doctor_2025_11_016",
+      "appointment_info": {
+        "scheduled_date": "2025-11-17T10:00:00Z",
+        "duration": 45,
+        "type": "follow_up",
+        "priority": "high"
+      },
+      "reason": "Đánh giá dị ứng thời tiết",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-16T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-15T12:00:00Z",
+      "updated_at": "2025-11-17T11:00:00Z",
+      "created_by": "staff_2025_11_016"
+    },
+    {
+      "_id": "appointment_2025_11_017",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_017",
+      "doctor_id": "doctor_2025_11_017",
+      "appointment_info": {
+        "scheduled_date": "2025-11-18T11:00:00Z",
+        "duration": 60,
+        "type": "telehealth",
+        "priority": "urgent"
+      },
+      "reason": "Kiểm tra chức năng gan",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-17T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-16T12:00:00Z",
+      "updated_at": "2025-11-18T11:00:00Z",
+      "created_by": "staff_2025_11_017"
+    },
+    {
+      "_id": "appointment_2025_11_018",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_018",
+      "doctor_id": "doctor_2025_11_018",
+      "appointment_info": {
+        "scheduled_date": "2025-11-19T12:00:00Z",
+        "duration": 30,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Đánh giá viêm khớp gối",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-18T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-17T12:00:00Z",
+      "updated_at": "2025-11-19T11:00:00Z",
+      "created_by": "staff_2025_11_018"
+    },
+    {
+      "_id": "appointment_2025_11_019",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_019",
+      "doctor_id": "doctor_2025_11_019",
+      "appointment_info": {
+        "scheduled_date": "2025-11-20T13:00:00Z",
+        "duration": 45,
+        "type": "follow_up",
+        "priority": "high"
+      },
+      "reason": "Khó thở về đêm",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-19T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-18T12:00:00Z",
+      "updated_at": "2025-11-20T11:00:00Z",
+      "created_by": "staff_2025_11_019"
+    },
+    {
+      "_id": "appointment_2025_11_020",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_020",
+      "doctor_id": "doctor_2025_11_020",
+      "appointment_info": {
+        "scheduled_date": "2025-11-21T09:00:00Z",
+        "duration": 60,
+        "type": "telehealth",
+        "priority": "urgent"
+      },
+      "reason": "Khám định kỳ kiểm tra sức khỏe",
+      "status": "completed",
+      "notes": "Lưu ý mang theo kết quả xét nghiệm gần nhất",
+      "reminders": [
+        {
+          "type": "sms",
+          "sent_at": "2025-11-20T18:00:00Z",
+          "status": "sent"
+        }
+      ],
+      "created_at": "2025-11-19T12:00:00Z",
+      "updated_at": "2025-11-21T11:00:00Z",
+      "created_by": "staff_2025_11_020"
     }
   ]
 }

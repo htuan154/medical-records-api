@@ -1,5 +1,5 @@
 {
-  "total_rows": 2,
+  "total_rows": 22,
   "offset": 0,
   "rows": [
     {
@@ -108,6 +108,1386 @@
         "status": "completed",
         "created_at": "2025-01-20T10:45:00Z",
         "updated_at": "2025-01-20T11:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_001",
+      "key": "record_2025_11_001",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_001",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "visit_info": {
+          "visit_date": "2025-11-02T10:30:00Z",
+          "visit_type": "follow_up",
+          "chief_complaint": "Theo dõi điều trị tăng huyết áp",
+          "appointment_id": "appointment_2025_11_001"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 122,
+              "diastolic": 79
+            },
+            "heart_rate": 71,
+            "respiratory_rate": 18,
+            "weight": 61,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "E11",
+            "description": "Đái tháo đường type 2",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "CardioSafe",
+              "dosage": "10mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-03",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-02T10:30:00Z",
+        "updated_at": "2025-11-02T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_002",
+      "key": "record_2025_11_002",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_002",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_002",
+        "doctor_id": "doctor_2025_11_002",
+        "visit_info": {
+          "visit_date": "2025-11-03T11:30:00Z",
+          "visit_type": "telehealth",
+          "chief_complaint": "Điều chỉnh toa thuốc tiểu đường",
+          "appointment_id": "appointment_2025_11_002"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.7,
+            "blood_pressure": {
+              "systolic": 126,
+              "diastolic": 82
+            },
+            "heart_rate": 72,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 162
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "J45",
+            "description": "Hen phế quản",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "GlucoBalance",
+              "dosage": "500mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-04",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-03T11:30:00Z",
+        "updated_at": "2025-11-03T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_003",
+      "key": "record_2025_11_003",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_003",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_003",
+        "doctor_id": "doctor_2025_11_003",
+        "visit_info": {
+          "visit_date": "2025-11-04T12:30:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Tư vấn cải thiện giấc ngủ",
+          "appointment_id": "appointment_2025_11_003"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.5,
+            "blood_pressure": {
+              "systolic": 130,
+              "diastolic": 85
+            },
+            "heart_rate": 73,
+            "respiratory_rate": 18,
+            "weight": 63,
+            "height": 163
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "K21",
+            "description": "Trào ngược dạ dày thực quản",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "LipoGuard",
+              "dosage": "20mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-05",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-04T12:30:00Z",
+        "updated_at": "2025-11-04T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_004",
+      "key": "record_2025_11_004",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_004",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_004",
+        "doctor_id": "doctor_2025_11_004",
+        "visit_info": {
+          "visit_date": "2025-11-05T09:30:00Z",
+          "visit_type": "follow_up",
+          "chief_complaint": "Đau dạ dày kéo dài",
+          "appointment_id": "appointment_2025_11_004"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 134,
+              "diastolic": 76
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 64,
+            "height": 164
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "E78",
+            "description": "Rối loạn mỡ máu",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "NeuroCalm",
+              "dosage": "75mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-06",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-05T09:30:00Z",
+        "updated_at": "2025-11-05T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_005",
+      "key": "record_2025_11_005",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_005",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_005",
+        "doctor_id": "doctor_2025_11_005",
+        "visit_info": {
+          "visit_date": "2025-11-06T10:30:00Z",
+          "visit_type": "telehealth",
+          "chief_complaint": "Tái khám sau phẫu thuật",
+          "appointment_id": "appointment_2025_11_005"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.7,
+            "blood_pressure": {
+              "systolic": 118,
+              "diastolic": 79
+            },
+            "heart_rate": 75,
+            "respiratory_rate": 18,
+            "weight": 65,
+            "height": 165
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "M54",
+            "description": "Đau thắt lưng mạn tính",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "GastroShield",
+              "dosage": "40mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-07",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-06T10:30:00Z",
+        "updated_at": "2025-11-06T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_006",
+      "key": "record_2025_11_006",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_006",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_006",
+        "doctor_id": "doctor_2025_11_006",
+        "visit_info": {
+          "visit_date": "2025-11-07T11:30:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Đánh giá dị ứng thời tiết",
+          "appointment_id": "appointment_2025_11_006"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.5,
+            "blood_pressure": {
+              "systolic": 122,
+              "diastolic": 82
+            },
+            "heart_rate": 70,
+            "respiratory_rate": 18,
+            "weight": 66,
+            "height": 166
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "G43",
+            "description": "Đau nửa đầu",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "PulmoEase",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-08",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-07T11:30:00Z",
+        "updated_at": "2025-11-07T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_007",
+      "key": "record_2025_11_007",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_007",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_007",
+        "doctor_id": "doctor_2025_11_007",
+        "visit_info": {
+          "visit_date": "2025-11-08T12:30:00Z",
+          "visit_type": "follow_up",
+          "chief_complaint": "Kiểm tra chức năng gan",
+          "appointment_id": "appointment_2025_11_007"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 126,
+              "diastolic": 85
+            },
+            "heart_rate": 71,
+            "respiratory_rate": 18,
+            "weight": 67,
+            "height": 167
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I25",
+            "description": "Bệnh mạch vành",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "JointFlex",
+              "dosage": "1500mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-09",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-08T12:30:00Z",
+        "updated_at": "2025-11-08T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_008",
+      "key": "record_2025_11_008",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_008",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_008",
+        "doctor_id": "doctor_2025_11_008",
+        "visit_info": {
+          "visit_date": "2025-11-09T09:30:00Z",
+          "visit_type": "telehealth",
+          "chief_complaint": "Đánh giá viêm khớp gối",
+          "appointment_id": "appointment_2025_11_008"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.7,
+            "blood_pressure": {
+              "systolic": 130,
+              "diastolic": 76
+            },
+            "heart_rate": 72,
+            "respiratory_rate": 18,
+            "weight": 68,
+            "height": 160
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "N18",
+            "description": "Suy thận mạn",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "RenalCare",
+              "dosage": "25mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-10",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-09T09:30:00Z",
+        "updated_at": "2025-11-09T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_009",
+      "key": "record_2025_11_009",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_009",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_009",
+        "doctor_id": "doctor_2025_11_009",
+        "visit_info": {
+          "visit_date": "2025-11-10T10:30:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Khó thở về đêm",
+          "appointment_id": "appointment_2025_11_009"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.5,
+            "blood_pressure": {
+              "systolic": 134,
+              "diastolic": 79
+            },
+            "heart_rate": 73,
+            "respiratory_rate": 18,
+            "weight": 69,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "M15",
+            "description": "Thoái hóa khớp đa ổ",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "ImmunoPlus",
+              "dosage": "1g",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-11",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-10T10:30:00Z",
+        "updated_at": "2025-11-10T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_010",
+      "key": "record_2025_11_010",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_010",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_010",
+        "doctor_id": "doctor_2025_11_010",
+        "visit_info": {
+          "visit_date": "2025-11-11T11:30:00Z",
+          "visit_type": "follow_up",
+          "chief_complaint": "Khám định kỳ kiểm tra sức khỏe",
+          "appointment_id": "appointment_2025_11_010"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 118,
+              "diastolic": 82
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 60,
+            "height": 162
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Dermasoft",
+              "dosage": "1%",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-12",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-11T11:30:00Z",
+        "updated_at": "2025-11-11T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_011",
+      "key": "record_2025_11_011",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_011",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_011",
+        "doctor_id": "doctor_2025_11_011",
+        "visit_info": {
+          "visit_date": "2025-11-12T12:30:00Z",
+          "visit_type": "telehealth",
+          "chief_complaint": "Theo dõi điều trị tăng huyết áp",
+          "appointment_id": "appointment_2025_11_011"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.7,
+            "blood_pressure": {
+              "systolic": 122,
+              "diastolic": 85
+            },
+            "heart_rate": 75,
+            "respiratory_rate": 18,
+            "weight": 61,
+            "height": 163
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "E11",
+            "description": "Đái tháo đường type 2",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "CardioSafe",
+              "dosage": "10mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-13",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-12T12:30:00Z",
+        "updated_at": "2025-11-12T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_012",
+      "key": "record_2025_11_012",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_012",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_012",
+        "doctor_id": "doctor_2025_11_012",
+        "visit_info": {
+          "visit_date": "2025-11-13T09:30:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Điều chỉnh toa thuốc tiểu đường",
+          "appointment_id": "appointment_2025_11_012"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.5,
+            "blood_pressure": {
+              "systolic": 126,
+              "diastolic": 76
+            },
+            "heart_rate": 70,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 164
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "J45",
+            "description": "Hen phế quản",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "GlucoBalance",
+              "dosage": "500mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-14",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-13T09:30:00Z",
+        "updated_at": "2025-11-13T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_013",
+      "key": "record_2025_11_013",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_013",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_013",
+        "doctor_id": "doctor_2025_11_013",
+        "visit_info": {
+          "visit_date": "2025-11-14T10:30:00Z",
+          "visit_type": "follow_up",
+          "chief_complaint": "Tư vấn cải thiện giấc ngủ",
+          "appointment_id": "appointment_2025_11_013"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 130,
+              "diastolic": 79
+            },
+            "heart_rate": 71,
+            "respiratory_rate": 18,
+            "weight": 63,
+            "height": 165
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "K21",
+            "description": "Trào ngược dạ dày thực quản",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "LipoGuard",
+              "dosage": "20mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-15",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-14T10:30:00Z",
+        "updated_at": "2025-11-14T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_014",
+      "key": "record_2025_11_014",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_014",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_014",
+        "doctor_id": "doctor_2025_11_014",
+        "visit_info": {
+          "visit_date": "2025-11-15T11:30:00Z",
+          "visit_type": "telehealth",
+          "chief_complaint": "Đau dạ dày kéo dài",
+          "appointment_id": "appointment_2025_11_014"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.7,
+            "blood_pressure": {
+              "systolic": 134,
+              "diastolic": 82
+            },
+            "heart_rate": 72,
+            "respiratory_rate": 18,
+            "weight": 64,
+            "height": 166
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "E78",
+            "description": "Rối loạn mỡ máu",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "NeuroCalm",
+              "dosage": "75mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-16",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-15T11:30:00Z",
+        "updated_at": "2025-11-15T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_015",
+      "key": "record_2025_11_015",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_015",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_015",
+        "doctor_id": "doctor_2025_11_015",
+        "visit_info": {
+          "visit_date": "2025-11-16T12:30:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Tái khám sau phẫu thuật",
+          "appointment_id": "appointment_2025_11_015"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.5,
+            "blood_pressure": {
+              "systolic": 118,
+              "diastolic": 85
+            },
+            "heart_rate": 73,
+            "respiratory_rate": 18,
+            "weight": 65,
+            "height": 167
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "M54",
+            "description": "Đau thắt lưng mạn tính",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "GastroShield",
+              "dosage": "40mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-17",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-16T12:30:00Z",
+        "updated_at": "2025-11-16T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_016",
+      "key": "record_2025_11_016",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_016",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_016",
+        "doctor_id": "doctor_2025_11_016",
+        "visit_info": {
+          "visit_date": "2025-11-17T09:30:00Z",
+          "visit_type": "follow_up",
+          "chief_complaint": "Đánh giá dị ứng thời tiết",
+          "appointment_id": "appointment_2025_11_016"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 122,
+              "diastolic": 76
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 66,
+            "height": 160
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "G43",
+            "description": "Đau nửa đầu",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "PulmoEase",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-18",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-17T09:30:00Z",
+        "updated_at": "2025-11-17T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_017",
+      "key": "record_2025_11_017",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_017",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_017",
+        "doctor_id": "doctor_2025_11_017",
+        "visit_info": {
+          "visit_date": "2025-11-18T10:30:00Z",
+          "visit_type": "telehealth",
+          "chief_complaint": "Kiểm tra chức năng gan",
+          "appointment_id": "appointment_2025_11_017"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.7,
+            "blood_pressure": {
+              "systolic": 126,
+              "diastolic": 79
+            },
+            "heart_rate": 75,
+            "respiratory_rate": 18,
+            "weight": 67,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I25",
+            "description": "Bệnh mạch vành",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "JointFlex",
+              "dosage": "1500mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-19",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-18T10:30:00Z",
+        "updated_at": "2025-11-18T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_018",
+      "key": "record_2025_11_018",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_018",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_018",
+        "doctor_id": "doctor_2025_11_018",
+        "visit_info": {
+          "visit_date": "2025-11-19T11:30:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Đánh giá viêm khớp gối",
+          "appointment_id": "appointment_2025_11_018"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.5,
+            "blood_pressure": {
+              "systolic": 130,
+              "diastolic": 82
+            },
+            "heart_rate": 70,
+            "respiratory_rate": 18,
+            "weight": 68,
+            "height": 162
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "N18",
+            "description": "Suy thận mạn",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "RenalCare",
+              "dosage": "25mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-20",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-19T11:30:00Z",
+        "updated_at": "2025-11-19T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_019",
+      "key": "record_2025_11_019",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_019",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_019",
+        "doctor_id": "doctor_2025_11_019",
+        "visit_info": {
+          "visit_date": "2025-11-20T12:30:00Z",
+          "visit_type": "follow_up",
+          "chief_complaint": "Khó thở về đêm",
+          "appointment_id": "appointment_2025_11_019"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 134,
+              "diastolic": 85
+            },
+            "heart_rate": 71,
+            "respiratory_rate": 18,
+            "weight": 69,
+            "height": 163
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "M15",
+            "description": "Thoái hóa khớp đa ổ",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "ImmunoPlus",
+              "dosage": "1g",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-21",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-20T12:30:00Z",
+        "updated_at": "2025-11-20T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_2025_11_020",
+      "key": "record_2025_11_020",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_2025_11_020",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_020",
+        "doctor_id": "doctor_2025_11_020",
+        "visit_info": {
+          "visit_date": "2025-11-21T09:30:00Z",
+          "visit_type": "telehealth",
+          "chief_complaint": "Khám định kỳ kiểm tra sức khỏe",
+          "appointment_id": "appointment_2025_11_020"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.7,
+            "blood_pressure": {
+              "systolic": 118,
+              "diastolic": 76
+            },
+            "heart_rate": 72,
+            "respiratory_rate": 18,
+            "weight": 60,
+            "height": 164
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Dermasoft",
+              "dosage": "1%",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Uống sau ăn"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Tập thể dục 30 phút/ngày"
+          ],
+          "follow_up": {
+            "date": "2025-11-22",
+            "notes": "Tái khám theo hẹn"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-11-21T09:30:00Z",
+        "updated_at": "2025-11-21T13:00:00Z"
       }
     }
   ]

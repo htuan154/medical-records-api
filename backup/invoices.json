@@ -1,5 +1,5 @@
 {
-  "total_rows": 2,
+  "total_rows": 22,
   "offset": 0,
   "rows": [
     {
@@ -78,6 +78,966 @@
         "paid_date": "2025-01-20T11:00:00Z",
         "created_at": "2025-01-20T10:45:00Z",
         "updated_at": "2025-01-20T11:00:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_001",
+      "key": "invoice_2025_11_001",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_001",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_001",
+        "medical_record_id": "record_2025_11_001",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-001",
+          "invoice_date": "2025-11-02T14:30:00Z",
+          "due_date": "2025-11-09T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 312000,
+            "total_price": 312000
+          },
+          {
+            "service_type": "lab",
+            "description": "Sinh hóa máu",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 462000,
+          "tax_rate": 0.08,
+          "tax_amount": 36960,
+          "total_amount": 498960,
+          "patient_payment": 498960,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-02T15:15:00Z",
+        "created_at": "2025-11-02T14:00:00Z",
+        "updated_at": "2025-11-02T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_002",
+      "key": "invoice_2025_11_002",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_002",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_002",
+        "medical_record_id": "record_2025_11_002",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-002",
+          "invoice_date": "2025-11-03T14:30:00Z",
+          "due_date": "2025-11-10T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 324000,
+            "total_price": 324000
+          },
+          {
+            "service_type": "lab",
+            "description": "X-quang ngực thẳng",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 474000,
+          "tax_rate": 0.08,
+          "tax_amount": 37920,
+          "total_amount": 511920,
+          "patient_payment": 511920,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-03T15:15:00Z",
+        "created_at": "2025-11-03T14:00:00Z",
+        "updated_at": "2025-11-03T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_003",
+      "key": "invoice_2025_11_003",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_003",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_003",
+        "medical_record_id": "record_2025_11_003",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-003",
+          "invoice_date": "2025-11-04T14:30:00Z",
+          "due_date": "2025-11-11T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 336000,
+            "total_price": 336000
+          },
+          {
+            "service_type": "lab",
+            "description": "Điện tâm đồ 12 chuyển đạo",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 486000,
+          "tax_rate": 0.08,
+          "tax_amount": 38880,
+          "total_amount": 524880,
+          "patient_payment": 524880,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-04T15:15:00Z",
+        "created_at": "2025-11-04T14:00:00Z",
+        "updated_at": "2025-11-04T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_004",
+      "key": "invoice_2025_11_004",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_004",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_004",
+        "medical_record_id": "record_2025_11_004",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-004",
+          "invoice_date": "2025-11-05T14:30:00Z",
+          "due_date": "2025-11-12T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 348000,
+            "total_price": 348000
+          },
+          {
+            "service_type": "lab",
+            "description": "Định lượng HbA1c",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 498000,
+          "tax_rate": 0.08,
+          "tax_amount": 39840,
+          "total_amount": 537840,
+          "patient_payment": 537840,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-05T15:15:00Z",
+        "created_at": "2025-11-05T14:00:00Z",
+        "updated_at": "2025-11-05T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_005",
+      "key": "invoice_2025_11_005",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_005",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_005",
+        "medical_record_id": "record_2025_11_005",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-005",
+          "invoice_date": "2025-11-06T14:30:00Z",
+          "due_date": "2025-11-13T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 360000,
+            "total_price": 360000
+          },
+          {
+            "service_type": "lab",
+            "description": "Chức năng thận",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 510000,
+          "tax_rate": 0.08,
+          "tax_amount": 40800,
+          "total_amount": 550800,
+          "patient_payment": 550800,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-06T15:15:00Z",
+        "created_at": "2025-11-06T14:00:00Z",
+        "updated_at": "2025-11-06T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_006",
+      "key": "invoice_2025_11_006",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_006",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_006",
+        "medical_record_id": "record_2025_11_006",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-006",
+          "invoice_date": "2025-11-07T14:30:00Z",
+          "due_date": "2025-11-14T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 372000,
+            "total_price": 372000
+          },
+          {
+            "service_type": "lab",
+            "description": "Hồ sơ mỡ máu",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 522000,
+          "tax_rate": 0.08,
+          "tax_amount": 41760,
+          "total_amount": 563760,
+          "patient_payment": 563760,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-07T15:15:00Z",
+        "created_at": "2025-11-07T14:00:00Z",
+        "updated_at": "2025-11-07T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_007",
+      "key": "invoice_2025_11_007",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_007",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_007",
+        "medical_record_id": "record_2025_11_007",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-007",
+          "invoice_date": "2025-11-08T14:30:00Z",
+          "due_date": "2025-11-15T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 384000,
+            "total_price": 384000
+          },
+          {
+            "service_type": "lab",
+            "description": "CRP định lượng",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 534000,
+          "tax_rate": 0.08,
+          "tax_amount": 42720,
+          "total_amount": 576720,
+          "patient_payment": 576720,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-08T15:15:00Z",
+        "created_at": "2025-11-08T14:00:00Z",
+        "updated_at": "2025-11-08T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_008",
+      "key": "invoice_2025_11_008",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_008",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_008",
+        "medical_record_id": "record_2025_11_008",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-008",
+          "invoice_date": "2025-11-09T14:30:00Z",
+          "due_date": "2025-11-16T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 396000,
+            "total_price": 396000
+          },
+          {
+            "service_type": "lab",
+            "description": "Đông máu toàn bộ",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 546000,
+          "tax_rate": 0.08,
+          "tax_amount": 43680,
+          "total_amount": 589680,
+          "patient_payment": 589680,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-09T15:15:00Z",
+        "created_at": "2025-11-09T14:00:00Z",
+        "updated_at": "2025-11-09T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_009",
+      "key": "invoice_2025_11_009",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_009",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_009",
+        "medical_record_id": "record_2025_11_009",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-009",
+          "invoice_date": "2025-11-10T14:30:00Z",
+          "due_date": "2025-11-17T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 408000,
+            "total_price": 408000
+          },
+          {
+            "service_type": "lab",
+            "description": "TSH & FT4",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 558000,
+          "tax_rate": 0.08,
+          "tax_amount": 44640,
+          "total_amount": 602640,
+          "patient_payment": 602640,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-10T15:15:00Z",
+        "created_at": "2025-11-10T14:00:00Z",
+        "updated_at": "2025-11-10T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_010",
+      "key": "invoice_2025_11_010",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_010",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_010",
+        "medical_record_id": "record_2025_11_010",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-010",
+          "invoice_date": "2025-11-11T14:30:00Z",
+          "due_date": "2025-11-18T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 420000,
+            "total_price": 420000
+          },
+          {
+            "service_type": "lab",
+            "description": "Tổng phân tích máu",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 570000,
+          "tax_rate": 0.08,
+          "tax_amount": 45600,
+          "total_amount": 615600,
+          "patient_payment": 615600,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-11T15:15:00Z",
+        "created_at": "2025-11-11T14:00:00Z",
+        "updated_at": "2025-11-11T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_011",
+      "key": "invoice_2025_11_011",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_011",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_011",
+        "medical_record_id": "record_2025_11_011",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-011",
+          "invoice_date": "2025-11-12T14:30:00Z",
+          "due_date": "2025-11-19T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 432000,
+            "total_price": 432000
+          },
+          {
+            "service_type": "lab",
+            "description": "Sinh hóa máu",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 582000,
+          "tax_rate": 0.08,
+          "tax_amount": 46560,
+          "total_amount": 628560,
+          "patient_payment": 628560,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-12T15:15:00Z",
+        "created_at": "2025-11-12T14:00:00Z",
+        "updated_at": "2025-11-12T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_012",
+      "key": "invoice_2025_11_012",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_012",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_012",
+        "medical_record_id": "record_2025_11_012",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-012",
+          "invoice_date": "2025-11-13T14:30:00Z",
+          "due_date": "2025-11-20T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 444000,
+            "total_price": 444000
+          },
+          {
+            "service_type": "lab",
+            "description": "X-quang ngực thẳng",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 594000,
+          "tax_rate": 0.08,
+          "tax_amount": 47520,
+          "total_amount": 641520,
+          "patient_payment": 641520,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-13T15:15:00Z",
+        "created_at": "2025-11-13T14:00:00Z",
+        "updated_at": "2025-11-13T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_013",
+      "key": "invoice_2025_11_013",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_013",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_013",
+        "medical_record_id": "record_2025_11_013",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-013",
+          "invoice_date": "2025-11-14T14:30:00Z",
+          "due_date": "2025-11-21T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 456000,
+            "total_price": 456000
+          },
+          {
+            "service_type": "lab",
+            "description": "Điện tâm đồ 12 chuyển đạo",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 606000,
+          "tax_rate": 0.08,
+          "tax_amount": 48480,
+          "total_amount": 654480,
+          "patient_payment": 654480,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-14T15:15:00Z",
+        "created_at": "2025-11-14T14:00:00Z",
+        "updated_at": "2025-11-14T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_014",
+      "key": "invoice_2025_11_014",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_014",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_014",
+        "medical_record_id": "record_2025_11_014",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-014",
+          "invoice_date": "2025-11-15T14:30:00Z",
+          "due_date": "2025-11-22T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 468000,
+            "total_price": 468000
+          },
+          {
+            "service_type": "lab",
+            "description": "Định lượng HbA1c",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 618000,
+          "tax_rate": 0.08,
+          "tax_amount": 49440,
+          "total_amount": 667440,
+          "patient_payment": 667440,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-15T15:15:00Z",
+        "created_at": "2025-11-15T14:00:00Z",
+        "updated_at": "2025-11-15T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_015",
+      "key": "invoice_2025_11_015",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_015",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_015",
+        "medical_record_id": "record_2025_11_015",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-015",
+          "invoice_date": "2025-11-16T14:30:00Z",
+          "due_date": "2025-11-23T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 480000,
+            "total_price": 480000
+          },
+          {
+            "service_type": "lab",
+            "description": "Chức năng thận",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 630000,
+          "tax_rate": 0.08,
+          "tax_amount": 50400,
+          "total_amount": 680400,
+          "patient_payment": 680400,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-16T15:15:00Z",
+        "created_at": "2025-11-16T14:00:00Z",
+        "updated_at": "2025-11-16T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_016",
+      "key": "invoice_2025_11_016",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_016",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_016",
+        "medical_record_id": "record_2025_11_016",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-016",
+          "invoice_date": "2025-11-17T14:30:00Z",
+          "due_date": "2025-11-24T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 492000,
+            "total_price": 492000
+          },
+          {
+            "service_type": "lab",
+            "description": "Hồ sơ mỡ máu",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 642000,
+          "tax_rate": 0.08,
+          "tax_amount": 51360,
+          "total_amount": 693360,
+          "patient_payment": 693360,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-17T15:15:00Z",
+        "created_at": "2025-11-17T14:00:00Z",
+        "updated_at": "2025-11-17T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_017",
+      "key": "invoice_2025_11_017",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_017",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_017",
+        "medical_record_id": "record_2025_11_017",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-017",
+          "invoice_date": "2025-11-18T14:30:00Z",
+          "due_date": "2025-11-25T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 504000,
+            "total_price": 504000
+          },
+          {
+            "service_type": "lab",
+            "description": "CRP định lượng",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 654000,
+          "tax_rate": 0.08,
+          "tax_amount": 52320,
+          "total_amount": 706320,
+          "patient_payment": 706320,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-18T15:15:00Z",
+        "created_at": "2025-11-18T14:00:00Z",
+        "updated_at": "2025-11-18T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_018",
+      "key": "invoice_2025_11_018",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_018",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_018",
+        "medical_record_id": "record_2025_11_018",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-018",
+          "invoice_date": "2025-11-19T14:30:00Z",
+          "due_date": "2025-11-26T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 516000,
+            "total_price": 516000
+          },
+          {
+            "service_type": "lab",
+            "description": "Đông máu toàn bộ",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 666000,
+          "tax_rate": 0.08,
+          "tax_amount": 53280,
+          "total_amount": 719280,
+          "patient_payment": 719280,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-19T15:15:00Z",
+        "created_at": "2025-11-19T14:00:00Z",
+        "updated_at": "2025-11-19T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_019",
+      "key": "invoice_2025_11_019",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_019",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_019",
+        "medical_record_id": "record_2025_11_019",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-019",
+          "invoice_date": "2025-11-20T14:30:00Z",
+          "due_date": "2025-11-27T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 528000,
+            "total_price": 528000
+          },
+          {
+            "service_type": "lab",
+            "description": "TSH & FT4",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 678000,
+          "tax_rate": 0.08,
+          "tax_amount": 54240,
+          "total_amount": 732240,
+          "patient_payment": 732240,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-20T15:15:00Z",
+        "created_at": "2025-11-20T14:00:00Z",
+        "updated_at": "2025-11-20T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_2025_11_020",
+      "key": "invoice_2025_11_020",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_2025_11_020",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_020",
+        "medical_record_id": "record_2025_11_020",
+        "invoice_info": {
+          "invoice_number": "INV-2025-11-020",
+          "invoice_date": "2025-11-21T14:30:00Z",
+          "due_date": "2025-11-28T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 540000,
+            "total_price": 540000
+          },
+          {
+            "service_type": "lab",
+            "description": "Tổng phân tích máu",
+            "quantity": 1,
+            "unit_price": 150000,
+            "total_price": 150000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 690000,
+          "tax_rate": 0.08,
+          "tax_amount": 55200,
+          "total_amount": 745200,
+          "patient_payment": 745200,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-11-21T15:15:00Z",
+        "created_at": "2025-11-21T14:00:00Z",
+        "updated_at": "2025-11-21T15:20:00Z"
       }
     }
   ]

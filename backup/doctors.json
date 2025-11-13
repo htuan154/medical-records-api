@@ -179,6 +179,706 @@
       "status": "active",
       "created_at": "2025-01-05T08:00:00Z",
       "updated_at": "2025-01-18T10:30:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_001",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Huỳnh Thị Huy",
+        "gender": "female",
+        "phone": "0907913579",
+        "email": "doctor001@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Nội tiết",
+        "license_number": "MD-2025001",
+        "experience_years": 9,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P202",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-02T07:45:00Z",
+      "updated_at": "2025-11-02T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_002",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Võ Hữu Hà",
+        "gender": "male",
+        "phone": "0904826048",
+        "email": "doctor002@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Tiêu hóa",
+        "license_number": "MD-2025002",
+        "experience_years": 10,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P203",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-03T07:45:00Z",
+      "updated_at": "2025-11-03T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_003",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Dương Quang Thắng",
+        "gender": "female",
+        "phone": "0901739517",
+        "email": "doctor003@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Thần kinh",
+        "license_number": "MD-2025003",
+        "experience_years": 11,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P204",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-04T07:45:00Z",
+      "updated_at": "2025-11-04T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_004",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Cao Ngọc Trang",
+        "gender": "male",
+        "phone": "0908642086",
+        "email": "doctor004@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Cơ xương khớp",
+        "license_number": "MD-2025004",
+        "experience_years": 12,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P205",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-05T07:45:00Z",
+      "updated_at": "2025-11-05T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_005",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Tạ Gia Khoa",
+        "gender": "female",
+        "phone": "0905555555",
+        "email": "doctor005@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Hô hấp",
+        "license_number": "MD-2025005",
+        "experience_years": 13,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P206",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-06T07:45:00Z",
+      "updated_at": "2025-11-06T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_006",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Mai Minh Vy",
+        "gender": "male",
+        "phone": "0902468024",
+        "email": "doctor006@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Tai mũi họng",
+        "license_number": "MD-2025006",
+        "experience_years": 14,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P207",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-07T07:45:00Z",
+      "updated_at": "2025-11-07T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_007",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Ngô Thanh Nhân",
+        "gender": "female",
+        "phone": "0909371593",
+        "email": "doctor007@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Da liễu",
+        "license_number": "MD-2025007",
+        "experience_years": 15,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P208",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-08T07:45:00Z",
+      "updated_at": "2025-11-08T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_008",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Châu Thùy Quỳnh",
+        "gender": "male",
+        "phone": "0906284062",
+        "email": "doctor008@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Nhi khoa",
+        "license_number": "MD-2025008",
+        "experience_years": 16,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P209",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-09T07:45:00Z",
+      "updated_at": "2025-11-09T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_009",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Tô Phương Long",
+        "gender": "female",
+        "phone": "0903197531",
+        "email": "doctor009@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Ung bướu",
+        "license_number": "MD-2025009",
+        "experience_years": 17,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P210",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-10T07:45:00Z",
+      "updated_at": "2025-11-10T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_010",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Nguyễn Văn Lan",
+        "gender": "male",
+        "phone": "0900000000",
+        "email": "doctor010@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Tim mạch",
+        "license_number": "MD-2025010",
+        "experience_years": 8,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P211",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-11T07:45:00Z",
+      "updated_at": "2025-11-11T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_011",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Trần Thị Huy",
+        "gender": "female",
+        "phone": "0907913579",
+        "email": "doctor011@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Nội tiết",
+        "license_number": "MD-2025011",
+        "experience_years": 9,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P212",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-12T07:45:00Z",
+      "updated_at": "2025-11-12T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_012",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Lê Hữu Hà",
+        "gender": "male",
+        "phone": "0904826048",
+        "email": "doctor012@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Tiêu hóa",
+        "license_number": "MD-2025012",
+        "experience_years": 10,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P201",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-13T07:45:00Z",
+      "updated_at": "2025-11-13T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_013",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Phạm Quang Thắng",
+        "gender": "female",
+        "phone": "0901739517",
+        "email": "doctor013@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Thần kinh",
+        "license_number": "MD-2025013",
+        "experience_years": 11,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P202",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-14T07:45:00Z",
+      "updated_at": "2025-11-14T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_014",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Hoàng Ngọc Trang",
+        "gender": "male",
+        "phone": "0908642086",
+        "email": "doctor014@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Cơ xương khớp",
+        "license_number": "MD-2025014",
+        "experience_years": 12,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P203",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-15T07:45:00Z",
+      "updated_at": "2025-11-15T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_015",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Đặng Gia Khoa",
+        "gender": "female",
+        "phone": "0905555555",
+        "email": "doctor015@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Hô hấp",
+        "license_number": "MD-2025015",
+        "experience_years": 13,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P204",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-16T07:45:00Z",
+      "updated_at": "2025-11-16T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_016",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Đỗ Minh Vy",
+        "gender": "male",
+        "phone": "0902468024",
+        "email": "doctor016@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Tai mũi họng",
+        "license_number": "MD-2025016",
+        "experience_years": 14,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P205",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-17T07:45:00Z",
+      "updated_at": "2025-11-17T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_017",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Vũ Thanh Nhân",
+        "gender": "female",
+        "phone": "0909371593",
+        "email": "doctor017@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Da liễu",
+        "license_number": "MD-2025017",
+        "experience_years": 15,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P206",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-18T07:45:00Z",
+      "updated_at": "2025-11-18T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_018",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Bùi Thùy Quỳnh",
+        "gender": "male",
+        "phone": "0906284062",
+        "email": "doctor018@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Nhi khoa",
+        "license_number": "MD-2025018",
+        "experience_years": 16,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P207",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-19T07:45:00Z",
+      "updated_at": "2025-11-19T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_019",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Đinh Phương Long",
+        "gender": "female",
+        "phone": "0903197531",
+        "email": "doctor019@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Ung bướu",
+        "license_number": "MD-2025019",
+        "experience_years": 17,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P208",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-20T07:45:00Z",
+      "updated_at": "2025-11-20T09:15:00Z"
+    },
+    {
+      "_id": "doctor_2025_11_020",
+      "type": "doctor",
+      "personal_info": {
+        "full_name": "BS. Phan Văn Lan",
+        "gender": "male",
+        "phone": "0900000000",
+        "email": "doctor020@demo-clinic.com"
+      },
+      "professional_info": {
+        "specialty": "Tim mạch",
+        "license_number": "MD-2025020",
+        "experience_years": 8,
+        "qualifications": [
+          "MD",
+          "Specialist Level 1"
+        ]
+      },
+      "schedule": {
+        "working_days": [
+          "mon",
+          "tue",
+          "thu",
+          "fri"
+        ],
+        "working_hours": "08:00-17:00"
+      },
+      "contact_info": {
+        "room": "P209",
+        "hotline": "19001725"
+      },
+      "status": "active",
+      "created_at": "2025-11-21T07:45:00Z",
+      "updated_at": "2025-11-21T09:15:00Z"
     }
   ]
 }

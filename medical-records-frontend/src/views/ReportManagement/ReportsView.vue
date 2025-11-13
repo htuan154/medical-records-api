@@ -134,6 +134,36 @@
       </div>
     </div>
 
+    <!-- Advanced revenue summary -->
+    <div
+      class="card mb-4 border-success"
+      v-if="selectedReportType === 'revenue_stats' && revenueSummary"
+    >
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-md-3 mb-3 mb-md-0">
+            <div class="text-muted text-uppercase small">Tổng doanh thu</div>
+            <div class="h4 mb-0 text-success">{{ formatCurrency(revenueSummary.total_revenue) }}</div>
+          </div>
+          <div class="col-md-3 mb-3 mb-md-0">
+            <div class="text-muted text-uppercase small">Số hóa đơn hợp lệ</div>
+            <div class="h4 mb-0">{{ revenueSummary.invoice_count }}</div>
+          </div>
+          <div class="col-md-3 mb-3 mb-md-0">
+            <div class="text-muted text-uppercase small">Bệnh nhân đáp ứng</div>
+            <div class="h4 mb-0">{{ revenueSummary.patient_count }}</div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-muted text-uppercase small">Điều kiện lọc</div>
+            <div class="fw-semibold">
+              {{ formatDate(revenueSummary.start_date) }} → {{ formatDate(revenueSummary.end_date) }}
+            </div>
+            <small class="text-muted">Tuổi bệnh nhân ≥ {{ revenueSummary.min_age }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Kết quả báo cáo -->
     <div class="card" v-if="reportData && reportData.length > 0">
       <div class="card-header d-flex justify-content-between align-items-center">
@@ -266,6 +296,8 @@ export default {
         revenue: 0
       },
       reportData: [],
+      revenueSummary: null,
+      advancedRevenueMinAge: 40,
       tableColumns: [],
       currentPage: 1,
       pageSize: 10
@@ -450,6 +482,7 @@ export default {
       this.reportData = []
       this.reportGenerated = false
       this.showChart = false
+      this.revenueSummary = null
       this.setupTableColumns()
     },
 
@@ -474,9 +507,12 @@ export default {
           { key: 'percentage', label: 'Tỷ lệ %', type: 'number' }
         ],
         revenue_stats: [
-          { key: 'period', label: 'Thời gian', type: 'text' },
-          { key: 'revenue', label: 'Doanh thu', type: 'currency' },
-          { key: 'invoice_count', label: 'Số hóa đơn', type: 'number' }
+          { key: 'invoice_number', label: 'Mã hóa đơn', type: 'text' },
+          { key: 'patient_name', label: 'Bệnh nhân', type: 'text' },
+          { key: 'invoice_date', label: 'Ngày hóa đơn', type: 'date' },
+          { key: 'total_amount', label: 'Doanh thu', type: 'currency' },
+          { key: 'patient_age', label: 'Tuổi bệnh nhân', type: 'number' },
+          { key: 'payment_status', label: 'Trạng thái', type: 'text' }
         ],
         appointment_stats: [
           { key: 'date', label: 'Ngày', type: 'date' },
@@ -499,6 +535,9 @@ export default {
 
       this.loading = true
       this.reportGenerated = false
+      if (this.selectedReportType !== 'revenue_stats') {
+        this.revenueSummary = null
+      }
       try {
         // Gọi API lấy dữ liệu báo cáo
         const data = await this.fetchReportData()
@@ -650,71 +689,124 @@ export default {
     },
 
     async getRevenueStatsFromAPI () {
-      try {
-        // Lấy data thật từ Invoice API với bộ lọc ngày
-        const response = await InvoiceService.list({ limit: 10000 })
-        const invoices = response?.rows || response?.data || []
-
-        // Lọc theo khoảng thời gian
-        const filteredInvoices = invoices.filter(item => {
-          const invoice = item.doc || item
-          const invoiceDate = invoice.created_at || invoice.invoice_date
-          return this.isWithinDateRange(invoiceDate)
-        })
-
-        // Hiển thị từng hóa đơn, period là ngày tạo hóa đơn
-        return filteredInvoices.map(item => {
-          const invoice = item.doc || item
-          const date = new Date(invoice.created_at || invoice.invoice_date)
-          const period = date.toLocaleDateString('vi-VN')
-          let amount = 0
-          if (invoice.payment_info) {
-            amount = invoice.payment_info.total_amount || invoice.payment_info.patient_payment || invoice.payment_info.subtotal || 0
-          }
-          if (!amount) {
-            amount = invoice.total_amount || invoice.amount || invoice.payment_amount || invoice['BN phải trả'] || invoice.total || invoice.grand_total || invoice.final_amount || 0
-          }
-          if (typeof amount === 'string') {
-            amount = amount.replace(/,/g, '').replace(/\./g, '')
-          }
-          amount = parseInt(amount) || 0
-          return {
-            period,
-            revenue: amount,
-            invoice_count: 1
-          }
-        })
-      } catch (e) {
-        console.warn('Revenue API failed, using calculation from records')
-        // Fallback: Tính từ medical records với bộ lọc ngày
-        const records = await MedicalRecordService.list({ limit: 10000 })
-        const recordList = records?.rows || records?.data || []
-
-        const filteredRecords = recordList.filter(item => {
-          const record = item.doc || item
-          return this.isWithinDateRange(record.created_at)
-        })
-
-        const periodStats = {}
-        filteredRecords.forEach(item => {
-          const record = item.doc || item
-          const date = new Date(record.created_at)
-          const periodKey = this.getPeriodKey(date)
-
-          if (!periodStats[periodKey]) {
-            periodStats[periodKey] = { revenue: 0, count: 0 }
-          }
-
-          periodStats[periodKey].revenue += 500000 // Giả định mỗi khám = 500k
-          periodStats[periodKey].count++
-        })
-
-        return Object.entries(periodStats).map(([period, data]) => ({
-          period,
-          revenue: data.revenue,
-          invoice_count: data.count
-        }))
+      const params = {
+        start_date: this.filters.startDate,
+        end_date: this.filters.endDate,
+        min_age: this.advancedRevenueMinAge
       }
+
+      try {
+        const summary = await ReportService.getAdvancedRevenueStats(params)
+        this.revenueSummary = summary
+        return (summary?.invoices || []).map(item => ({
+          invoice_number: item.invoice_number || item.invoice_id,
+          patient_name: item.patient_name,
+          invoice_date: item.invoice_date,
+          total_amount: item.total_amount,
+          patient_age: item.patient_age,
+          payment_status: item.payment_status || '-'
+        }))
+      } catch (e) {
+        console.warn('Advanced revenue API failed, falling back to local calculation', e)
+        const fallback = await this.buildRevenueRowsFromInvoices()
+        this.revenueSummary = fallback.summary
+        return fallback.rows
+      }
+    },
+
+    async buildRevenueRowsFromInvoices () {
+      const [invoiceResponse, patientResponse] = await Promise.all([
+        InvoiceService.list({ limit: 10000 }).catch(() => ({ rows: [] })),
+        PatientService.list({ limit: 10000 }).catch(() => ({ rows: [] }))
+      ])
+
+      const invoices = invoiceResponse?.rows || invoiceResponse?.data || []
+      const patients = patientResponse?.rows || patientResponse?.data || []
+      const patientMap = {}
+
+      patients.forEach(item => {
+        const doc = item.doc || item
+        if (doc && doc._id) {
+          patientMap[doc._id] = doc
+        }
+      })
+
+      const minAge = this.advancedRevenueMinAge
+      const rows = []
+      let totalRevenue = 0
+      const patientSet = new Set()
+
+      invoices.forEach(item => {
+        const invoice = item.doc || item
+        const invoiceDate = invoice.invoice_info?.invoice_date || invoice.created_at
+        if (!this.isWithinDateRange(invoiceDate)) return
+
+        const patientId = invoice.patient_id
+        if (!patientId || !patientMap[patientId]) return
+
+        const patientDoc = patientMap[patientId]
+        const birthDate = patientDoc.personal_info?.birth_date || patientDoc.birth_date
+        if (!birthDate) return
+
+        const age = this.calculateAge(birthDate)
+        if (age < minAge) return
+
+        const amount = this.extractInvoiceAmount(invoice)
+        if (!amount) return
+
+        rows.push({
+          invoice_number: invoice.invoice_info?.invoice_number || invoice.invoice_number || invoice._id,
+          patient_name: patientDoc.personal_info?.full_name || patientDoc.full_name || patientDoc.name || 'Không rõ',
+          invoice_date: invoiceDate,
+          total_amount: amount,
+          patient_age: age,
+          payment_status: invoice.payment_status || '-'
+        })
+
+        totalRevenue += amount
+        patientSet.add(patientId)
+      })
+
+      rows.sort((a, b) => {
+        return new Date(b.invoice_date || 0) - new Date(a.invoice_date || 0)
+      })
+
+      return {
+        rows,
+        summary: {
+          start_date: this.filters.startDate,
+          end_date: this.filters.endDate,
+          min_age: minAge,
+          invoice_count: rows.length,
+          patient_count: patientSet.size,
+          total_revenue: totalRevenue,
+          currency: 'VND'
+        }
+      }
+    },
+
+    extractInvoiceAmount (invoice) {
+      let paymentInfo = invoice.payment_info
+      if (typeof paymentInfo === 'string') {
+        try {
+          paymentInfo = JSON.parse(paymentInfo)
+        } catch (err) {
+          paymentInfo = null
+        }
+      }
+
+      let amount = 0
+      if (paymentInfo && typeof paymentInfo === 'object') {
+        amount = paymentInfo.total_amount ?? paymentInfo.patient_payment ?? paymentInfo.subtotal ?? 0
+      } else {
+        amount = invoice.total_amount ?? invoice.amount ?? invoice.payment_amount ?? 0
+      }
+
+      if (typeof amount === 'string') {
+        amount = amount.replace(/[^\d.-]/g, '')
+      }
+
+      return Number(amount) || 0
     },
 
     async getAppointmentStatsFromAPI () {

@@ -196,6 +196,306 @@
       "account_type": "patient",
       "linked_patient_id": "patient_2025_006",
       "status": "active"
+    },
+    {
+      "_id": "user_patient_2025_11_001",
+      "type": "user",
+      "username": "patient.2025_11_001",
+      "email": "patient001@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_001",
+      "status": "active",
+      "created_at": "2025-11-02T08:00:00Z",
+      "updated_at": "2025-11-02T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_002",
+      "type": "user",
+      "username": "patient.2025_11_002",
+      "email": "patient002@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_002",
+      "status": "active",
+      "created_at": "2025-11-03T08:00:00Z",
+      "updated_at": "2025-11-03T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_003",
+      "type": "user",
+      "username": "patient.2025_11_003",
+      "email": "patient003@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_003",
+      "status": "active",
+      "created_at": "2025-11-04T08:00:00Z",
+      "updated_at": "2025-11-04T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_004",
+      "type": "user",
+      "username": "patient.2025_11_004",
+      "email": "patient004@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_004",
+      "status": "active",
+      "created_at": "2025-11-05T08:00:00Z",
+      "updated_at": "2025-11-05T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_005",
+      "type": "user",
+      "username": "patient.2025_11_005",
+      "email": "patient005@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_005",
+      "status": "active",
+      "created_at": "2025-11-06T08:00:00Z",
+      "updated_at": "2025-11-06T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_006",
+      "type": "user",
+      "username": "patient.2025_11_006",
+      "email": "patient006@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_006",
+      "status": "active",
+      "created_at": "2025-11-07T08:00:00Z",
+      "updated_at": "2025-11-07T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_007",
+      "type": "user",
+      "username": "patient.2025_11_007",
+      "email": "patient007@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_007",
+      "status": "active",
+      "created_at": "2025-11-08T08:00:00Z",
+      "updated_at": "2025-11-08T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_008",
+      "type": "user",
+      "username": "patient.2025_11_008",
+      "email": "patient008@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_008",
+      "status": "active",
+      "created_at": "2025-11-09T08:00:00Z",
+      "updated_at": "2025-11-09T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_009",
+      "type": "user",
+      "username": "patient.2025_11_009",
+      "email": "patient009@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_009",
+      "status": "active",
+      "created_at": "2025-11-10T08:00:00Z",
+      "updated_at": "2025-11-10T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_010",
+      "type": "user",
+      "username": "patient.2025_11_010",
+      "email": "patient010@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_010",
+      "status": "active",
+      "created_at": "2025-11-11T08:00:00Z",
+      "updated_at": "2025-11-11T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_011",
+      "type": "user",
+      "username": "patient.2025_11_011",
+      "email": "patient011@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_011",
+      "status": "active",
+      "created_at": "2025-11-12T08:00:00Z",
+      "updated_at": "2025-11-12T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_012",
+      "type": "user",
+      "username": "patient.2025_11_012",
+      "email": "patient012@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_012",
+      "status": "active",
+      "created_at": "2025-11-13T08:00:00Z",
+      "updated_at": "2025-11-13T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_013",
+      "type": "user",
+      "username": "patient.2025_11_013",
+      "email": "patient013@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_013",
+      "status": "active",
+      "created_at": "2025-11-14T08:00:00Z",
+      "updated_at": "2025-11-14T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_014",
+      "type": "user",
+      "username": "patient.2025_11_014",
+      "email": "patient014@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_014",
+      "status": "active",
+      "created_at": "2025-11-15T08:00:00Z",
+      "updated_at": "2025-11-15T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_015",
+      "type": "user",
+      "username": "patient.2025_11_015",
+      "email": "patient015@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_015",
+      "status": "active",
+      "created_at": "2025-11-16T08:00:00Z",
+      "updated_at": "2025-11-16T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_016",
+      "type": "user",
+      "username": "patient.2025_11_016",
+      "email": "patient016@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_016",
+      "status": "active",
+      "created_at": "2025-11-17T08:00:00Z",
+      "updated_at": "2025-11-17T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_017",
+      "type": "user",
+      "username": "patient.2025_11_017",
+      "email": "patient017@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_017",
+      "status": "active",
+      "created_at": "2025-11-18T08:00:00Z",
+      "updated_at": "2025-11-18T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_018",
+      "type": "user",
+      "username": "patient.2025_11_018",
+      "email": "patient018@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_018",
+      "status": "active",
+      "created_at": "2025-11-19T08:00:00Z",
+      "updated_at": "2025-11-19T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_019",
+      "type": "user",
+      "username": "patient.2025_11_019",
+      "email": "patient019@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_019",
+      "status": "active",
+      "created_at": "2025-11-20T08:00:00Z",
+      "updated_at": "2025-11-20T08:30:00Z"
+    },
+    {
+      "_id": "user_patient_2025_11_020",
+      "type": "user",
+      "username": "patient.2025_11_020",
+      "email": "patient020@demo-clinic.com",
+      "password_hash": "$2a$12$N1GocFct6mkIJSWWU4M5sOQVYnI6lortWck28EfrLJ58euANVuHDq",
+      "role_names": [
+        "patient"
+      ],
+      "account_type": "patient",
+      "linked_patient_id": "patient_2025_11_020",
+      "status": "active",
+      "created_at": "2025-11-21T08:00:00Z",
+      "updated_at": "2025-11-21T08:30:00Z"
     }
   ]
 }
