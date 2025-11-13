@@ -125,6 +125,20 @@
             />
           </div>
 
+          <div class="col-md-2" v-if="selectedReportType === 'revenue_stats'">
+            <div class="form-check mt-4 pt-2">
+              <input
+                id="senior-filter"
+                v-model="onlySeniorPatients"
+                class="form-check-input"
+                type="checkbox"
+              >
+              <label class="form-check-label" for="senior-filter">
+                Chỉ tính bệnh nhân ≥ 40 tuổi
+              </label>
+            </div>
+          </div>
+
           <div class="col-md-2 d-flex align-items-end">
             <button class="btn btn-primary w-100" @click="generateReport" :disabled="!selectedReportType || loading">
               {{ loading ? '🔄 Đang tải...' : '📊 Tạo báo cáo' }}
@@ -158,7 +172,9 @@
             <div class="fw-semibold">
               {{ formatDate(revenueSummary.start_date) }} → {{ formatDate(revenueSummary.end_date) }}
             </div>
-            <small class="text-muted">Tuổi bệnh nhân ≥ {{ revenueSummary.min_age }}</small>
+            <small class="text-muted">
+              {{ revenueSummary.min_age > 0 ? `Tuổi bệnh nhân ≥ ${revenueSummary.min_age}` : 'Không giới hạn độ tuổi' }}
+            </small>
           </div>
         </div>
       </div>
@@ -298,6 +314,7 @@ export default {
       reportData: [],
       revenueSummary: null,
       advancedRevenueMinAge: 40,
+      onlySeniorPatients: true,
       tableColumns: [],
       currentPage: 1,
       pageSize: 10
@@ -330,6 +347,14 @@ export default {
   },
   created () {
     this.loadDashboard()
+  },
+  watch: {
+    onlySeniorPatients (val) {
+      this.advancedRevenueMinAge = val ? 40 : 0
+      if (this.selectedReportType === 'revenue_stats' && this.reportGenerated) {
+        this.generateReport()
+      }
+    }
   },
   methods: {
     // Utility functions
