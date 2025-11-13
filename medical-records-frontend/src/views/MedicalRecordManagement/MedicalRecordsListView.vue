@@ -85,8 +85,8 @@
               </tr>
             </thead>
             <tbody>
-              <template v-for="(r, idx) in filteredItems" :key="rowKey(r, idx)">
-                <tr class="record-row" :class="{ 'expanded': isExpanded(r) }">
+              <template v-for="(r, idx) in filteredItems">
+                <tr class="record-row" :class="{ 'expanded': isExpanded(r) }" :key="rowKey(r, idx)">
                   <td class="cell-number">
                     <span class="row-number">{{ idx + 1 + (page - 1) * pageSize }}</span>
                   </td>
@@ -145,7 +145,7 @@
                 </tr>
 
                 <!-- DETAILS xổ khi bấm Xem -->
-                <tr v-if="isExpanded(r)" class="detail-row">
+                <tr v-if="isExpanded(r)" class="detail-row" :key="'detail-' + rowKey(r, idx)">
                   <td :colspan="7">
                     <div class="detail-wrap">
                       <div class="detail-title">Thông tin khám</div>
