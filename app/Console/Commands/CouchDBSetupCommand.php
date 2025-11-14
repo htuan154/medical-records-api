@@ -13,7 +13,6 @@ use App\Services\CouchDB\TreatmentService;
 use App\Services\CouchDB\MedicalRecordService;
 use App\Services\CouchDB\InvoiceService;
 use App\Services\CouchDB\MedicationService;
-use Illuminate\Support\Facades\Http;
 
 class CouchDBSetupCommand extends Command
 {
@@ -27,27 +26,20 @@ class CouchDBSetupCommand extends Command
         // Step 1: Create databases
         $this->info('📦 Creating databases...');
         $databases = [
-            'appointments', 'patients', 'doctors', 'staff', 'users',
+            'appointments', 'patients', 'doctors', 'staffs', 'users',
             'treatments', 'medical_records', 'invoices', 'medications'
         ];
         
-        $baseUrl = env('COUCHDB_SCHEME', 'http') . '://' . 
-                   env('COUCHDB_HOST', '127.0.0.1') . ':' . 
-                   env('COUCHDB_PORT', 5984);
+        $couchClient = app(CouchClient::class);
         
         foreach ($databases as $dbName) {
             try {
-                $response = Http::withBasicAuth(
-                    env('COUCHDB_USERNAME', ''),
-                    env('COUCHDB_PASSWORD', '')
-                )->put("$baseUrl/$dbName");
+                $response = $couchClient->pendingRequest()->put("/{$dbName}");
                 
-                if ($response->successful()) {
+                if ($response->successful() || $response->status() === 412) {
                     $this->info("  ✅ Created database: $dbName");
-                } elseif ($response->status() === 412) {
-                    $this->comment("  ℹ️  Database already exists: $dbName");
                 } else {
-                    $this->error("  ❌ Failed to create database: $dbName");
+                    $this->error("  ❌ Failed to create database: $dbName (status {$response->status()})");
                 }
             } catch (\Throwable $e) {
                 $this->error("  ❌ Error creating database $dbName: " . $e->getMessage());

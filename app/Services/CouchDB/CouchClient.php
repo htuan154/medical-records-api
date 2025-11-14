@@ -3,6 +3,7 @@
 namespace App\Services\CouchDB;
 
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -13,16 +14,23 @@ class CouchClient
     protected string $baseUrl;
     protected string $username;
     protected string $password;
+    protected int $timeout;
+    protected int $connectTimeout;
     protected ?string $db = null;
 
     public function __construct()
     {
-        $scheme   = env('COUCHDB_SCHEME', 'http');             // ✅ từ ENV
-        $host     = env('COUCHDB_HOST', '127.0.0.1');          // ✅
-        $port     = (int) env('COUCHDB_PORT', $scheme === 'https' ? 443 : 5984); // ✅
-        $this->baseUrl  = rtrim("{$scheme}://{$host}:{$port}", '/');
-        $this->username = env('COUCHDB_USERNAME', '');
-        $this->password = env('COUCHDB_PASSWORD', '');
+        $config = config('couchdb', []);
+        $scheme = $config['scheme'] ?? 'http';
+        $host = $config['host'] ?? '127.0.0.1';
+        $defaultPort = $scheme === 'https' ? 443 : 5984;
+        $port = (int) ($config['port'] ?? $defaultPort);
+
+        $this->baseUrl = rtrim(sprintf('%s://%s:%d', $scheme, $host, $port), '/');
+        $this->username = $config['username'] ?? env('COUCHDB_USERNAME', '');
+        $this->password = $config['password'] ?? env('COUCHDB_PASSWORD', '');
+        $this->timeout = max(1, (int) ($config['timeout'] ?? 10));
+        $this->connectTimeout = max(1, (int) ($config['connect_timeout'] ?? 5));
     }
 
 
@@ -42,8 +50,14 @@ class CouchClient
             ->baseUrl($this->baseUrl)
             ->acceptJson()
             ->asJson()
-            ->timeout(10)
-            ->connectTimeout(5);
+            ->timeout($this->timeout)
+            ->connectTimeout($this->connectTimeout);
+    }
+
+    /** Expose configured PendingRequest for setup/admin flows */
+    public function pendingRequest(): PendingRequest
+    {
+        return $this->http();
     }
 
     /** Đảm bảo đã chọn DB trước khi gọi */

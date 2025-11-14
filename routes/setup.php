@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Services\CouchDB\CouchClient;
 use App\Services\CouchDB\AppointmentService;
 use App\Services\CouchDB\PatientService;
 use App\Services\CouchDB\DoctorService;
@@ -35,25 +36,25 @@ Route::prefix('setup')->group(function () {
         
         // ✅ STEP 1: Tạo tất cả databases trước
         $databases = [
-            'appointments', 'patients', 'doctors', 'staff', 'users',
+            'appointments', 'patients', 'doctors', 'staffs', 'users',
             'treatments', 'medical_records', 'invoices', 'medications',
             'medical_tests', 'roles', 'consultations'
         ];
+
+        $couchClient = app(CouchClient::class);
         
         foreach ($databases as $dbName) {
             try {
-                $client = app(\App\Services\CouchDB\CouchClient::class);
-                $baseUrl = env('COUCHDB_SCHEME', 'http') . '://' . env('COUCHDB_HOST', '127.0.0.1') . ':' . env('COUCHDB_PORT', 5984);
-                $response = \Illuminate\Support\Facades\Http::withBasicAuth(
-                    env('COUCHDB_USERNAME', ''),
-                    env('COUCHDB_PASSWORD', '')
-                )->put("$baseUrl/$dbName");
+                $response = $couchClient->pendingRequest()->put("/{$dbName}");
                 
                 if ($response->successful() || $response->status() === 412) {
                     // 412 = already exists, đó là OK
                     $results['databases'][$dbName] = 'created_or_exists';
                 } else {
-                    $results['databases'][$dbName] = ['error' => $response->json()];
+                    $results['databases'][$dbName] = [
+                        'status' => $response->status(),
+                        'body' => $response->json() ?? $response->body(),
+                    ];
                 }
             } catch (\Throwable $e) {
                 $results['databases'][$dbName] = ['error' => $e->getMessage()];
