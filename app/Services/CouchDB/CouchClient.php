@@ -25,8 +25,10 @@ class CouchClient
         $host = $config['host'] ?? '127.0.0.1';
         $defaultPort = $scheme === 'https' ? 443 : 5984;
         $port = (int) ($config['port'] ?? $defaultPort);
+        $useDefaultPort = ($scheme === 'https' && $port === 443) || ($scheme === 'http' && $port === 80);
+        $portPart = $useDefaultPort ? '' : ':' . $port;
 
-        $this->baseUrl = rtrim(sprintf('%s://%s:%d', $scheme, $host, $port), '/');
+        $this->baseUrl = rtrim(sprintf('%s://%s%s', $scheme, $host, $portPart), '/');
         $this->username = $config['username'] ?? env('COUCHDB_USERNAME', '');
         $this->password = $config['password'] ?? env('COUCHDB_PASSWORD', '');
         $this->timeout = max(1, (int) ($config['timeout'] ?? 10));
