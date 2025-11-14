@@ -226,6 +226,133 @@ class ReportController extends Controller
     }
 
     /**
+     * Advanced revenue summary filtered by date range and patient age
+     * GET /api/reports/revenue-advanced
+     */
+    public function getAdvancedRevenueStats(Request $request)
+    {
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        $minAge = (int) $request->query('min_age', 40);
+
+        if (!$startDate || !$endDate) {
+            return response()->json([
+                'error' => 'invalid_date_range',
+                'message' => 'Vui lòng cung cấp đầy đủ ngày bắt đầu và ngày kết thúc'
+            ], 422);
+        }
+
+        try {
+            $normalizedStart = $this->buildDateBoundary($startDate, true);
+            $normalizedEnd = $this->buildDateBoundary($endDate, false);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'invalid_date_format',
+                'message' => 'Định dạng ngày không hợp lệ. Vui lòng sử dụng YYYY-MM-DD'
+            ], 422);
+        }
+
+        if (strcmp($normalizedStart, $normalizedEnd) > 0) {
+            return response()->json([
+                'error' => 'invalid_date_range',
+                'message' => 'Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc'
+            ], 422);
+        }
+
+        try {
+            $invoiceResult = $this->invoiceService->list(1000, 0, [
+                'start' => $normalizedStart,
+                'end' => $normalizedEnd
+            ]);
+            $invoiceRows = $invoiceResult['rows'] ?? $invoiceResult['data'] ?? [];
+
+            $patientResult = $this->patientService->list(5000);
+            $patientRows = $patientResult['rows'] ?? $patientResult['data'] ?? [];
+
+            $patientsById = [];
+            foreach ($patientRows as $patientRow) {
+                $patientDoc = $patientRow['doc'] ?? $patientRow;
+                if (!isset($patientDoc['_id'])) {
+                    continue;
+                }
+                $patientsById[$patientDoc['_id']] = $patientDoc;
+            }
+
+            $matchedInvoices = [];
+            $totalRevenue = 0;
+            $uniquePatients = [];
+
+            foreach ($invoiceRows as $invoiceRow) {
+                $invoice = $invoiceRow['doc'] ?? $invoiceRow;
+                $patientId = $invoice['patient_id'] ?? null;
+                if (!$patientId || !isset($patientsById[$patientId])) {
+                    continue;
+                }
+
+                $patientDoc = $patientsById[$patientId];
+                $birthDate = $patientDoc['birth_date']
+                    ?? ($patientDoc['personal_info']['birth_date'] ?? null);
+                if (!$birthDate) {
+                    continue; // Không đủ thông tin tuổi
+                }
+
+                $age = $this->calculateAge($birthDate);
+                if ($age < $minAge) {
+                    continue;
+                }
+
+                $amount = $this->extractInvoiceAmount($invoice);
+                if ($amount <= 0) {
+                    continue;
+                }
+
+                $invoiceDate = $invoice['invoice_info']['invoice_date']
+                    ?? $invoice['created_at']
+                    ?? null;
+
+                $matchedInvoices[] = [
+                    'invoice_id' => $invoice['_id'] ?? null,
+                    'invoice_number' => $invoice['invoice_info']['invoice_number']
+                        ?? $invoice['invoice_number']
+                        ?? null,
+                    'invoice_date' => $invoiceDate,
+                    'patient_id' => $patientId,
+                    'patient_name' => $patientDoc['personal_info']['full_name']
+                        ?? $patientDoc['full_name']
+                        ?? $patientDoc['name']
+                        ?? 'Không rõ',
+                    'patient_age' => $age,
+                    'total_amount' => $amount,
+                    'payment_status' => $invoice['payment_status'] ?? null
+                ];
+
+                $totalRevenue += $amount;
+                $uniquePatients[$patientId] = true;
+            }
+
+            usort($matchedInvoices, function ($a, $b) {
+                return strcmp($b['invoice_date'] ?? '', $a['invoice_date'] ?? '');
+            });
+
+            return response()->json([
+                'start_date' => substr($normalizedStart, 0, 10),
+                'end_date' => substr($normalizedEnd, 0, 10),
+                'min_age' => $minAge,
+                'invoice_count' => count($matchedInvoices),
+                'patient_count' => count($uniquePatients),
+                'total_revenue' => $totalRevenue,
+                'currency' => 'VND',
+                'invoices' => $matchedInvoices
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'failed_to_calculate_revenue',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Get appointment statistics  
      * GET /api/reports/appointment-stats
      */
@@ -417,6 +544,46 @@ class ReportController extends Controller
     /**
      * Helper method to calculate age from birth date
      */
+    private function buildDateBoundary(string $date, bool $isStart = true): string
+    {
+        $dateTime = new \DateTime($date, new \DateTimeZone('UTC'));
+        if ($isStart) {
+            $dateTime->setTime(0, 0, 0);
+        } else {
+            $dateTime->setTime(23, 59, 59);
+        }
+        return $dateTime->format('Y-m-d\TH:i:s\Z');
+    }
+
+    private function extractInvoiceAmount(array $invoice): float
+    {
+        $paymentInfo = $invoice['payment_info'] ?? null;
+        if (is_string($paymentInfo)) {
+            $decoded = json_decode($paymentInfo, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $paymentInfo = $decoded;
+            }
+        }
+
+        if (is_array($paymentInfo)) {
+            $rawAmount = $paymentInfo['total_amount']
+                ?? $paymentInfo['patient_payment']
+                ?? $paymentInfo['subtotal']
+                ?? 0;
+        } else {
+            $rawAmount = $invoice['total_amount']
+                ?? $invoice['amount']
+                ?? $invoice['payment_amount']
+                ?? 0;
+        }
+
+        if (is_string($rawAmount)) {
+            $rawAmount = preg_replace('/[^\d\.\-]/', '', $rawAmount);
+        }
+
+        return floatval($rawAmount);
+    }
+
     private function calculateAge($birthDate)
     {
         if (!$birthDate) return 25; // default age

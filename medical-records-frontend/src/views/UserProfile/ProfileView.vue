@@ -34,32 +34,36 @@
                   </div>
 
                   <div class="mb-3">
-                    <label class="form-label">Tên đăng nhập</label>
-                    <input v-model="userForm.username" type="text" class="form-control" :class="{ 'is-invalid': formErrors.username }" placeholder="Nhập tên đăng nhập">
-                    <div v-if="formErrors.username" class="invalid-feedback">{{ formErrors.username }}</div>
+                    <label class="form-label">Tên đăng nhập <span class="text-muted">(readonly)</span></label>
+                    <input v-model="userForm.username" type="text" class="form-control" readonly>
+                    <small class="form-text text-muted">Không thể thay đổi tên đăng nhập</small>
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label">Họ tên</label>
                     <input v-model="userForm.name" type="text" class="form-control" :class="{ 'is-invalid': formErrors.name }" placeholder="Nhập họ tên">
+                    <small class="form-text text-muted">{{ linkedEntityType ? `Cập nhật vào bảng ${linkedEntityType === 'staff' ? 'nhân viên' : 'bác sĩ'}` : 'Thông tin tài khoản' }}</small>
                     <div v-if="formErrors.name" class="invalid-feedback">{{ formErrors.name }}</div>
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label">Email</label>
                     <input v-model="userForm.email" type="email" class="form-control" :class="{ 'is-invalid': formErrors.email }" placeholder="Nhập email">
+                    <small class="form-text text-muted">{{ linkedEntityType ? `Cập nhật vào bảng ${linkedEntityType === 'staff' ? 'nhân viên' : 'bác sĩ'}` : 'Thông tin tài khoản' }}</small>
                     <div v-if="formErrors.email" class="invalid-feedback">{{ formErrors.email }}</div>
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label">Số điện thoại</label>
                     <input v-model="userForm.phone" type="text" class="form-control" :class="{ 'is-invalid': formErrors.phone }" placeholder="Nhập số điện thoại">
+                    <small class="form-text text-muted">{{ linkedEntityType ? `Cập nhật vào bảng ${linkedEntityType === 'staff' ? 'nhân viên' : 'bác sĩ'}` : 'Thông tin tài khoản' }}</small>
                     <div v-if="formErrors.phone" class="invalid-feedback">{{ formErrors.phone }}</div>
                   </div>
 
                   <div class="mb-3">
                     <label class="form-label">Địa chỉ</label>
                     <textarea v-model="userForm.address" class="form-control" rows="3" :class="{ 'is-invalid': formErrors.address }" placeholder="Nhập địa chỉ"></textarea>
+                    <small class="form-text text-muted">{{ linkedEntityType ? `Cập nhật vào bảng ${linkedEntityType === 'staff' ? 'nhân viên' : 'bác sĩ'}` : 'Thông tin tài khoản' }}</small>
                     <div v-if="formErrors.address" class="invalid-feedback">{{ formErrors.address }}</div>
                   </div>
                 </div>
@@ -135,6 +139,8 @@
 
 <script>
 import UserService from '@/api/userService'
+import StaffService from '@/api/staffService'
+import DoctorService from '@/api/doctorService'
 
 export default {
   name: 'ProfileView',
@@ -142,6 +148,8 @@ export default {
   data () {
     return {
       currentUser: null, // Lưu user data từ API với _id và _rev
+      linkedEntity: null, // Lưu thông tin từ staff hoặc doctor
+      linkedEntityType: null, // 'staff' hoặc 'doctor'
       userForm: {
         username: '',
         name: '',
@@ -192,16 +200,78 @@ export default {
         this.currentUser = userData
         console.log('Gán vào currentUser:', this.currentUser)
 
-        // Gán dữ liệu vào form
-        this.userForm = {
-          username: userData.username || '',
-          name: userData.name || '',
-          email: userData.email || '',
-          phone: userData.phone || '',
-          address: userData.address || '',
-          password: '' // Luôn để trống password
+        // 🔗 Load thông tin từ bảng liên kết (staff hoặc doctor)
+        if (userData.linked_staff_id) {
+          console.log('🔗 Loading staff data for:', userData.linked_staff_id)
+          try {
+            const staffData = await StaffService.get(userData.linked_staff_id)
+            this.linkedEntity = staffData
+            this.linkedEntityType = 'staff'
+            console.log('✅ Staff data loaded:', staffData)
+
+            // Đổ data từ staff vào form
+            this.userForm = {
+              username: userData.username || '',
+              name: staffData.full_name || '',
+              email: staffData.email || '',
+              phone: staffData.phone || '',
+              address: staffData.address || '',
+              password: ''
+            }
+          } catch (error) {
+            console.error('❌ Lỗi load staff:', error)
+            // Fallback về user data
+            this.userForm = {
+              username: userData.username || '',
+              name: userData.name || '',
+              email: userData.email || '',
+              phone: userData.phone || '',
+              address: userData.address || '',
+              password: ''
+            }
+          }
+        } else if (userData.linked_doctor_id) {
+          console.log('🔗 Loading doctor data for:', userData.linked_doctor_id)
+          try {
+            const doctorData = await DoctorService.get(userData.linked_doctor_id)
+            this.linkedEntity = doctorData
+            this.linkedEntityType = 'doctor'
+            console.log('✅ Doctor data loaded:', doctorData)
+
+            // Đổ data từ doctor vào form (doctor có nested object personal_info)
+            this.userForm = {
+              username: userData.username || '',
+              name: doctorData.personal_info?.full_name || doctorData.full_name || '',
+              email: doctorData.personal_info?.email || doctorData.email || '',
+              phone: doctorData.personal_info?.phone || doctorData.phone || '',
+              address: doctorData.personal_info?.address || doctorData.address || '',
+              password: ''
+            }
+          } catch (error) {
+            console.error('❌ Lỗi load doctor:', error)
+            // Fallback về user data
+            this.userForm = {
+              username: userData.username || '',
+              name: userData.name || '',
+              email: userData.email || '',
+              phone: userData.phone || '',
+              address: userData.address || '',
+              password: ''
+            }
+          }
+        } else {
+          // Không có linked entity, dùng data từ user
+          this.userForm = {
+            username: userData.username || '',
+            name: userData.name || '',
+            email: userData.email || '',
+            phone: userData.phone || '',
+            address: userData.address || '',
+            password: ''
+          }
         }
-        console.log('Gán vào userForm:', this.userForm)
+
+        console.log('✅ Final userForm:', this.userForm)
       } catch (error) {
         console.error('Lỗi tải dữ liệu user:', error)
         alert('Lỗi khi tải dữ liệu: ' + (error.response?.data?.message || error.message))
@@ -218,22 +288,46 @@ export default {
       this.formErrors = {}
 
       try {
-        // Chuẩn bị data update giống trang user
-        const updateData = {
-          _rev: this.currentUser._rev,
-          username: this.userForm.username,
-          name: this.userForm.name,
-          email: this.userForm.email,
-          phone: this.userForm.phone,
-          address: this.userForm.address
+        // 🔄 Cập nhật vào bảng liên kết (staff hoặc doctor)
+        if (this.linkedEntityType === 'staff' && this.linkedEntity?._id && this.linkedEntity?._rev) {
+          console.log('🔄 Updating staff data...')
+          const staffUpdateData = {
+            ...this.linkedEntity,
+            _rev: this.linkedEntity._rev,
+            full_name: this.userForm.name,
+            email: this.userForm.email,
+            phone: this.userForm.phone,
+            address: this.userForm.address || ''
+          }
+          await StaffService.update(this.linkedEntity._id, staffUpdateData)
+          console.log('✅ Staff updated successfully')
+        } else if (this.linkedEntityType === 'doctor' && this.linkedEntity?._id && this.linkedEntity?._rev) {
+          console.log('🔄 Updating doctor data...')
+          const doctorUpdateData = {
+            ...this.linkedEntity,
+            _rev: this.linkedEntity._rev,
+            personal_info: {
+              ...this.linkedEntity.personal_info,
+              full_name: this.userForm.name,
+              email: this.userForm.email,
+              phone: this.userForm.phone,
+              address: this.userForm.address || ''
+            }
+          }
+          await DoctorService.update(this.linkedEntity._id, doctorUpdateData)
+          console.log('✅ Doctor updated successfully')
         }
 
-        // Thêm password nếu người dùng nhập
+        // 🔄 Cập nhật password nếu có
         if (this.userForm.password && this.userForm.password.trim()) {
-          updateData.password = this.userForm.password
+          console.log('🔄 Updating password...')
+          const userUpdateData = {
+            _rev: this.currentUser._rev,
+            password: this.userForm.password
+          }
+          await UserService.update(this.currentUser._id, userUpdateData)
+          console.log('✅ Password updated successfully')
         }
-
-        await UserService.update(this.currentUser._id, updateData)
 
         alert('Cập nhật hồ sơ thành công!')
 
@@ -243,7 +337,7 @@ export default {
         // Cập nhật store
         await this.$store.dispatch('fetchMe')
       } catch (error) {
-        console.error('Lỗi cập nhật user:', error)
+        console.error('❌ Lỗi cập nhật:', error)
 
         if (error.response?.data?.errors) {
           this.formErrors = error.response.data.errors

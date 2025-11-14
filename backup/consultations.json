@@ -39,7 +39,7 @@
     {
       "_id": "consultation_2025_001",
       "type": "consultation",
-      "patient_id": "patient_2024_001",
+      "patient_id": "patient_2025_001",
       "patient_info": {
         "name": "Nguyễn Văn An",
         "phone": "0901234567",
@@ -62,7 +62,7 @@
     {
       "_id": "consultation_2025_002",
       "type": "consultation",
-      "patient_id": "patient_2024_002",
+      "patient_id": "patient_2025_002",
       "patient_info": {
         "name": "Trần Thị Lan",
         "phone": "0908888002",
@@ -85,7 +85,7 @@
     {
       "_id": "consultation_2025_003",
       "type": "consultation",
-      "patient_id": "patient_2024_004",
+      "patient_id": "patient_2025_004",
       "patient_info": {
         "name": "Phạm Thu Hà",
         "phone": "0908888004",
@@ -104,7 +104,7 @@
     {
       "_id": "consultation_2025_004",
       "type": "consultation",
-      "patient_id": "patient_2024_005",
+      "patient_id": "patient_2025_005",
       "patient_info": {
         "name": "Đỗ Quang Huy",
         "phone": "0908888005",
@@ -128,7 +128,7 @@
       "_id": "message_001",
       "type": "message",
       "consultation_id": "consultation_2025_001",
-      "sender_id": "patient_2024_001",
+      "sender_id": "patient_2025_001",
       "sender_type": "patient",
       "sender_name": "Nguyễn Văn An",
       "message": "Chào bệnh viện. Cho em hỏi có gói khám sức khỏe tổng quát không ạ?",
@@ -150,7 +150,7 @@
       "_id": "message_003",
       "type": "message",
       "consultation_id": "consultation_2025_001",
-      "sender_id": "patient_2024_001",
+      "sender_id": "patient_2025_001",
       "sender_type": "patient",
       "sender_name": "Nguyễn Văn An",
       "message": "Gói nâng cao bao gồm những gì ạ?",
@@ -172,7 +172,7 @@
       "_id": "message_005",
       "type": "message",
       "consultation_id": "consultation_2025_001",
-      "sender_id": "patient_2024_001",
+      "sender_id": "patient_2025_001",
       "sender_type": "patient",
       "sender_name": "Nguyễn Văn An",
       "message": "Vâng em muốn đặt ạ. Tuần sau có được không?",
@@ -194,7 +194,7 @@
       "_id": "message_007",
       "type": "message",
       "consultation_id": "consultation_2025_001",
-      "sender_id": "patient_2024_001",
+      "sender_id": "patient_2025_001",
       "sender_type": "patient",
       "sender_name": "Nguyễn Văn An",
       "message": "Cảm ơn anh nhiều ạ!",
@@ -205,7 +205,7 @@
       "_id": "message_008",
       "type": "message",
       "consultation_id": "consultation_2025_002",
-      "sender_id": "patient_2024_002",
+      "sender_id": "patient_2025_002",
       "sender_type": "patient",
       "sender_name": "Trần Thị Lan",
       "message": "Chị ơi, em khám hôm qua và bác sĩ cho làm xét nghiệm máu. Khi nào có kết quả ạ?",
@@ -227,7 +227,7 @@
       "_id": "message_010",
       "type": "message",
       "consultation_id": "consultation_2025_002",
-      "sender_id": "patient_2024_002",
+      "sender_id": "patient_2025_002",
       "sender_type": "patient",
       "sender_name": "Trần Thị Lan",
       "message": "Dạ em cảm ơn chị ạ!",
@@ -238,7 +238,7 @@
       "_id": "message_011",
       "type": "message",
       "consultation_id": "consultation_2025_003",
-      "sender_id": "patient_2024_004",
+      "sender_id": "patient_2025_004",
       "sender_type": "patient",
       "sender_name": "Phạm Thu Hà",
       "message": "Em đang uống thuốc dạ dày do bác sĩ kê. Nhưng em thấy bị buồn ngủ nhiều. Có sao không ạ?",
@@ -249,7 +249,7 @@
       "_id": "message_012",
       "type": "message",
       "consultation_id": "consultation_2025_004",
-      "sender_id": "patient_2024_005",
+      "sender_id": "patient_2025_005",
       "sender_type": "patient",
       "sender_name": "Đỗ Quang Huy",
       "message": "Chào bệnh viện. Em có lịch hẹn sáng mai nhưng bận việc đột xuất ạ.",
@@ -271,12 +271,912 @@
       "_id": "message_014",
       "type": "message",
       "consultation_id": "consultation_2025_004",
-      "sender_id": "patient_2024_005",
+      "sender_id": "patient_2025_005",
       "sender_type": "patient",
       "sender_name": "Đỗ Quang Huy",
       "message": "Anh muốn đổi sang thứ 6 được không ạ?",
       "is_read": false,
       "created_at": "2025-11-07T09:15:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_001",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_001",
+      "patient_info": {
+        "name": "Trần Thị Huy",
+        "phone": "0907913579",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_001",
+      "staff_info": {
+        "name": "Trần Thị Huy",
+        "staff_type": "receptionist",
+        "avatar": null
+      },
+      "status": "closed",
+      "last_message": "Thuốc uống sau ăn mà em lại uống trước ăn, có sao không anh/chị?",
+      "last_message_at": "2025-11-02T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-02T18:00:00Z",
+      "updated_at": "2025-11-02T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_002",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_002",
+      "patient_info": {
+        "name": "Lê Hữu Hà",
+        "phone": "0904826048",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_002",
+      "staff_info": {
+        "name": "Lê Hữu Hà",
+        "staff_type": "lab_technician",
+        "avatar": null
+      },
+      "status": "waiting",
+      "last_message": "Em muốn đổi lịch hẹn sang buổi sáng được không ạ?",
+      "last_message_at": "2025-11-03T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 1,
+      "created_at": "2025-11-03T18:00:00Z",
+      "updated_at": "2025-11-03T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_003",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_003",
+      "patient_info": {
+        "name": "Phạm Quang Thắng",
+        "phone": "0901739517",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_003",
+      "staff_info": {
+        "name": "Phạm Quang Thắng",
+        "staff_type": "care_coordinator",
+        "avatar": null
+      },
+      "status": "active",
+      "last_message": "Bé nhà em ho nhiều về đêm, cần mua thuốc gì hỗ trợ?",
+      "last_message_at": "2025-11-04T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-04T18:00:00Z",
+      "updated_at": "2025-11-04T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_004",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_004",
+      "patient_info": {
+        "name": "Hoàng Ngọc Trang",
+        "phone": "0908642086",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_004",
+      "staff_info": {
+        "name": "Hoàng Ngọc Trang",
+        "staff_type": "pharmacist",
+        "avatar": null
+      },
+      "status": "closed",
+      "last_message": "Em vừa nhận kết quả xét nghiệm, nhờ anh/chị giải thích giúp",
+      "last_message_at": "2025-11-05T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-05T18:00:00Z",
+      "updated_at": "2025-11-05T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_005",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_005",
+      "patient_info": {
+        "name": "Đặng Gia Khoa",
+        "phone": "0905555555",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_005",
+      "staff_info": {
+        "name": "Đặng Gia Khoa",
+        "staff_type": "nurse",
+        "avatar": null
+      },
+      "status": "waiting",
+      "last_message": "Có gói khám tổng quát gia đình trong tháng 11 không ạ?",
+      "last_message_at": "2025-11-06T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 1,
+      "created_at": "2025-11-06T18:00:00Z",
+      "updated_at": "2025-11-06T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_006",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_006",
+      "patient_info": {
+        "name": "Đỗ Minh Vy",
+        "phone": "0902468024",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_006",
+      "staff_info": {
+        "name": "Đỗ Minh Vy",
+        "staff_type": "receptionist",
+        "avatar": null
+      },
+      "status": "active",
+      "last_message": "Em cần cấp lại toa thuốc tháng 10 thì làm sao ạ?",
+      "last_message_at": "2025-11-07T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-07T18:00:00Z",
+      "updated_at": "2025-11-07T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_007",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_007",
+      "patient_info": {
+        "name": "Vũ Thanh Nhân",
+        "phone": "0909371593",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_007",
+      "staff_info": {
+        "name": "Vũ Thanh Nhân",
+        "staff_type": "lab_technician",
+        "avatar": null
+      },
+      "status": "closed",
+      "last_message": "Bố em bị tăng huyết áp, cần đặt lịch đo huyết áp hàng tuần",
+      "last_message_at": "2025-11-08T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-08T18:00:00Z",
+      "updated_at": "2025-11-08T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_008",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_008",
+      "patient_info": {
+        "name": "Bùi Thùy Quỳnh",
+        "phone": "0906284062",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_008",
+      "staff_info": {
+        "name": "Bùi Thùy Quỳnh",
+        "staff_type": "care_coordinator",
+        "avatar": null
+      },
+      "status": "waiting",
+      "last_message": "Sau khi chụp MRI em thấy hơi chóng mặt, có bình thường không?",
+      "last_message_at": "2025-11-09T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 1,
+      "created_at": "2025-11-09T18:00:00Z",
+      "updated_at": "2025-11-09T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_009",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_009",
+      "patient_info": {
+        "name": "Đinh Phương Long",
+        "phone": "0903197531",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_009",
+      "staff_info": {
+        "name": "Đinh Phương Long",
+        "staff_type": "pharmacist",
+        "avatar": null
+      },
+      "status": "active",
+      "last_message": "Bệnh viện có hỗ trợ tư vấn dinh dưỡng online không ạ?",
+      "last_message_at": "2025-11-10T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-10T18:00:00Z",
+      "updated_at": "2025-11-10T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_010",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_010",
+      "patient_info": {
+        "name": "Phan Văn Lan",
+        "phone": "0900000000",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_010",
+      "staff_info": {
+        "name": "Phan Văn Lan",
+        "staff_type": "nurse",
+        "avatar": null
+      },
+      "status": "closed",
+      "last_message": "Em bị đau đầu mỗi tối, cần đặt lịch khám thế nào ạ?",
+      "last_message_at": "2025-11-11T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-11T18:00:00Z",
+      "updated_at": "2025-11-11T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_011",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_011",
+      "patient_info": {
+        "name": "Huỳnh Thị Huy",
+        "phone": "0907913579",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_011",
+      "staff_info": {
+        "name": "Huỳnh Thị Huy",
+        "staff_type": "receptionist",
+        "avatar": null
+      },
+      "status": "waiting",
+      "last_message": "Thuốc uống sau ăn mà em lại uống trước ăn, có sao không anh/chị?",
+      "last_message_at": "2025-11-12T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 1,
+      "created_at": "2025-11-12T18:00:00Z",
+      "updated_at": "2025-11-12T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_012",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_012",
+      "patient_info": {
+        "name": "Võ Hữu Hà",
+        "phone": "0904826048",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_012",
+      "staff_info": {
+        "name": "Võ Hữu Hà",
+        "staff_type": "lab_technician",
+        "avatar": null
+      },
+      "status": "active",
+      "last_message": "Em muốn đổi lịch hẹn sang buổi sáng được không ạ?",
+      "last_message_at": "2025-11-13T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-13T18:00:00Z",
+      "updated_at": "2025-11-13T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_013",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_013",
+      "patient_info": {
+        "name": "Dương Quang Thắng",
+        "phone": "0901739517",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_013",
+      "staff_info": {
+        "name": "Dương Quang Thắng",
+        "staff_type": "care_coordinator",
+        "avatar": null
+      },
+      "status": "closed",
+      "last_message": "Bé nhà em ho nhiều về đêm, cần mua thuốc gì hỗ trợ?",
+      "last_message_at": "2025-11-14T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-14T18:00:00Z",
+      "updated_at": "2025-11-14T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_014",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_014",
+      "patient_info": {
+        "name": "Cao Ngọc Trang",
+        "phone": "0908642086",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_014",
+      "staff_info": {
+        "name": "Cao Ngọc Trang",
+        "staff_type": "pharmacist",
+        "avatar": null
+      },
+      "status": "waiting",
+      "last_message": "Em vừa nhận kết quả xét nghiệm, nhờ anh/chị giải thích giúp",
+      "last_message_at": "2025-11-15T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 1,
+      "created_at": "2025-11-15T18:00:00Z",
+      "updated_at": "2025-11-15T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_015",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_015",
+      "patient_info": {
+        "name": "Tạ Gia Khoa",
+        "phone": "0905555555",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_015",
+      "staff_info": {
+        "name": "Tạ Gia Khoa",
+        "staff_type": "nurse",
+        "avatar": null
+      },
+      "status": "active",
+      "last_message": "Có gói khám tổng quát gia đình trong tháng 11 không ạ?",
+      "last_message_at": "2025-11-16T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-16T18:00:00Z",
+      "updated_at": "2025-11-16T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_016",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_016",
+      "patient_info": {
+        "name": "Mai Minh Vy",
+        "phone": "0902468024",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_016",
+      "staff_info": {
+        "name": "Mai Minh Vy",
+        "staff_type": "receptionist",
+        "avatar": null
+      },
+      "status": "closed",
+      "last_message": "Em cần cấp lại toa thuốc tháng 10 thì làm sao ạ?",
+      "last_message_at": "2025-11-17T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-17T18:00:00Z",
+      "updated_at": "2025-11-17T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_017",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_017",
+      "patient_info": {
+        "name": "Ngô Thanh Nhân",
+        "phone": "0909371593",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_017",
+      "staff_info": {
+        "name": "Ngô Thanh Nhân",
+        "staff_type": "lab_technician",
+        "avatar": null
+      },
+      "status": "waiting",
+      "last_message": "Bố em bị tăng huyết áp, cần đặt lịch đo huyết áp hàng tuần",
+      "last_message_at": "2025-11-18T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 1,
+      "created_at": "2025-11-18T18:00:00Z",
+      "updated_at": "2025-11-18T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_018",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_018",
+      "patient_info": {
+        "name": "Châu Thùy Quỳnh",
+        "phone": "0906284062",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_018",
+      "staff_info": {
+        "name": "Châu Thùy Quỳnh",
+        "staff_type": "care_coordinator",
+        "avatar": null
+      },
+      "status": "active",
+      "last_message": "Sau khi chụp MRI em thấy hơi chóng mặt, có bình thường không?",
+      "last_message_at": "2025-11-19T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-19T18:00:00Z",
+      "updated_at": "2025-11-19T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_019",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_019",
+      "patient_info": {
+        "name": "Tô Phương Long",
+        "phone": "0903197531",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_019",
+      "staff_info": {
+        "name": "Tô Phương Long",
+        "staff_type": "pharmacist",
+        "avatar": null
+      },
+      "status": "closed",
+      "last_message": "Bệnh viện có hỗ trợ tư vấn dinh dưỡng online không ạ?",
+      "last_message_at": "2025-11-20T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 0,
+      "created_at": "2025-11-20T18:00:00Z",
+      "updated_at": "2025-11-20T19:05:00Z"
+    },
+    {
+      "_id": "consultation_2025_11_020",
+      "type": "consultation",
+      "patient_id": "patient_2025_11_020",
+      "patient_info": {
+        "name": "Nguyễn Văn Lan",
+        "phone": "0900000000",
+        "avatar": null
+      },
+      "staff_id": "staff_2025_11_020",
+      "staff_info": {
+        "name": "Nguyễn Văn Lan",
+        "staff_type": "nurse",
+        "avatar": null
+      },
+      "status": "waiting",
+      "last_message": "Em bị đau đầu mỗi tối, cần đặt lịch khám thế nào ạ?",
+      "last_message_at": "2025-11-21T19:00:00Z",
+      "unread_count_patient": 0,
+      "unread_count_staff": 1,
+      "created_at": "2025-11-21T18:00:00Z",
+      "updated_at": "2025-11-21T19:05:00Z"
+    },
+    {
+      "_id": "message_2025_11_001_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_001",
+      "sender_id": "patient_2025_11_001",
+      "sender_type": "patient",
+      "sender_name": "Trần Thị Huy",
+      "message": "Thuốc uống sau ăn mà em lại uống trước ăn, có sao không anh/chị?",
+      "is_read": false,
+      "created_at": "2025-11-02T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_001_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_001",
+      "sender_id": "staff_2025_11_001",
+      "sender_type": "staff",
+      "sender_name": "Trần Thị Huy",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-02T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_002_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_002",
+      "sender_id": "patient_2025_11_002",
+      "sender_type": "patient",
+      "sender_name": "Lê Hữu Hà",
+      "message": "Em muốn đổi lịch hẹn sang buổi sáng được không ạ?",
+      "is_read": false,
+      "created_at": "2025-11-03T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_002_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_002",
+      "sender_id": "staff_2025_11_002",
+      "sender_type": "staff",
+      "sender_name": "Lê Hữu Hà",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-03T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_003_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_003",
+      "sender_id": "patient_2025_11_003",
+      "sender_type": "patient",
+      "sender_name": "Phạm Quang Thắng",
+      "message": "Bé nhà em ho nhiều về đêm, cần mua thuốc gì hỗ trợ?",
+      "is_read": false,
+      "created_at": "2025-11-04T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_003_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_003",
+      "sender_id": "staff_2025_11_003",
+      "sender_type": "staff",
+      "sender_name": "Phạm Quang Thắng",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-04T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_004_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_004",
+      "sender_id": "patient_2025_11_004",
+      "sender_type": "patient",
+      "sender_name": "Hoàng Ngọc Trang",
+      "message": "Em vừa nhận kết quả xét nghiệm, nhờ anh/chị giải thích giúp",
+      "is_read": false,
+      "created_at": "2025-11-05T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_004_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_004",
+      "sender_id": "staff_2025_11_004",
+      "sender_type": "staff",
+      "sender_name": "Hoàng Ngọc Trang",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-05T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_005_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_005",
+      "sender_id": "patient_2025_11_005",
+      "sender_type": "patient",
+      "sender_name": "Đặng Gia Khoa",
+      "message": "Có gói khám tổng quát gia đình trong tháng 11 không ạ?",
+      "is_read": false,
+      "created_at": "2025-11-06T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_005_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_005",
+      "sender_id": "staff_2025_11_005",
+      "sender_type": "staff",
+      "sender_name": "Đặng Gia Khoa",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-06T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_006_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_006",
+      "sender_id": "patient_2025_11_006",
+      "sender_type": "patient",
+      "sender_name": "Đỗ Minh Vy",
+      "message": "Em cần cấp lại toa thuốc tháng 10 thì làm sao ạ?",
+      "is_read": false,
+      "created_at": "2025-11-07T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_006_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_006",
+      "sender_id": "staff_2025_11_006",
+      "sender_type": "staff",
+      "sender_name": "Đỗ Minh Vy",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-07T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_007_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_007",
+      "sender_id": "patient_2025_11_007",
+      "sender_type": "patient",
+      "sender_name": "Vũ Thanh Nhân",
+      "message": "Bố em bị tăng huyết áp, cần đặt lịch đo huyết áp hàng tuần",
+      "is_read": false,
+      "created_at": "2025-11-08T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_007_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_007",
+      "sender_id": "staff_2025_11_007",
+      "sender_type": "staff",
+      "sender_name": "Vũ Thanh Nhân",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-08T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_008_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_008",
+      "sender_id": "patient_2025_11_008",
+      "sender_type": "patient",
+      "sender_name": "Bùi Thùy Quỳnh",
+      "message": "Sau khi chụp MRI em thấy hơi chóng mặt, có bình thường không?",
+      "is_read": false,
+      "created_at": "2025-11-09T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_008_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_008",
+      "sender_id": "staff_2025_11_008",
+      "sender_type": "staff",
+      "sender_name": "Bùi Thùy Quỳnh",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-09T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_009_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_009",
+      "sender_id": "patient_2025_11_009",
+      "sender_type": "patient",
+      "sender_name": "Đinh Phương Long",
+      "message": "Bệnh viện có hỗ trợ tư vấn dinh dưỡng online không ạ?",
+      "is_read": false,
+      "created_at": "2025-11-10T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_009_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_009",
+      "sender_id": "staff_2025_11_009",
+      "sender_type": "staff",
+      "sender_name": "Đinh Phương Long",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-10T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_010_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_010",
+      "sender_id": "patient_2025_11_010",
+      "sender_type": "patient",
+      "sender_name": "Phan Văn Lan",
+      "message": "Em bị đau đầu mỗi tối, cần đặt lịch khám thế nào ạ?",
+      "is_read": false,
+      "created_at": "2025-11-11T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_010_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_010",
+      "sender_id": "staff_2025_11_010",
+      "sender_type": "staff",
+      "sender_name": "Phan Văn Lan",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-11T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_011_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_011",
+      "sender_id": "patient_2025_11_011",
+      "sender_type": "patient",
+      "sender_name": "Huỳnh Thị Huy",
+      "message": "Thuốc uống sau ăn mà em lại uống trước ăn, có sao không anh/chị?",
+      "is_read": false,
+      "created_at": "2025-11-12T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_011_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_011",
+      "sender_id": "staff_2025_11_011",
+      "sender_type": "staff",
+      "sender_name": "Huỳnh Thị Huy",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-12T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_012_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_012",
+      "sender_id": "patient_2025_11_012",
+      "sender_type": "patient",
+      "sender_name": "Võ Hữu Hà",
+      "message": "Em muốn đổi lịch hẹn sang buổi sáng được không ạ?",
+      "is_read": false,
+      "created_at": "2025-11-13T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_012_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_012",
+      "sender_id": "staff_2025_11_012",
+      "sender_type": "staff",
+      "sender_name": "Võ Hữu Hà",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-13T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_013_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_013",
+      "sender_id": "patient_2025_11_013",
+      "sender_type": "patient",
+      "sender_name": "Dương Quang Thắng",
+      "message": "Bé nhà em ho nhiều về đêm, cần mua thuốc gì hỗ trợ?",
+      "is_read": false,
+      "created_at": "2025-11-14T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_013_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_013",
+      "sender_id": "staff_2025_11_013",
+      "sender_type": "staff",
+      "sender_name": "Dương Quang Thắng",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-14T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_014_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_014",
+      "sender_id": "patient_2025_11_014",
+      "sender_type": "patient",
+      "sender_name": "Cao Ngọc Trang",
+      "message": "Em vừa nhận kết quả xét nghiệm, nhờ anh/chị giải thích giúp",
+      "is_read": false,
+      "created_at": "2025-11-15T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_014_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_014",
+      "sender_id": "staff_2025_11_014",
+      "sender_type": "staff",
+      "sender_name": "Cao Ngọc Trang",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-15T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_015_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_015",
+      "sender_id": "patient_2025_11_015",
+      "sender_type": "patient",
+      "sender_name": "Tạ Gia Khoa",
+      "message": "Có gói khám tổng quát gia đình trong tháng 11 không ạ?",
+      "is_read": false,
+      "created_at": "2025-11-16T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_015_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_015",
+      "sender_id": "staff_2025_11_015",
+      "sender_type": "staff",
+      "sender_name": "Tạ Gia Khoa",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-16T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_016_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_016",
+      "sender_id": "patient_2025_11_016",
+      "sender_type": "patient",
+      "sender_name": "Mai Minh Vy",
+      "message": "Em cần cấp lại toa thuốc tháng 10 thì làm sao ạ?",
+      "is_read": false,
+      "created_at": "2025-11-17T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_016_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_016",
+      "sender_id": "staff_2025_11_016",
+      "sender_type": "staff",
+      "sender_name": "Mai Minh Vy",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-17T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_017_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_017",
+      "sender_id": "patient_2025_11_017",
+      "sender_type": "patient",
+      "sender_name": "Ngô Thanh Nhân",
+      "message": "Bố em bị tăng huyết áp, cần đặt lịch đo huyết áp hàng tuần",
+      "is_read": false,
+      "created_at": "2025-11-18T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_017_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_017",
+      "sender_id": "staff_2025_11_017",
+      "sender_type": "staff",
+      "sender_name": "Ngô Thanh Nhân",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-18T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_018_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_018",
+      "sender_id": "patient_2025_11_018",
+      "sender_type": "patient",
+      "sender_name": "Châu Thùy Quỳnh",
+      "message": "Sau khi chụp MRI em thấy hơi chóng mặt, có bình thường không?",
+      "is_read": false,
+      "created_at": "2025-11-19T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_018_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_018",
+      "sender_id": "staff_2025_11_018",
+      "sender_type": "staff",
+      "sender_name": "Châu Thùy Quỳnh",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-19T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_019_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_019",
+      "sender_id": "patient_2025_11_019",
+      "sender_type": "patient",
+      "sender_name": "Tô Phương Long",
+      "message": "Bệnh viện có hỗ trợ tư vấn dinh dưỡng online không ạ?",
+      "is_read": false,
+      "created_at": "2025-11-20T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_019_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_019",
+      "sender_id": "staff_2025_11_019",
+      "sender_type": "staff",
+      "sender_name": "Tô Phương Long",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-20T18:30:00Z"
+    },
+    {
+      "_id": "message_2025_11_020_a",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_020",
+      "sender_id": "patient_2025_11_020",
+      "sender_type": "patient",
+      "sender_name": "Nguyễn Văn Lan",
+      "message": "Em bị đau đầu mỗi tối, cần đặt lịch khám thế nào ạ?",
+      "is_read": false,
+      "created_at": "2025-11-21T18:00:00Z"
+    },
+    {
+      "_id": "message_2025_11_020_b",
+      "type": "message",
+      "consultation_id": "consultation_2025_11_020",
+      "sender_id": "staff_2025_11_020",
+      "sender_type": "staff",
+      "sender_name": "Nguyễn Văn Lan",
+      "message": "Bộ phận CSKH đã nhận được thông tin và sẽ hỗ trợ ngay.",
+      "is_read": true,
+      "created_at": "2025-11-21T18:30:00Z"
     }
   ]
 }

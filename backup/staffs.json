@@ -85,6 +85,486 @@
       "status": "active",
       "created_at": "2025-08-19T10:00:00Z",
       "updated_at": "2025-08-19T10:00:00Z"
+    },
+    {
+      "_id": "staff_2025_11_001",
+      "type": "staff",
+      "full_name": "Trần Thị Huy",
+      "staff_type": "receptionist",
+      "gender": "male",
+      "phone": "0897913579",
+      "email": "staff001@demo-clinic.com",
+      "department": "Inpatient",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-02T07:00:00Z",
+      "updated_at": "2025-11-02T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_002",
+      "type": "staff",
+      "full_name": "Lê Hữu Hà",
+      "staff_type": "lab_technician",
+      "gender": "female",
+      "phone": "0894826048",
+      "email": "staff002@demo-clinic.com",
+      "department": "Diagnostics",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-03T07:00:00Z",
+      "updated_at": "2025-11-03T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_003",
+      "type": "staff",
+      "full_name": "Phạm Quang Thắng",
+      "staff_type": "care_coordinator",
+      "gender": "male",
+      "phone": "0891739517",
+      "email": "staff003@demo-clinic.com",
+      "department": "Customer Care",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-04T07:00:00Z",
+      "updated_at": "2025-11-04T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_004",
+      "type": "staff",
+      "full_name": "Hoàng Ngọc Trang",
+      "staff_type": "pharmacist",
+      "gender": "female",
+      "phone": "0898642086",
+      "email": "staff004@demo-clinic.com",
+      "department": "Pharmacy",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-05T07:00:00Z",
+      "updated_at": "2025-11-05T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_005",
+      "type": "staff",
+      "full_name": "Đặng Gia Khoa",
+      "staff_type": "nurse",
+      "gender": "male",
+      "phone": "0895555555",
+      "email": "staff005@demo-clinic.com",
+      "department": "Outpatient",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-06T07:00:00Z",
+      "updated_at": "2025-11-06T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_006",
+      "type": "staff",
+      "full_name": "Đỗ Minh Vy",
+      "staff_type": "receptionist",
+      "gender": "female",
+      "phone": "0892468024",
+      "email": "staff006@demo-clinic.com",
+      "department": "Inpatient",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-07T07:00:00Z",
+      "updated_at": "2025-11-07T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_007",
+      "type": "staff",
+      "full_name": "Vũ Thanh Nhân",
+      "staff_type": "lab_technician",
+      "gender": "male",
+      "phone": "0899371593",
+      "email": "staff007@demo-clinic.com",
+      "department": "Diagnostics",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-08T07:00:00Z",
+      "updated_at": "2025-11-08T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_008",
+      "type": "staff",
+      "full_name": "Bùi Thùy Quỳnh",
+      "staff_type": "care_coordinator",
+      "gender": "female",
+      "phone": "0896284062",
+      "email": "staff008@demo-clinic.com",
+      "department": "Customer Care",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-09T07:00:00Z",
+      "updated_at": "2025-11-09T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_009",
+      "type": "staff",
+      "full_name": "Đinh Phương Long",
+      "staff_type": "pharmacist",
+      "gender": "male",
+      "phone": "0893197531",
+      "email": "staff009@demo-clinic.com",
+      "department": "Pharmacy",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-10T07:00:00Z",
+      "updated_at": "2025-11-10T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_010",
+      "type": "staff",
+      "full_name": "Phan Văn Lan",
+      "staff_type": "nurse",
+      "gender": "female",
+      "phone": "0890000000",
+      "email": "staff010@demo-clinic.com",
+      "department": "Outpatient",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-11T07:00:00Z",
+      "updated_at": "2025-11-11T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_011",
+      "type": "staff",
+      "full_name": "Huỳnh Thị Huy",
+      "staff_type": "receptionist",
+      "gender": "male",
+      "phone": "0897913579",
+      "email": "staff011@demo-clinic.com",
+      "department": "Inpatient",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-12T07:00:00Z",
+      "updated_at": "2025-11-12T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_012",
+      "type": "staff",
+      "full_name": "Võ Hữu Hà",
+      "staff_type": "lab_technician",
+      "gender": "female",
+      "phone": "0894826048",
+      "email": "staff012@demo-clinic.com",
+      "department": "Diagnostics",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-13T07:00:00Z",
+      "updated_at": "2025-11-13T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_013",
+      "type": "staff",
+      "full_name": "Dương Quang Thắng",
+      "staff_type": "care_coordinator",
+      "gender": "male",
+      "phone": "0891739517",
+      "email": "staff013@demo-clinic.com",
+      "department": "Customer Care",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-14T07:00:00Z",
+      "updated_at": "2025-11-14T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_014",
+      "type": "staff",
+      "full_name": "Cao Ngọc Trang",
+      "staff_type": "pharmacist",
+      "gender": "female",
+      "phone": "0898642086",
+      "email": "staff014@demo-clinic.com",
+      "department": "Pharmacy",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-15T07:00:00Z",
+      "updated_at": "2025-11-15T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_015",
+      "type": "staff",
+      "full_name": "Tạ Gia Khoa",
+      "staff_type": "nurse",
+      "gender": "male",
+      "phone": "0895555555",
+      "email": "staff015@demo-clinic.com",
+      "department": "Outpatient",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-16T07:00:00Z",
+      "updated_at": "2025-11-16T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_016",
+      "type": "staff",
+      "full_name": "Mai Minh Vy",
+      "staff_type": "receptionist",
+      "gender": "female",
+      "phone": "0892468024",
+      "email": "staff016@demo-clinic.com",
+      "department": "Inpatient",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-17T07:00:00Z",
+      "updated_at": "2025-11-17T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_017",
+      "type": "staff",
+      "full_name": "Ngô Thanh Nhân",
+      "staff_type": "lab_technician",
+      "gender": "male",
+      "phone": "0899371593",
+      "email": "staff017@demo-clinic.com",
+      "department": "Diagnostics",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-18T07:00:00Z",
+      "updated_at": "2025-11-18T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_018",
+      "type": "staff",
+      "full_name": "Châu Thùy Quỳnh",
+      "staff_type": "care_coordinator",
+      "gender": "female",
+      "phone": "0896284062",
+      "email": "staff018@demo-clinic.com",
+      "department": "Customer Care",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-19T07:00:00Z",
+      "updated_at": "2025-11-19T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_019",
+      "type": "staff",
+      "full_name": "Tô Phương Long",
+      "staff_type": "pharmacist",
+      "gender": "male",
+      "phone": "0893197531",
+      "email": "staff019@demo-clinic.com",
+      "department": "Pharmacy",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-20T07:00:00Z",
+      "updated_at": "2025-11-20T07:30:00Z"
+    },
+    {
+      "_id": "staff_2025_11_020",
+      "type": "staff",
+      "full_name": "Nguyễn Văn Lan",
+      "staff_type": "nurse",
+      "gender": "female",
+      "phone": "0890000000",
+      "email": "staff020@demo-clinic.com",
+      "department": "Outpatient",
+      "shift": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri"
+        ],
+        "start": "07:30",
+        "end": "16:30"
+      },
+      "status": "active",
+      "created_at": "2025-11-21T07:00:00Z",
+      "updated_at": "2025-11-21T07:30:00Z"
     }
   ]
 }

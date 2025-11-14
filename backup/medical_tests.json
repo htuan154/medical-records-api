@@ -1,5 +1,5 @@
 {
-  "total_rows": 2,
+  "total_rows": 22,
   "offset": 0,
   "rows": [
     {
@@ -29,24 +29,24 @@
       }
     },
     {
-      "id": "test_2024_001",
-      "key": "test_2024_001",
+      "id": "test_2025_001",
+      "key": "test_2025_001",
       "value": {
         "rev": "1-2ff3f35a7631d6890c5ffa6a6781d9a1"
       },
       "doc": {
-        "_id": "test_2024_001",
+        "_id": "test_2025_001",
         "_rev": "1-2ff3f35a7631d6890c5ffa6a6781d9a1",
         "type": "medical_test",
-        "patient_id": "patient_2024_001",
-        "doctor_id": "doctor_2024_001",
-        "medical_record_id": "record_2024_001",
+        "patient_id": "patient_2025_001",
+        "doctor_id": "doctor_2025_001",
+        "medical_record_id": "record_2025_001",
         "test_info": {
           "test_type": "blood_work",
           "test_name": "Tổng phân tích máu",
-          "ordered_date": "2024-01-20T10:45:00Z",
-          "sample_collected_date": "2024-01-21T08:00:00Z",
-          "result_date": "2024-01-21T16:00:00Z",
+          "ordered_date": "2025-01-20T10:45:00Z",
+          "sample_collected_date": "2025-01-21T08:00:00Z",
+          "result_date": "2025-01-21T16:00:00Z",
           "unit_price": 150000
         },
         "results": {
@@ -78,8 +78,828 @@
         "interpretation": "Các chỉ số xét nghiệm trong giới hạn bình thường",
         "status": "completed",
         "lab_technician": "tech_001",
-        "created_at": "2024-01-20T10:45:00Z",
-        "updated_at": "2024-01-21T16:30:00Z"
+        "created_at": "2025-01-20T10:45:00Z",
+        "updated_at": "2025-01-21T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_001",
+      "key": "test_2025_11_001",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_001",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "medical_record_id": "record_2025_11_001",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Sinh hóa máu",
+          "ordered_date": "2025-11-02T10:30:00Z",
+          "sample_collected_date": "2025-11-02T11:00:00Z",
+          "result_date": "2025-11-03T16:00:00Z",
+          "unit_price": 170000
+        },
+        "results": {
+          "primary": {
+            "value": 1.2,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 81,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_001",
+        "created_at": "2025-11-02T10:30:00Z",
+        "updated_at": "2025-11-03T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_002",
+      "key": "test_2025_11_002",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_002",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_002",
+        "doctor_id": "doctor_2025_11_002",
+        "medical_record_id": "record_2025_11_002",
+        "test_info": {
+          "test_type": "imaging",
+          "test_name": "X-quang ngực thẳng",
+          "ordered_date": "2025-11-03T11:30:00Z",
+          "sample_collected_date": "2025-11-03T11:00:00Z",
+          "result_date": "2025-11-04T16:00:00Z",
+          "unit_price": 190000
+        },
+        "results": {
+          "primary": {
+            "value": 1.4,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 82,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_002",
+        "created_at": "2025-11-03T11:30:00Z",
+        "updated_at": "2025-11-04T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_003",
+      "key": "test_2025_11_003",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_003",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_003",
+        "doctor_id": "doctor_2025_11_003",
+        "medical_record_id": "record_2025_11_003",
+        "test_info": {
+          "test_type": "cardiology",
+          "test_name": "Điện tâm đồ 12 chuyển đạo",
+          "ordered_date": "2025-11-04T12:30:00Z",
+          "sample_collected_date": "2025-11-04T11:00:00Z",
+          "result_date": "2025-11-05T16:00:00Z",
+          "unit_price": 210000
+        },
+        "results": {
+          "primary": {
+            "value": 1.6,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 83,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_003",
+        "created_at": "2025-11-04T12:30:00Z",
+        "updated_at": "2025-11-05T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_004",
+      "key": "test_2025_11_004",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_004",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_004",
+        "doctor_id": "doctor_2025_11_004",
+        "medical_record_id": "record_2025_11_004",
+        "test_info": {
+          "test_type": "endocrine",
+          "test_name": "Định lượng HbA1c",
+          "ordered_date": "2025-11-05T09:30:00Z",
+          "sample_collected_date": "2025-11-05T11:00:00Z",
+          "result_date": "2025-11-06T16:00:00Z",
+          "unit_price": 230000
+        },
+        "results": {
+          "primary": {
+            "value": 1.8,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 84,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_004",
+        "created_at": "2025-11-05T09:30:00Z",
+        "updated_at": "2025-11-06T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_005",
+      "key": "test_2025_11_005",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_005",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_005",
+        "doctor_id": "doctor_2025_11_005",
+        "medical_record_id": "record_2025_11_005",
+        "test_info": {
+          "test_type": "renal",
+          "test_name": "Chức năng thận",
+          "ordered_date": "2025-11-06T10:30:00Z",
+          "sample_collected_date": "2025-11-06T11:00:00Z",
+          "result_date": "2025-11-07T16:00:00Z",
+          "unit_price": 150000
+        },
+        "results": {
+          "primary": {
+            "value": 1.0,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 85,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_005",
+        "created_at": "2025-11-06T10:30:00Z",
+        "updated_at": "2025-11-07T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_006",
+      "key": "test_2025_11_006",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_006",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_006",
+        "doctor_id": "doctor_2025_11_006",
+        "medical_record_id": "record_2025_11_006",
+        "test_info": {
+          "test_type": "lipid",
+          "test_name": "Hồ sơ mỡ máu",
+          "ordered_date": "2025-11-07T11:30:00Z",
+          "sample_collected_date": "2025-11-07T11:00:00Z",
+          "result_date": "2025-11-08T16:00:00Z",
+          "unit_price": 170000
+        },
+        "results": {
+          "primary": {
+            "value": 1.2,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 86,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_006",
+        "created_at": "2025-11-07T11:30:00Z",
+        "updated_at": "2025-11-08T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_007",
+      "key": "test_2025_11_007",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_007",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_007",
+        "doctor_id": "doctor_2025_11_007",
+        "medical_record_id": "record_2025_11_007",
+        "test_info": {
+          "test_type": "inflammatory",
+          "test_name": "CRP định lượng",
+          "ordered_date": "2025-11-08T12:30:00Z",
+          "sample_collected_date": "2025-11-08T11:00:00Z",
+          "result_date": "2025-11-09T16:00:00Z",
+          "unit_price": 190000
+        },
+        "results": {
+          "primary": {
+            "value": 1.4,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 87,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_007",
+        "created_at": "2025-11-08T12:30:00Z",
+        "updated_at": "2025-11-09T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_008",
+      "key": "test_2025_11_008",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_008",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_008",
+        "doctor_id": "doctor_2025_11_008",
+        "medical_record_id": "record_2025_11_008",
+        "test_info": {
+          "test_type": "coagulation",
+          "test_name": "Đông máu toàn bộ",
+          "ordered_date": "2025-11-09T09:30:00Z",
+          "sample_collected_date": "2025-11-09T11:00:00Z",
+          "result_date": "2025-11-10T16:00:00Z",
+          "unit_price": 210000
+        },
+        "results": {
+          "primary": {
+            "value": 1.6,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 88,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_008",
+        "created_at": "2025-11-09T09:30:00Z",
+        "updated_at": "2025-11-10T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_009",
+      "key": "test_2025_11_009",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_009",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_009",
+        "doctor_id": "doctor_2025_11_009",
+        "medical_record_id": "record_2025_11_009",
+        "test_info": {
+          "test_type": "thyroid",
+          "test_name": "TSH & FT4",
+          "ordered_date": "2025-11-10T10:30:00Z",
+          "sample_collected_date": "2025-11-10T11:00:00Z",
+          "result_date": "2025-11-11T16:00:00Z",
+          "unit_price": 230000
+        },
+        "results": {
+          "primary": {
+            "value": 1.8,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 89,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_009",
+        "created_at": "2025-11-10T10:30:00Z",
+        "updated_at": "2025-11-11T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_010",
+      "key": "test_2025_11_010",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_010",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_010",
+        "doctor_id": "doctor_2025_11_010",
+        "medical_record_id": "record_2025_11_010",
+        "test_info": {
+          "test_type": "blood_work",
+          "test_name": "Tổng phân tích máu",
+          "ordered_date": "2025-11-11T11:30:00Z",
+          "sample_collected_date": "2025-11-11T11:00:00Z",
+          "result_date": "2025-11-12T16:00:00Z",
+          "unit_price": 150000
+        },
+        "results": {
+          "primary": {
+            "value": 1.0,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 90,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_010",
+        "created_at": "2025-11-11T11:30:00Z",
+        "updated_at": "2025-11-12T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_011",
+      "key": "test_2025_11_011",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_011",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_011",
+        "doctor_id": "doctor_2025_11_011",
+        "medical_record_id": "record_2025_11_011",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Sinh hóa máu",
+          "ordered_date": "2025-11-12T12:30:00Z",
+          "sample_collected_date": "2025-11-12T11:00:00Z",
+          "result_date": "2025-11-13T16:00:00Z",
+          "unit_price": 170000
+        },
+        "results": {
+          "primary": {
+            "value": 1.2,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 91,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_011",
+        "created_at": "2025-11-12T12:30:00Z",
+        "updated_at": "2025-11-13T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_012",
+      "key": "test_2025_11_012",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_012",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_012",
+        "doctor_id": "doctor_2025_11_012",
+        "medical_record_id": "record_2025_11_012",
+        "test_info": {
+          "test_type": "imaging",
+          "test_name": "X-quang ngực thẳng",
+          "ordered_date": "2025-11-13T09:30:00Z",
+          "sample_collected_date": "2025-11-13T11:00:00Z",
+          "result_date": "2025-11-14T16:00:00Z",
+          "unit_price": 190000
+        },
+        "results": {
+          "primary": {
+            "value": 1.4,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 92,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_012",
+        "created_at": "2025-11-13T09:30:00Z",
+        "updated_at": "2025-11-14T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_013",
+      "key": "test_2025_11_013",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_013",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_013",
+        "doctor_id": "doctor_2025_11_013",
+        "medical_record_id": "record_2025_11_013",
+        "test_info": {
+          "test_type": "cardiology",
+          "test_name": "Điện tâm đồ 12 chuyển đạo",
+          "ordered_date": "2025-11-14T10:30:00Z",
+          "sample_collected_date": "2025-11-14T11:00:00Z",
+          "result_date": "2025-11-15T16:00:00Z",
+          "unit_price": 210000
+        },
+        "results": {
+          "primary": {
+            "value": 1.6,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 93,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_013",
+        "created_at": "2025-11-14T10:30:00Z",
+        "updated_at": "2025-11-15T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_014",
+      "key": "test_2025_11_014",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_014",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_014",
+        "doctor_id": "doctor_2025_11_014",
+        "medical_record_id": "record_2025_11_014",
+        "test_info": {
+          "test_type": "endocrine",
+          "test_name": "Định lượng HbA1c",
+          "ordered_date": "2025-11-15T11:30:00Z",
+          "sample_collected_date": "2025-11-15T11:00:00Z",
+          "result_date": "2025-11-16T16:00:00Z",
+          "unit_price": 230000
+        },
+        "results": {
+          "primary": {
+            "value": 1.8,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 94,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_014",
+        "created_at": "2025-11-15T11:30:00Z",
+        "updated_at": "2025-11-16T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_015",
+      "key": "test_2025_11_015",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_015",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_015",
+        "doctor_id": "doctor_2025_11_015",
+        "medical_record_id": "record_2025_11_015",
+        "test_info": {
+          "test_type": "renal",
+          "test_name": "Chức năng thận",
+          "ordered_date": "2025-11-16T12:30:00Z",
+          "sample_collected_date": "2025-11-16T11:00:00Z",
+          "result_date": "2025-11-17T16:00:00Z",
+          "unit_price": 150000
+        },
+        "results": {
+          "primary": {
+            "value": 1.0,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 95,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_015",
+        "created_at": "2025-11-16T12:30:00Z",
+        "updated_at": "2025-11-17T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_016",
+      "key": "test_2025_11_016",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_016",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_016",
+        "doctor_id": "doctor_2025_11_016",
+        "medical_record_id": "record_2025_11_016",
+        "test_info": {
+          "test_type": "lipid",
+          "test_name": "Hồ sơ mỡ máu",
+          "ordered_date": "2025-11-17T09:30:00Z",
+          "sample_collected_date": "2025-11-17T11:00:00Z",
+          "result_date": "2025-11-18T16:00:00Z",
+          "unit_price": 170000
+        },
+        "results": {
+          "primary": {
+            "value": 1.2,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 96,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_016",
+        "created_at": "2025-11-17T09:30:00Z",
+        "updated_at": "2025-11-18T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_017",
+      "key": "test_2025_11_017",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_017",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_017",
+        "doctor_id": "doctor_2025_11_017",
+        "medical_record_id": "record_2025_11_017",
+        "test_info": {
+          "test_type": "inflammatory",
+          "test_name": "CRP định lượng",
+          "ordered_date": "2025-11-18T10:30:00Z",
+          "sample_collected_date": "2025-11-18T11:00:00Z",
+          "result_date": "2025-11-19T16:00:00Z",
+          "unit_price": 190000
+        },
+        "results": {
+          "primary": {
+            "value": 1.4,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 97,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_017",
+        "created_at": "2025-11-18T10:30:00Z",
+        "updated_at": "2025-11-19T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_018",
+      "key": "test_2025_11_018",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_018",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_018",
+        "doctor_id": "doctor_2025_11_018",
+        "medical_record_id": "record_2025_11_018",
+        "test_info": {
+          "test_type": "coagulation",
+          "test_name": "Đông máu toàn bộ",
+          "ordered_date": "2025-11-19T11:30:00Z",
+          "sample_collected_date": "2025-11-19T11:00:00Z",
+          "result_date": "2025-11-20T16:00:00Z",
+          "unit_price": 210000
+        },
+        "results": {
+          "primary": {
+            "value": 1.6,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 98,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_018",
+        "created_at": "2025-11-19T11:30:00Z",
+        "updated_at": "2025-11-20T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_019",
+      "key": "test_2025_11_019",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_019",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_019",
+        "doctor_id": "doctor_2025_11_019",
+        "medical_record_id": "record_2025_11_019",
+        "test_info": {
+          "test_type": "thyroid",
+          "test_name": "TSH & FT4",
+          "ordered_date": "2025-11-20T12:30:00Z",
+          "sample_collected_date": "2025-11-20T11:00:00Z",
+          "result_date": "2025-11-21T16:00:00Z",
+          "unit_price": 230000
+        },
+        "results": {
+          "primary": {
+            "value": 1.8,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 99,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_019",
+        "created_at": "2025-11-20T12:30:00Z",
+        "updated_at": "2025-11-21T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_2025_11_020",
+      "key": "test_2025_11_020",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_2025_11_020",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_020",
+        "doctor_id": "doctor_2025_11_020",
+        "medical_record_id": "record_2025_11_020",
+        "test_info": {
+          "test_type": "blood_work",
+          "test_name": "Tổng phân tích máu",
+          "ordered_date": "2025-11-21T09:30:00Z",
+          "sample_collected_date": "2025-11-21T11:00:00Z",
+          "result_date": "2025-11-22T16:00:00Z",
+          "unit_price": 150000
+        },
+        "results": {
+          "primary": {
+            "value": 1.0,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          },
+          "secondary": {
+            "value": 100,
+            "unit": "mg/dL",
+            "reference_range": "70-110",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_020",
+        "created_at": "2025-11-21T09:30:00Z",
+        "updated_at": "2025-11-22T16:30:00Z"
       }
     }
   ]

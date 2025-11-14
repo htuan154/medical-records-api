@@ -174,6 +174,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/dashboard',          [ReportController::class, 'getDashboardStats']);
             Route::get('/patient-stats',      [ReportController::class, 'getPatientStats']);
             Route::get('/revenue-stats',      [ReportController::class, 'getRevenueStats']);
+            Route::get('/revenue-advanced',   [ReportController::class, 'getAdvancedRevenueStats']);
             Route::get('/appointment-stats',  [ReportController::class, 'getAppointmentStats']);
             Route::get('/medication-stats',   [ReportController::class, 'getMedicationStats']);
             Route::get('/disease-stats',      [ReportController::class, 'getDiseaseStats']);
