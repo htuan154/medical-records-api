@@ -1,147 +1,250 @@
 <template>
-  <section class="container py-4">
-    <!-- Header + Tools -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="h5 mb-0">Hoá đơn</h2>
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-secondary" @click="reload" :disabled="loading">Tải lại</button>
-        <button class="btn btn-primary" @click="openCreate" :disabled="loading">+ Thêm mới</button>
-      </div>
-    </div>
-
-    <div class="d-flex align-items-center mb-3" style="max-width: 520px">
-      <input v-model.trim="q" class="form-control me-2" placeholder="Tìm số hoá đơn / bệnh nhân…" @keyup.enter="search" />
-      <button class="btn btn-outline-secondary" @click="search">Tìm</button>
-    </div>
-
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
-
-    <!-- LIST: số HĐ / ngày / bệnh nhân / tổng / trạng thái -->
-    <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead>
-        <tr>
-          <th style="width:56px">#</th>
-          <th>Số hoá đơn</th>
-          <th>Ngày HĐ</th>
-          <th>Bệnh nhân</th>
-          <th>Tổng tiền</th>
-          <th>Trạng thái</th>
-          <th style="width:180px">Hành động</th>
-        </tr>
-        </thead>
-        <tbody v-for="(inv, idx) in items" :key="rowKey(inv, idx)">
-          <tr>
-            <td>{{ idx + 1 + (page - 1) * pageSize }}</td>
-            <td>{{ inv.invoice_number }}</td>
-            <td>{{ fmtDate(inv.invoice_date) }}</td>
-            <td>{{ displayName(patientsMap[inv.patient_id]) || inv.patient_id }}</td>
-            <td>{{ n(inv.total_amount) }}</td>
-            <td><span :class="['badge', statusClass(inv.payment_status)]">{{ inv.payment_status || '-' }}</span></td>
-            <td>
-              <div class="btn-group">
-                <button class="btn btn-sm btn-outline-secondary" @click="toggleRow(inv)" title="Xem chi tiết">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-success" @click="downloadInvoice(inv)" :disabled="loading" title="In hóa đơn">
-                  <i class="bi bi-printer"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-primary" @click="openEdit(inv)" title="Sửa">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" @click="remove(inv)" :disabled="loading" title="Xóa">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-
-          <!-- DETAILS xổ khi Xem -->
-          <tr v-if="isExpanded(inv)">
-            <td :colspan="7">
-              <div class="detail-wrap">
-                <div class="detail-title">Thông tin</div>
-                <div class="detail-grid">
-                  <div><b>Số HĐ:</b> {{ inv.invoice_number }}</div>
-                  <div><b>Ngày HĐ:</b> {{ fmtDate(inv.invoice_date) }}</div>
-                  <div><b>Hạn thanh toán:</b> {{ fmtDate(inv.due_date) }}</div>
-                  <div><b>Hồ sơ khám:</b> {{ inv.medical_record_id || '-' }}</div>
-                </div>
-
-                <div class="detail-title">Dịch vụ</div>
-                <div class="table-responsive">
-                  <table class="table table-sm">
-                    <thead><tr><th>Loại</th><th>Mô tả</th><th class="text-end">SL</th><th class="text-end">Đơn giá</th><th class="text-end">Thành tiền</th></tr></thead>
-                    <tbody>
-                      <tr v-for="(s, i) in inv.services" :key="i">
-                        <td>{{ s.service_type }}</td>
-                        <td>{{ s.description }}</td>
-                        <td class="text-end">{{ s.quantity }}</td>
-                        <td class="text-end">{{ n(s.unit_price) }}</td>
-                        <td class="text-end">{{ n(s.total_price) }}</td>
-                      </tr>
-                      <tr v-if="!inv.services || !inv.services.length">
-                        <td colspan="5" class="text-muted">-</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div class="detail-title">Thanh toán</div>
-                <div class="detail-grid">
-                  <div><b>Tạm tính:</b> {{ n(inv.subtotal) }}</div>
-                  <div><b>Thuế:</b> {{ inv.tax_rate ?? 0 }} → {{ n(inv.tax_amount) }}</div>
-                  <div><b>Tổng cộng:</b> {{ n(inv.total_amount) }}</div>
-                  <div><b>Bảo hiểm chi trả:</b> {{ inv.insurance_coverage ?? 0 }} → {{ n(inv.insurance_amount) }}</div>
-                  <div><b>BN phải trả:</b> {{ n(inv.patient_payment) }}</div>
-                  <div><b>PTTT:</b> {{ inv.payment_method || '-' }}</div>
-                  <div><b>Ngày thanh toán:</b> {{ fmtDateTime(inv.paid_date) }}</div>
-                </div>
-
-                <div class="text-muted small mt-2">
-                  Tạo: {{ fmtDateTime(inv.created_at) }} | Cập nhật: {{ fmtDateTime(inv.updated_at) }}
-                </div>
-            </div>
-          </td>
-        </tr>
-        </tbody>
-
-        <tbody v-if="!items.length">
-          <tr>
-            <td colspan="7" class="text-center text-muted">Không có dữ liệu</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- ✅ BETTER: Enhanced pagination với page selector -->
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          Trang {{ page }} / {{ Math.max(1, Math.ceil((total || 0) / pageSize)) }}
-          <span class="text-muted">({{ total || 0 }} tổng)</span>
-        </div>
-
-        <!-- Page selector -->
-        <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-outline-secondary" @click="prev" :disabled="page <= 1 || loading">‹ Trước</button>
-
-          <!-- Quick page jumps -->
-          <select v-model.number="page" class="form-select form-select-sm" style="width: auto;" @change="fetch">
-            <option v-for="p in Math.min(10, Math.ceil((total || 0) / pageSize))" :key="p" :value="p">{{ p }}</option>
-          </select>
-
-          <button class="btn btn-outline-secondary" @click="next" :disabled="!hasMore || loading">Sau ›</button>
+  <div class="invoices-management">
+    <!-- Header Section -->
+    <header class="header-section">
+      <div class="header-content">
+        <h1 class="page-title">
+          <i class="bi bi-receipt"></i>
+          Quản lý hóa đơn
+        </h1>
+        <div class="header-actions">
+          <button class="btn-action btn-action-home" @click="goHome">
+            <i class="bi bi-house-door"></i>
+          </button>
+          <button class="btn-action btn-action-reload" @click="reload" :disabled="loading">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+          <div class="stats-badge">
+            <i class="bi bi-receipt-cutoff"></i>
+            Tổng: <strong>{{ total }}</strong>
+          </div>
+          <div class="page-size-selector">
+            <select v-model.number="pageSize" @change="changePageSize">
+              <option :value="10">10 / trang</option>
+              <option :value="25">25 / trang</option>
+              <option :value="50">50 / trang</option>
+              <option :value="100">100 / trang</option>
+            </select>
+          </div>
+          <button class="btn-action btn-primary" @click="openCreate" :disabled="loading">
+            <i class="bi bi-plus-lg"></i>
+            Thêm mới
+          </button>
         </div>
       </div>
-    </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="search-section">
+      <div class="search-container">
+        <div class="search-input-group">
+          <i class="bi bi-search search-icon"></i>
+          <input
+            v-model.trim="q"
+            class="search-input"
+            placeholder="Tìm số hóa đơn, bệnh nhân..."
+            @keyup.enter="search"
+          />
+        </div>
+        <button class="search-btn" @click="search" :disabled="loading">
+          <i class="bi bi-search"></i>
+          Tìm kiếm
+        </button>
+      </div>
+    </section>
+
+    <!-- Content Section -->
+    <section class="content-section">
+      <div v-if="error" class="alert-error">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {{ error }}
+      </div>
+
+      <div v-if="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+
+      <div v-else class="table-container">
+        <table class="invoices-table">
+          <thead>
+            <tr>
+              <th class="col-number">#</th>
+              <th class="col-invoice">Số hóa đơn</th>
+              <th class="col-date">Ngày HĐ</th>
+              <th class="col-patient">Bệnh nhân</th>
+              <th class="col-amount">Tổng tiền</th>
+              <th class="col-status">Trạng thái</th>
+              <th class="col-actions">Hành động</th>
+            </tr>
+          </thead>
+          <tbody v-for="(inv, idx) in items" :key="rowKey(inv, idx)">
+            <tr class="invoice-row" :class="{ expanded: isExpanded(inv) }">
+              <td class="cell-number">
+                <span class="row-number">{{ idx + 1 + (page - 1) * pageSize }}</span>
+              </td>
+              <td class="cell-invoice">
+                <strong>{{ inv.invoice_number }}</strong>
+              </td>
+              <td class="cell-date">
+                <div class="date-info">
+                  <i class="bi bi-calendar-event"></i>
+                  {{ fmtDate(inv.invoice_date) }}
+                </div>
+              </td>
+              <td class="cell-patient">
+                <span class="patient-name">{{ displayName(patientsMap[inv.patient_id]) || inv.patient_id }}</span>
+              </td>
+              <td class="cell-amount">
+                <span class="amount-badge">{{ n(inv.total_amount) }} VNĐ</span>
+              </td>
+              <td class="cell-status">
+                <span :class="['status-badge', paymentStatusClass(inv.payment_status)]">
+                  <i :class="paymentStatusIcon(inv.payment_status)"></i>
+                  {{ paymentStatusLabel(inv.payment_status) }}
+                </span>
+              </td>
+              <td class="cell-actions">
+                <div class="action-buttons">
+                  <button class="action-btn view-btn" @click="toggleRow(inv)" :title="isExpanded(inv) ? 'Thu gọn' : 'Xem chi tiết'">
+                    <i :class="isExpanded(inv) ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                  </button>
+                  <button class="action-btn print-btn" @click="downloadInvoice(inv)" :disabled="loading" title="In hóa đơn">
+                    <i class="bi bi-printer"></i>
+                  </button>
+                  <button class="action-btn edit-btn" @click="openEdit(inv)" title="Chỉnh sửa">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="action-btn delete-btn" @click="remove(inv)" :disabled="loading" title="Xóa">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Detail Row -->
+            <tr v-if="isExpanded(inv)" class="detail-row">
+              <td colspan="7">
+                <div class="detail-wrap">
+                  <div class="detail-title">Thông tin hóa đơn</div>
+                  <div class="detail-grid">
+                    <div><b>Số HĐ:</b> {{ inv.invoice_number }}</div>
+                    <div><b>Ngày HĐ:</b> {{ fmtDate(inv.invoice_date) }}</div>
+                    <div><b>Hạn thanh toán:</b> {{ fmtDate(inv.due_date) }}</div>
+                    <div><b>Hồ sơ khám:</b> {{ inv.medical_record_id || '-' }}</div>
+                  </div>
+
+                  <div class="detail-title">Dịch vụ</div>
+                  <div class="services-table-wrapper">
+                    <table class="services-table">
+                      <thead>
+                        <tr>
+                          <th>Loại</th>
+                          <th>Mô tả</th>
+                          <th class="text-end">SL</th>
+                          <th class="text-end">Đơn giá</th>
+                          <th class="text-end">Thành tiền</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(s, i) in inv.services" :key="i">
+                          <td><span class="service-type-badge">{{ s.service_type }}</span></td>
+                          <td>{{ s.description }}</td>
+                          <td class="text-end">{{ s.quantity }}</td>
+                          <td class="text-end">{{ n(s.unit_price) }} VNĐ</td>
+                          <td class="text-end"><strong>{{ n(s.total_price) }} VNĐ</strong></td>
+                        </tr>
+                        <tr v-if="!inv.services || !inv.services.length">
+                          <td colspan="5" class="text-muted">Chưa có dịch vụ</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="detail-title">Thanh toán</div>
+                  <div class="detail-grid">
+                    <div><b>Tạm tính:</b> {{ n(inv.subtotal) }} VNĐ</div>
+                    <div><b>Thuế:</b> {{ inv.tax_rate ?? 0 }}% → {{ n(inv.tax_amount) }} VNĐ</div>
+                    <div><b>Tổng cộng:</b> <strong>{{ n(inv.total_amount) }} VNĐ</strong></div>
+                    <div><b>Bảo hiểm chi trả:</b> {{ inv.insurance_coverage ?? 0 }}% → {{ n(inv.insurance_amount) }} VNĐ</div>
+                    <div><b>BN phải trả:</b> <strong>{{ n(inv.patient_payment) }} VNĐ</strong></div>
+                    <div><b>Phương thức TT:</b> {{ inv.payment_method || '-' }}</div>
+                    <div><b>Ngày thanh toán:</b> {{ fmtDateTime(inv.paid_date) }}</div>
+                  </div>
+
+                  <div class="detail-meta">
+                    <span><i class="bi bi-clock-history"></i> Tạo: {{ fmtDateTime(inv.created_at) }}</span>
+                    <span><i class="bi bi-pencil-square"></i> Cập nhật: {{ fmtDateTime(inv.updated_at) }}</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+
+          <tbody v-if="!items.length">
+            <tr>
+              <td colspan="7" class="text-center text-muted">
+                Không có dữ liệu
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-section">
+        <div class="pagination-info-row">
+          <i class="bi bi-info-circle"></i>
+          Hiển thị {{ items.length > 0 ? (page - 1) * pageSize + 1 : 0 }} - {{ Math.min(page * pageSize, total) }} trong tổng số <strong>{{ total }}</strong> bản ghi
+        </div>
+        <div class="pagination-controls-center">
+          <button class="pagination-btn" @click="goToPage(1)" :disabled="page <= 1 || loading" title="Trang đầu">
+            <i class="bi bi-chevron-double-left"></i>
+          </button>
+          <button class="pagination-btn" @click="prev" :disabled="page <= 1 || loading" title="Trang trước">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <div class="page-numbers">
+            <button
+              v-for="p in visiblePages"
+              :key="p"
+              :class="['page-number-btn', { active: p === page, ellipsis: p === '...' }]"
+              @click="goToPage(p)"
+              :disabled="p === '...'"
+            >
+              {{ p }}
+            </button>
+          </div>
+          <button class="pagination-btn" @click="next" :disabled="!hasMore || loading" title="Trang sau">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+          <button class="pagination-btn" @click="goToPage(Math.ceil(total / pageSize))" :disabled="!hasMore || loading" title="Trang cuối">
+            <i class="bi bi-chevron-double-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
 
     <!-- MODAL: form đầy đủ + combobox -->
     <div v-if="showModal" class="modal-backdrop" @mousedown.self="close">
       <div class="modal-card">
-        <h3 class="h6 mb-3">{{ editingId ? 'Sửa hoá đơn' : 'Thêm hoá đơn' }}</h3>
+        <div class="modal-header-custom">
+          <div class="modal-title-wrapper">
+            <i class="bi bi-receipt-cutoff modal-icon"></i>
+            <h3 class="modal-title">{{ editingId ? 'Chỉnh sửa hóa đơn' : 'Tạo hóa đơn mới' }}</h3>
+          </div>
+          <button type="button" class="btn-close-modal" @click="close" :disabled="saving">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
 
-        <form @submit.prevent="save">
+        <form @submit.prevent="save" class="modal-form">
           <!-- Liên kết -->
-          <div class="section-title">Liên kết</div>
+          <div class="form-section">
+            <div class="section-title-enhanced">
+              <i class="bi bi-link-45deg section-icon"></i>
+              <span>Liên kết thông tin</span>
+            </div>
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label">Bệnh nhân</label>
@@ -166,10 +269,15 @@
                 <option value="void">void</option>
               </select>
             </div>
+            </div>
           </div>
 
           <!-- Thông tin HĐ -->
-          <div class="section-title">Thông tin hoá đơn</div>
+          <div class="form-section">
+            <div class="section-title-enhanced">
+              <i class="bi bi-file-earmark-text section-icon"></i>
+              <span>Thông tin hóa đơn</span>
+            </div>
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label">Số hoá đơn</label>
@@ -183,10 +291,15 @@
               <label class="form-label">Hạn thanh toán</label>
               <input v-model="form.due_date" type="date" class="form-control" />
             </div>
+            </div>
           </div>
 
           <!-- Dịch vụ -->
-          <div class="section-title">Dịch vụ</div>
+          <div class="form-section">
+            <div class="section-title-enhanced">
+              <i class="bi bi-list-ul section-icon"></i>
+              <span>Danh sách dịch vụ</span>
+            </div>
           <div class="table-responsive">
             <table class="table table-sm align-middle">
               <thead>
@@ -310,11 +423,19 @@
               </tr>
               </tbody>
             </table>
+            </div>
+            <button type="button" class="btn btn-add-service" @click="addService">
+              <i class="bi bi-plus-circle"></i>
+              Thêm dịch vụ
+            </button>
           </div>
-          <button type="button" class="btn btn-outline-secondary btn-sm" @click="addService">+ Thêm dịch vụ</button>
 
           <!-- Thanh toán -->
-          <div class="section-title">Thanh toán</div>
+          <div class="form-section">
+            <div class="section-title-enhanced">
+              <i class="bi bi-credit-card section-icon"></i>
+              <span>Thông tin thanh toán</span>
+            </div>
           <div class="row g-3">
             <div class="col-md-3">
               <label class="form-label">Tạm tính</label>
@@ -368,43 +489,72 @@
 
             <!-- ✅ NEW: Payment status display -->
             <div class="col-md-12">
-              <div class="d-flex align-items-center gap-3">
-                <span class="fw-bold">Trạng thái:</span>
-                <span :class="['badge', 'fs-6', statusClass(form.payment_status)]">
-                  {{ getPaymentStatusText(form.payment_status) }}
-                </span>
+              <div class="payment-status-section">
+                <div class="status-display-row">
+                  <div class="status-label-wrapper">
+                    <i class="bi bi-flag-fill status-icon"></i>
+                    <span class="status-label">Trạng thái thanh toán:</span>
+                  </div>
+                  <span :class="['badge', 'fs-6', 'payment-status-badge', statusClass(form.payment_status)]">
+                    {{ getPaymentStatusText(form.payment_status) }}
+                  </span>
+                </div>
 
                 <!-- Quick payment buttons -->
-                <div class="btn-group btn-group-sm" v-if="form.payment_status !== 'paid'">
+                <div class="quick-action-buttons" v-if="form.payment_status !== 'paid'">
                   <button
                     type="button"
-                    class="btn btn-outline-success"
+                    class="btn btn-success btn-quick-action"
                     @click="markAsPaid"
                     :disabled="form.total_amount <= 0"
                   >
+                    <i class="bi bi-check-circle-fill"></i>
                     Đánh dấu đã thanh toán
                   </button>
                   <button
                     type="button"
-                    class="btn btn-outline-warning"
+                    class="btn btn-warning btn-quick-action"
                     @click="markAsPartial"
                     :disabled="form.total_amount <= 0"
                   >
+                    <i class="bi bi-hourglass-split"></i>
                     Thanh toán một phần
                   </button>
                 </div>
               </div>
+              </div>
             </div>
           </div>
 
-          <div class="d-flex justify-content-end gap-2 mt-3">
-            <button type="button" class="btn btn-outline-secondary" @click="close">Hủy</button>
-            <button class="btn btn-primary" type="submit" :disabled="saving">{{ saving ? 'Đang lưu…' : 'Lưu' }}</button>
+          <div class="modal-footer-custom">
+            <button type="button" class="btn btn-cancel" @click="close" :disabled="saving">
+              <i class="bi bi-x-circle"></i>
+              Hủy bỏ
+            </button>
+            <button class="btn btn-save" type="submit" :disabled="saving">
+              <i class="bi bi-check-circle"></i>
+              {{ saving ? 'Đang lưu...' : 'Lưu hóa đơn' }}
+            </button>
           </div>
         </form>
       </div>
     </div>
-  </section>
+
+    <!-- Modal xem hóa đơn -->
+    <div v-if="showInvoicePreview" class="modal-backdrop" @mousedown.self="closeInvoicePreview">
+      <div class="invoice-preview-modal">
+        <div class="invoice-preview-header">
+          <h3>Xem trước hóa đơn</h3>
+          <button type="button" class="btn-close-preview" @click="closeInvoicePreview">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="invoice-preview-content">
+          <iframe v-if="invoiceHtmlUrl" :src="invoiceHtmlUrl" frameborder="0"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -456,7 +606,11 @@ export default {
       // ✅ UPDATED: Simpler medication state
       allMedications: [],
       groupedMedications: [],
-      medicationsLoaded: false
+      medicationsLoaded: false,
+
+      // Invoice preview
+      showInvoicePreview: false,
+      invoiceHtmlUrl: null
     }
   },
   created () { this.fetch() },
@@ -470,6 +624,26 @@ export default {
       if (patientPayment >= total) return 'paid'
       if (patientPayment > 0) return 'partial'
       return 'unpaid'
+    },
+
+    visiblePages () {
+      const delta = 2
+      const pages = []
+      const totalPages = Math.ceil(this.total / this.pageSize)
+
+      for (let i = 1; i <= totalPages; i++) {
+        if (
+          i === 1 ||
+          i === totalPages ||
+          (i >= this.page - delta && i <= this.page + delta)
+        ) {
+          pages.push(i)
+        } else if (pages[pages.length - 1] !== '...') {
+          pages.push('...')
+        }
+      }
+
+      return pages
     }
   },
   watch: {
@@ -490,6 +664,41 @@ export default {
     }
   },
   methods: {
+    /* ===== UI Helpers ===== */
+    paymentStatusClass (status) {
+      if (status === 'paid') return 'status-paid'
+      if (status === 'partial') return 'status-partial'
+      if (status === 'void') return 'status-void'
+      return 'status-unpaid'
+    },
+
+    paymentStatusIcon (status) {
+      if (status === 'paid') return 'bi bi-check-circle-fill'
+      if (status === 'partial') return 'bi bi-hourglass-split'
+      if (status === 'void') return 'bi bi-x-circle-fill'
+      return 'bi bi-clock-fill'
+    },
+
+    paymentStatusLabel (status) {
+      const labels = {
+        paid: 'Đã thanh toán',
+        partial: 'Thanh toán 1 phần',
+        unpaid: 'Chưa thanh toán',
+        void: 'Đã hủy'
+      }
+      return labels[status] || status
+    },
+
+    goToPage (p) {
+      if (p === '...' || p === this.page) return
+      this.page = p
+    },
+
+    changePageSize () {
+      this.page = 1
+      this.fetch()
+    },
+
     /* ===== helpers ===== */
     rowKey (r, idx) { return r._id || r.id || `${idx}` },
     isExpanded (row) { return !!this.expanded[this.rowKey(row, 0)] },
@@ -614,6 +823,7 @@ export default {
 
     search () { this.page = 1; this.fetch() },
     reload () { this.fetch() },
+    goHome () { this.$router.push('/') },
     next () { if (this.hasMore) { this.page++; this.fetch() } },
     prev () { if (this.page > 1) { this.page--; this.fetch() } },
 
@@ -1210,7 +1420,7 @@ export default {
       }
     },
 
-    // ✅ SUC-06: Open invoice print page in new tab with authentication
+    // ✅ SUC-06: Open invoice preview in modal
     async downloadInvoice (row) {
       try {
         this.loading = true
@@ -1219,27 +1429,30 @@ export default {
         // ✅ Fetch HTML with authentication via axios
         const response = await InvoiceService.download(invoiceId)
 
-        // ✅ Create blob and open in new window
+        // ✅ Create blob URL for iframe
         const blob = new Blob([response.data], { type: 'text/html; charset=utf-8' })
-        const url = window.URL.createObjectURL(blob)
 
-        // Open in new tab
-        const printWindow = window.open(url, '_blank')
-
-        // Clean up after window loads
-        if (printWindow) {
-          printWindow.addEventListener('load', () => {
-            window.URL.revokeObjectURL(url)
-          })
-        } else {
-          alert('Vui lòng cho phép popup để xem hóa đơn')
-          window.URL.revokeObjectURL(url)
+        // Clean up old URL if exists
+        if (this.invoiceHtmlUrl) {
+          window.URL.revokeObjectURL(this.invoiceHtmlUrl)
         }
+
+        this.invoiceHtmlUrl = window.URL.createObjectURL(blob)
+        this.showInvoicePreview = true
       } catch (e) {
         console.error('Open invoice error:', e)
         alert(e?.response?.data?.message || e?.message || 'Không thể mở hóa đơn')
       } finally {
         this.loading = false
+      }
+    },
+
+    // Close invoice preview modal
+    closeInvoicePreview () {
+      this.showInvoicePreview = false
+      if (this.invoiceHtmlUrl) {
+        window.URL.revokeObjectURL(this.invoiceHtmlUrl)
+        this.invoiceHtmlUrl = null
       }
     }
   }
@@ -1247,23 +1460,918 @@ export default {
 </script>
 
 <style scoped>
-:deep(table.table) th, :deep(table.table) td { vertical-align: middle; }
-
-/* details */
-.detail-wrap { border-top: 1px solid #e5e7eb; padding-top: 10px; }
-.detail-title { font-weight: 600; margin: 10px 0 6px; }
-.detail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 6px 16px;
+/* =========================
+   Invoices Management
+   ========================= */
+.invoices-management {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem 1rem;
 }
 
-/* modal */
-.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; z-index: 1050; }
-.modal-card { width: min(1000px, 96vw); background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 20px 50px rgba(0,0,0,.25); max-height: 92vh; overflow: auto; }
-.section-title { font-weight: 600; margin: 14px 0 8px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb; }
+/* =========================
+   Header Section
+   ========================= */
+.header-section {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-/* ✅ UPDATED: Selected medication styles */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.page-title i {
+  font-size: 2rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stats-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-size: 0.95rem;
+}
+
+.page-size-selector select {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 0.4rem 2rem 0.4rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e40af;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231e40af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 12px;
+}
+
+.page-size-selector select:hover {
+  background-color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.page-size-selector select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.btn-action {
+  background: white;
+  color: #1d4ed8;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: #f0f9ff;
+}
+
+.btn-action i {
+  font-size: 1.1rem;
+}
+
+.btn-action-home {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  backdrop-filter: blur(10px);
+  padding: 0.6rem 1rem;
+}
+
+.btn-action-home:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-action-reload {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  backdrop-filter: blur(10px);
+  padding: 0.6rem 1rem;
+}
+
+.btn-action-reload:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* =========================
+   Search Section
+   ========================= */
+.search-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-input-group {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.search-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* =========================
+   Content Section
+   ========================= */
+.content-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+}
+
+.alert-error {
+  background: #fef2f2;
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.alert-error i {
+  font-size: 1.25rem;
+  color: #ef4444;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.loading-state .spinner {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem;
+  border: 4px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* =========================
+   Table
+   ========================= */
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.invoices-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.invoices-table thead {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.invoices-table thead th {
+  padding: 1rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.invoices-table tbody td {
+  padding: 0.875rem 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.invoices-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.invoices-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Column Widths */
+.col-number {
+  width: 60px;
+  text-align: center;
+}
+
+.col-invoice {
+  min-width: 140px;
+}
+
+.col-date {
+  width: 120px;
+}
+
+.col-patient {
+  min-width: 180px;
+}
+
+.col-amount {
+  width: 140px;
+}
+
+.col-status {
+  width: 140px;
+}
+
+.col-actions {
+  width: 180px;
+  text-align: center;
+}
+
+/* Cell Content */
+.row-number {
+  display: inline-block;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  min-width: 32px;
+  text-align: center;
+}
+
+.date-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.date-info i {
+  color: #3b82f6;
+}
+
+.patient-name {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.amount-badge {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.status-badge i {
+  font-size: 0.95rem;
+}
+
+.status-paid {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-partial {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-unpaid {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-void {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-btn {
+  width: 2.2rem;
+  height: 2.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.action-btn i {
+  font-size: 1rem;
+}
+
+.view-btn {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.view-btn:hover {
+  background: #3b82f6;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.print-btn {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.print-btn:hover {
+  background: #10b981;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.edit-btn {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.edit-btn:hover {
+  background: #f59e0b;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
+.delete-btn {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.delete-btn:hover {
+  background: #ef4444;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* =========================
+   Detail Row
+   ========================= */
+.detail-row td {
+  background: #f8fafc;
+  padding: 0 !important;
+}
+
+.detail-wrap {
+  padding: 1.5rem;
+  border-top: 2px solid #e2e8f0;
+}
+
+.detail-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1e293b;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.detail-grid div {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.detail-grid b {
+  color: #475569;
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.services-table-wrapper {
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.services-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.services-table thead {
+  background: #f8fafc;
+}
+
+.services-table thead th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #475569;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.services-table tbody td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.service-type-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #4338ca;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  border: 1px solid #c7d2fe;
+  box-shadow: 0 2px 4px rgba(67, 56, 202, 0.15);
+}
+
+.detail-meta {
+  display: flex;
+  gap: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.detail-meta i {
+  margin-right: 0.35rem;
+}
+
+/* =========================
+   Pagination Section
+   ========================= */
+.pagination-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.pagination-info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pagination-info-row i {
+  color: #3b82f6;
+  font-size: 1.1rem;
+}
+
+.pagination-controls-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #64748b;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #eff6ff;
+  transform: translateY(-2px);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 0.35rem;
+  margin: 0 0.5rem;
+}
+
+.page-number-btn {
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.5rem;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #64748b;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.page-number-btn:hover:not(.active):not(.ellipsis) {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #eff6ff;
+  transform: translateY(-2px);
+}
+
+.page-number-btn.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.page-number-btn.ellipsis {
+  border: none;
+  cursor: default;
+  background: transparent;
+}
+
+/* =========================
+   Modal
+   ========================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  z-index: 1050;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-card {
+  width: min(1100px, 96vw);
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  max-height: 92vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal Header */
+.modal-header-custom {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid #1e40af;
+}
+
+.modal-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modal-icon {
+  font-size: 2rem;
+  color: white;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+.btn-close-modal {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-close-modal:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.btn-close-modal:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Modal Form */
+.modal-form {
+  padding: 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Form Sections */
+.form-section {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-title-enhanced {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid #3b82f6;
+  letter-spacing: 0.3px;
+}
+
+.section-icon {
+  font-size: 1.5rem;
+  color: #3b82f6;
+}
+
+/* Legacy section title */
+.section-title {
+  font-weight: 600;
+  margin: 14px 0 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Add Service Button */
+.btn-add-service {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+}
+
+.btn-add-service:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-add-service i {
+  font-size: 1.1rem;
+}
+
+/* Modal Footer */
+.modal-footer-custom {
+  background: #f8fafc;
+  padding: 1.5rem 2rem;
+  border-top: 2px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.btn-cancel {
+  background: white;
+  color: #64748b;
+  border: 2px solid #cbd5e1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  transform: translateY(-2px);
+}
+
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-cancel i,
+.btn-save i {
+  font-size: 1.1rem;
+}
+
+/* Selected medication styles */
 .selected-medication {
   padding: 0.5rem;
   background-color: #f8fffe;
@@ -1285,10 +2393,136 @@ optgroup {
   color: #495057;
 }
 
-/* ✅ NEW: Payment status styles */
+/* Enhanced service type select in table */
+.table tbody td .form-select.form-select-sm {
+  font-weight: 600;
+  border: 2px solid #e5e7eb;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  color: #1e293b;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.table tbody td .form-select.form-select-sm:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: white;
+}
+
+.table tbody td .form-select.form-select-sm:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Payment status section */
+.payment-status-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.status-display-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.status-label-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-icon {
+  font-size: 1.25rem;
+  color: #3b82f6;
+}
+
+.status-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: 0.3px;
+}
+
+.payment-status-badge {
+  font-size: 1rem !important;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 700;
+  border: 2px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.payment-status-badge::before {
+  content: '●';
+  font-size: 1.3rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.quick-action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 0.75rem;
+  border-top: 2px dashed #e2e8f0;
+}
+
+.btn-quick-action {
+  padding: 0.65rem 1.25rem;
+  font-weight: 600;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.btn-quick-action i {
+  font-size: 1.1rem;
+}
+
+.btn-quick-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Legacy badge support */
 .badge.fs-6 {
-  font-size: 0.875rem !important;
-  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem !important;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 700;
+  border: 2px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.badge.fs-6::before {
+  content: '●';
+  font-size: 1.2rem;
 }
 
 /* Payment button styles */
@@ -1301,5 +2535,96 @@ optgroup {
 input[readonly] {
   background-color: #f8f9fa;
   border-color: #dee2e6;
+}
+
+/* Utilities */
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: #94a3b8;
+}
+
+.text-end {
+  text-align: right;
+}
+
+/* =========================
+   Invoice Preview Modal
+   ========================= */
+.invoice-preview-modal {
+  width: 95vw;
+  max-width: 1400px;
+  height: 90vh;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+.invoice-preview-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  padding: 1.25rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid #1d4ed8;
+  flex-shrink: 0;
+}
+
+.invoice-preview-header h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.invoice-preview-header h3::before {
+  content: '📄';
+  font-size: 1.5rem;
+}
+
+.btn-close-preview {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-close-preview:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: rotate(90deg) scale(1.1);
+}
+
+.invoice-preview-content {
+  flex: 1;
+  overflow: hidden;
+  background: #e5e7eb;
+  position: relative;
+  min-height: 0;
+}
+
+.invoice-preview-content iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: white;
 }
 </style>

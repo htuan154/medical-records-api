@@ -248,16 +248,12 @@
         <!-- Pagination Section -->
         <div class="pagination-section">
           <div class="pagination-info-row">
-            <span class="page-info">
-              <i class="bi bi-file-earmark-text"></i>
-              Trang <b>{{ page }} / {{ Math.ceil(total / pageSize) || 1 }}</b>
-              <span class="total-info">- Hiển thị {{ filteredItems.length }} trong tổng số {{ total }} hồ sơ</span>
-            </span>
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Trang <strong>{{ page }} / {{ Math.ceil(total / pageSize) || 1 }}</strong> - Hiển thị {{ filteredItems.length }} trong tổng số {{ total }} vai trò</span>
           </div>
-          <div class="pagination-controls">
+          <div class="pagination-controls-center">
             <button class="pagination-btn" @click="prev" :disabled="page <= 1 || loading">
               <i class="bi bi-chevron-left"></i>
-              Trước
             </button>
 
             <div class="page-numbers">
@@ -274,7 +270,6 @@
             </div>
 
             <button class="pagination-btn" @click="next" :disabled="!hasMore || loading">
-              Sau
               <i class="bi bi-chevron-right"></i>
             </button>
           </div>
@@ -284,10 +279,20 @@
   </section>
 
   <!-- MODAL: form đầy đủ + combobox BN/BS -->
-  <div v-if="showModal" class="modal-backdrop" @mousedown.self="close">
-    <div class="modal-card">
-      <h3 class="h6 mb-3">{{ editingId ? 'Sửa hồ sơ' : 'Thêm hồ sơ' }}</h3>
+  <div v-if="showModal" class="modal-overlay" @mousedown.self="close">
+    <div class="modal-container">
+      <div class="modal-header-custom">
+        <h3 class="modal-title-custom">
+          <i class="bi bi-file-medical-fill" v-if="!editingId"></i>
+          <i class="bi bi-pencil-square" v-else></i>
+          {{ editingId ? 'Sửa hồ sơ khám' : 'Thêm hồ sơ khám' }}
+        </h3>
+        <button type="button" class="modal-close-btn" @click="close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
 
+      <div class="modal-body-custom">
         <!-- ✅ SUC-08: Display previous medical records for follow-up visits -->
         <div v-if="previousRecords.length > 0" class="alert alert-info mb-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
@@ -329,19 +334,29 @@
 
         <form @submit.prevent="save">
           <!-- Thông tin chung -->
-          <div class="section-title">Thông tin chung</div>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Mã lịch hẹn</label>
-              <select v-model="form.appointment_id" class="form-select" @change="onAppointmentChange">
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-info-circle-fill"></i>
+              Thông tin chung
+            </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-calendar-check"></i>
+                Mã lịch hẹn
+              </label>
+              <select v-model="form.appointment_id" class="form-input-custom" @change="onAppointmentChange">
                 <option value="">-- Chọn lịch hẹn --</option>
                 <option v-for="a in appointmentOptions" :key="a.value" :value="a.value">{{ a.label }}</option>
               </select>
-              <small class="text-muted">Chọn lịch hẹn để tự động điền bệnh nhân và bác sĩ</small>
+              <small class="form-label-hint">Chọn lịch hẹn để tự động điền bệnh nhân và bác sĩ</small>
             </div>
-            <div class="col-md-3">
-              <label class="form-label">Loại khám</label>
-              <select v-model="form.visit_type" class="form-select">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-clipboard2-pulse"></i>
+                Loại khám
+              </label>
+              <select v-model="form.visit_type" class="form-input-custom">
                 <option value="">-- Chọn loại --</option>
                 <option value="consultation">Tư vấn</option>
                 <option value="follow_up">Tái khám</option>
@@ -349,9 +364,12 @@
                 <option value="emergency">Cấp cứu</option>
               </select>
             </div>
-            <div class="col-md-3">
-              <label class="form-label">Trạng thái</label>
-              <select v-model="form.status" class="form-select">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-toggle-on"></i>
+                Trạng thái
+              </label>
+              <select v-model="form.status" class="form-input-custom">
                 <option value="draft">Nháp</option>
                 <option value="in_progress">Đang khám</option>
                 <option value="completed">Hoàn thành</option>
@@ -359,113 +377,195 @@
               </select>
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label">Bệnh nhân <span class="text-danger">*</span></label>
-              <select v-model="form.patient_id" class="form-select" required>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-person-fill"></i>
+                Bệnh nhân <span class="text-required">*</span>
+              </label>
+              <select v-model="form.patient_id" class="form-input-custom" required>
                 <option value="">-- Chọn bệnh nhân --</option>
                 <option v-for="p in patientOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
               </select>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">Bác sĩ <span class="text-danger">*</span></label>
-              <select v-model="form.doctor_id" class="form-select" required>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-person-badge"></i>
+                Bác sĩ <span class="text-required">*</span>
+              </label>
+              <select v-model="form.doctor_id" class="form-input-custom" required>
                 <option value="">-- Chọn bác sĩ --</option>
                 <option v-for="d in doctorOptions" :key="d.value" :value="d.value">{{ d.label }}</option>
               </select>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">Ngày khám <span class="text-danger">*</span></label>
-              <input v-model="form.visit_date" type="datetime-local" class="form-control" required />
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-calendar3"></i>
+                Ngày khám <span class="text-required">*</span>
+              </label>
+              <input v-model="form.visit_date" type="datetime-local" class="form-input-custom" required />
             </div>
 
-            <div class="col-12">
-              <label class="form-label">Lý do khám</label>
-              <textarea v-model.trim="form.chief_complaint" class="form-control" rows="2" placeholder="Mô tả lý do đến khám..."></textarea>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label-custom">
+                <i class="bi bi-chat-left-text"></i>
+                Lý do khám
+              </label>
+              <textarea v-model.trim="form.chief_complaint" class="form-input-custom" rows="2" placeholder="Mô tả lý do đến khám..."></textarea>
             </div>
+          </div>
           </div>
 
           <!-- Tình trạng -->
-          <div class="section-title">Tình trạng</div>
-          <div class="row g-3">
-            <div class="col-md-2">
-              <label class="form-label">Nhiệt độ (°C)</label>
-              <input v-model.number="form.vital.temperature" type="number" step="0.1" class="form-control"/>
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-heart-pulse-fill"></i>
+              Sinh hiệu - Vital Signs
             </div>
-            <div class="col-md-2">
-              <label class="form-label">HA tâm thu</label>
-              <input v-model.number="form.vital.bp_systolic" type="number" class="form-control"/>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-thermometer-half"></i>
+                Nhiệt độ (°C)
+              </label>
+              <input v-model.number="form.vital.temperature" type="number" step="0.1" class="form-input-custom" placeholder="36.5"/>
             </div>
-            <div class="col-md-2">
-              <label class="form-label">HA tâm trương</label>
-              <input v-model.number="form.vital.bp_diastolic" type="number" class="form-control"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-activity"></i>
+                HA tâm thu
+              </label>
+              <input v-model.number="form.vital.bp_systolic" type="number" class="form-input-custom" placeholder="120"/>
             </div>
-            <div class="col-md-2">
-              <label class="form-label">Mạch (bpm)</label>
-              <input v-model.number="form.vital.heart_rate" type="number" class="form-control"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-activity"></i>
+                HA tâm trương
+              </label>
+              <input v-model.number="form.vital.bp_diastolic" type="number" class="form-input-custom" placeholder="80"/>
             </div>
-            <div class="col-md-2">
-              <label class="form-label">Nhịp thở</label>
-              <input v-model.number="form.vital.respiratory_rate" type="number" class="form-control"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-heart"></i>
+                Mạch (bpm)
+              </label>
+              <input v-model.number="form.vital.heart_rate" type="number" class="form-input-custom" placeholder="72"/>
             </div>
-            <div class="col-md-2">
-              <label class="form-label">Cân nặng (kg)</label>
-              <input v-model.number="form.vital.weight" type="number" step="0.1" class="form-control"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-wind"></i>
+                Nhịp thở
+              </label>
+              <input v-model.number="form.vital.respiratory_rate" type="number" class="form-input-custom" placeholder="18"/>
             </div>
-            <div class="col-md-2">
-              <label class="form-label">Chiều cao (cm)</label>
-              <input v-model.number="form.vital.height" type="number" class="form-control"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-speedometer2"></i>
+                Cân nặng (kg)
+              </label>
+              <input v-model.number="form.vital.weight" type="number" step="0.1" class="form-input-custom" placeholder="65.0"/>
             </div>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-arrows-vertical"></i>
+                Chiều cao (cm)
+              </label>
+              <input v-model.number="form.vital.height" type="number" class="form-input-custom" placeholder="170"/>
+            </div>
+          </div>
           </div>
 
           <!-- Khám thực thể -->
-          <div class="section-title">Khám thực thể</div>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Toàn thân</label>
-              <textarea v-model.trim="form.physical.general" rows="2" class="form-control" />
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-person-check"></i>
+              Khám thực thể - Physical Exam
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Tim mạch</label>
-              <textarea v-model.trim="form.physical.cardiovascular" rows="2" class="form-control" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-person"></i>
+                Toàn thân
+              </label>
+              <textarea v-model.trim="form.physical.general" rows="2" class="form-input-custom" placeholder="Bệnh nhân tỉnh táo, tiếp xúc tốt..." />
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Hô hấp</label>
-              <textarea v-model.trim="form.physical.respiratory" rows="2" class="form-control" />
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-heart-pulse"></i>
+                Tim mạch
+              </label>
+              <textarea v-model.trim="form.physical.cardiovascular" rows="2" class="form-input-custom" placeholder="Nhịp tim đều, không tiếng thổi..." />
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Khác</label>
-              <textarea v-model.trim="form.physical.other_findings" rows="2" class="form-control" />
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-lungs"></i>
+                Hô hấp
+              </label>
+              <textarea v-model.trim="form.physical.respiratory" rows="2" class="form-input-custom" placeholder="Phổi trong, không ran..." />
             </div>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-clipboard2-pulse"></i>
+                Khác
+              </label>
+              <textarea v-model.trim="form.physical.other_findings" rows="2" class="form-input-custom" placeholder="Các phát hiện khác..." />
+            </div>
+          </div>
           </div>
 
           <!-- Chẩn đoán -->
-          <div class="section-title">Chẩn đoán</div>
-          <div class="row g-3">
-            <div class="col-md-3">
-              <label class="form-label">Mã chính (ICD)</label>
-              <input v-model.trim="form.dx_primary.code" class="form-control"/>
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-clipboard2-check"></i>
+              Chẩn đoán - Diagnosis
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Mô tả chính</label>
-              <input v-model.trim="form.dx_primary.description" class="form-control"/>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-file-medical"></i>
+                Mã chính (ICD)
+              </label>
+              <input v-model.trim="form.dx_primary.code" class="form-input-custom" placeholder="I10"/>
             </div>
-            <div class="col-md-3">
-              <label class="form-label">Mức độ</label>
-              <input v-model.trim="form.dx_primary.severity" class="form-control" placeholder="mild/moderate/severe"/>
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label-custom">
+                <i class="bi bi-journal-medical"></i>
+                Mô tả chính
+              </label>
+              <input v-model.trim="form.dx_primary.description" class="form-input-custom" placeholder="Tăng huyết áp nguyên phát"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-speedometer"></i>
+                Mức độ
+              </label>
+              <input v-model.trim="form.dx_primary.severity" class="form-input-custom" placeholder="mild/moderate/severe"/>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Chẩn đoán phụ (ngăn bởi dấu phẩy)</label>
-              <input v-model.trim="form.dx_secondary_text" class="form-control" placeholder="ĐTĐ type 2, RL lipid máu…"/>
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label-custom">
+                <i class="bi bi-list-ul"></i>
+                Chẩn đoán phụ
+                <span class="form-label-hint">(ngăn bởi dấu phẩy)</span>
+              </label>
+              <input v-model.trim="form.dx_secondary_text" class="form-input-custom" placeholder="ĐTĐ type 2, Rối loạn lipid máu..."/>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Chẩn đoán phân biệt (dấu phẩy)</label>
-              <input v-model.trim="form.dx_differential_text" class="form-control" placeholder="Bệnh mạch vành, Rối loạn lo âu…"/>
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label-custom">
+                <i class="bi bi-question-circle"></i>
+                Chẩn đoán phân biệt
+                <span class="form-label-hint">(dấu phẩy)</span>
+              </label>
+              <input v-model.trim="form.dx_differential_text" class="form-input-custom" placeholder="Bệnh mạch vành, Rối loạn lo âu..."/>
             </div>
+          </div>
           </div>
 
           <!-- Điều trị -->
-          <div class="section-title">Điều trị</div>
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-capsule"></i>
+              Điều trị - Treatment Plan
+            </div>
           <div class="table-responsive">
             <table class="table table-sm align-middle">
               <thead>
@@ -519,47 +619,84 @@
             <button type="button" class="btn btn-outline-secondary btn-sm" @click="addLifestyle">+ Thêm tư vấn</button>
           </div>
 
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Thủ thuật (dấu phẩy)</label>
-              <input v-model.trim="form.procedures_text" class="form-control" placeholder="ECG, Siêu âm tim…"/>
+          <div class="form-grid" style="margin-top: 1rem;">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-scissors"></i>
+                Thủ thuật
+                <span class="form-label-hint">(dấu phẩy)</span>
+              </label>
+              <input v-model.trim="form.procedures_text" class="form-input-custom" placeholder="ECG, Siêu âm tim..."/>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Tư vấn lối sống (dấu phẩy)</label>
-              <input v-model.trim="form.lifestyle_text" class="form-control" placeholder="Giảm muối, Tập thể dục…"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-heart"></i>
+                Tư vấn lối sống
+                <span class="form-label-hint">(dấu phẩy)</span>
+              </label>
+              <input v-model.trim="form.lifestyle_text" class="form-input-custom" placeholder="Giảm muối, Tập thể dục..."/>
             </div>
           </div>
 
-          <div class="row g-3 mt-1">
-            <div class="col-md-4">
-              <label class="form-label">Ngày tái khám</label>
-              <input v-model="form.follow_up.date" type="date" class="form-control" />
+          <div class="form-grid" style="margin-top: 1rem;">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-calendar-event"></i>
+                Ngày tái khám
+              </label>
+              <input v-model="form.follow_up.date" type="date" class="form-input-custom" />
             </div>
-            <div class="col-md-8">
-              <label class="form-label">Ghi chú tái khám</label>
-              <input v-model.trim="form.follow_up.notes" class="form-control" />
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label-custom">
+                <i class="bi bi-sticky"></i>
+                Ghi chú tái khám
+              </label>
+              <input v-model.trim="form.follow_up.notes" class="form-input-custom" placeholder="Lưu ý cho lần tái khám..." />
             </div>
+          </div>
           </div>
 
           <!-- Yêu cầu xét nghiệm -->
-          <div class="section-title">Yêu cầu xét nghiệm</div>
-          <div class="mb-3">
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-clipboard2-data"></i>
+              Yêu cầu xét nghiệm - Test Requests
+            </div>
+          <div class="form-group">
             <textarea
               v-model.trim="form.test_requests"
-              class="form-control"
-              rows="3"
+              class="form-input-custom"
+              rows="4"
               placeholder="Ví dụ: Xét nghiệm máu: Công thức máu, Đường huyết, Lipid máu&#10;Chẩn đoán hình ảnh: X-quang ngực, Siêu âm bụng"
             ></textarea>
-            <small class="text-muted">Liệt kê các xét nghiệm cần làm (mỗi loại một dòng)</small>
+            <small class="form-label-hint">Liệt kê các xét nghiệm cần làm (mỗi loại một dòng)</small>
           </div>
-
-          <div class="d-flex justify-content-end gap-2 mt-3">
-            <button type="button" class="btn btn-outline-secondary" @click="close">Hủy</button>
-            <button class="btn btn-primary" type="submit" :disabled="saving">{{ saving ? 'Đang lưu…' : 'Lưu' }}</button>
           </div>
         </form>
       </div>
+
+      <div class="modal-footer-custom">
+        <button
+          type="button"
+          class="btn-modal-cancel"
+          @click="close"
+          :disabled="saving"
+        >
+          <i class="bi bi-x-circle"></i>
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="btn-modal-save"
+          @click="save"
+          :disabled="saving"
+        >
+          <i class="bi bi-check-circle-fill"></i>
+          {{ saving ? 'Đang lưu...' : 'Lưu hồ sơ' }}
+        </button>
+      </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -2160,150 +2297,318 @@ export default {
 
 .pagination-info-row {
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 0.5rem 0 0.5rem;
-  border-top: 1px solid #e5e7eb;
-  margin-top: 1.5rem;
-  background: transparent;
+  align-items: center;
   gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: #334155;
 }
 
-.pagination-info {
-  text-align: center;
-  color: #64748b;
+.pagination-info-row i {
+  color: #3b82f6;
+  font-size: 1rem;
 }
 
-.page-info {
+.pagination-info-row strong {
+  color: #1e40af;
   font-weight: 600;
-  color: #374151;
+}
+
+.pagination-controls-center {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-  margin-bottom: 0.25rem;
-}
-
-.page-info b {
-  color: #374151;
-  font-weight: 700;
-}
-
-.total-info {
-  font-size: 0.85rem;
-  color: #64748b;
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
   justify-content: center;
-  background: #fff;
-  border-radius: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  border: 1px solid #e5e7eb;
-  padding: 0.15rem 0.5rem;
-  min-width: 120px;
-  max-width: 180px;
-  gap: 0;
-  height: 2.6rem;
+  align-items: center;
+  gap: 8px;
 }
 
 .pagination-btn {
-  width: 2.4rem;
-  height: 2.4rem;
-  border: none;
-  background: transparent;
-  color: #b0b6be;
-  border-radius: 50%;
-  font-weight: 600;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  border-radius: 8px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, color 0.15s;
-  cursor: pointer;
-  font-size: 1.2rem;
-  margin: 0 0.1rem;
+  transition: all 0.3s ease;
+  font-size: 16px;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: #f3f4f6;
-  color: #2563eb;
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-1px);
 }
 
 .pagination-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
-  background: transparent;
-  color: #e5e7eb;
 }
 
 .page-numbers {
   display: flex;
-  align-items: center;
-  gap: 0;
-  margin: 0;
+  gap: 6px;
 }
 
 .page-number-btn {
-  width: 2.4rem;
-  height: 2.4rem;
-  border: none;
-  background: transparent;
-  color: #2563eb;
-  border-radius: 50%;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  border-radius: 8px;
+  cursor: pointer;
   font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, color 0.15s;
-  cursor: pointer;
-  font-size: 1.1rem;
-  margin: 0 0.1rem;
 }
 
-.page-number-btn:hover:not(:disabled):not(.ellipsis) {
-  background: #f3f4f6;
-  color: #2563eb;
+.page-number-btn:hover:not(:disabled):not(.active) {
+  border-color: #3b82f6;
+  color: #3b82f6;
 }
 
 .page-number-btn.active {
-  background: #2563eb;
-  color: #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.10);
-  z-index: 1;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .page-number-btn.ellipsis {
   border: none;
   background: transparent;
   cursor: default;
-  color: #b0b6be;
-  font-weight: 400;
 }
 
 /* Modal */
-.modal-backdrop {
+.modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1050;
   overflow-y: auto;
   padding: 1rem;
 }
 
-.modal-card {
-  width: min(1000px, 95vw);
+.modal-container {
+  width: min(1100px, 95vw);
   background: white;
   border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header-custom {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-title-custom {
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.modal-body-custom {
+  padding: 32px;
   overflow-y: auto;
+  flex: 1;
+}
+
+.form-section {
+  margin-bottom: 32px;
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.form-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-section-title i {
+  color: #3b82f6;
+  font-size: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label-custom {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-label-custom i {
+  color: #3b82f6;
+  font-size: 16px;
+}
+
+.text-required {
+  color: #dc2626;
+}
+
+.form-label-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.form-input-custom {
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1e293b;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.form-input-custom:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input-custom:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+.form-input-custom::placeholder {
+  color: #94a3b8;
+}
+
+.modal-footer-custom {
+  padding: 20px 32px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-radius: 0 0 16px 16px;
+}
+
+.btn-modal-cancel {
+  padding: 12px 24px;
+  background: white;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-modal-cancel:hover:not(:disabled) {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.btn-modal-save {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-modal-save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+}
+
+.btn-modal-cancel:disabled,
+.btn-modal-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .section-title {

@@ -365,7 +365,7 @@ export default {
 /* Container chính */
 .profile-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   padding: 2rem 0;
 }
 
@@ -425,8 +425,8 @@ export default {
 /* Form container */
  .profile-form-container {
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(102,126,234,0.18);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
   padding: 3rem 2.5rem;
   max-width: 100%;
   width: 100%;
@@ -455,7 +455,7 @@ export default {
 
 /* Section titles */
 .section-title {
-  color: #4facfe;
+  color: #3b82f6;
   font-weight: 800;
   margin-bottom: 1.5rem;
   font-size: 1.15rem;
@@ -480,8 +480,8 @@ export default {
 }
 
 .form-control:focus {
-  border-color: #4facfe;
-  box-shadow: 0 0 0 0.15rem rgba(79, 172, 254, 0.15);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.15rem rgba(59, 130, 246, 0.15);
 }
 
 .form-control:read-only {
@@ -497,7 +497,7 @@ export default {
 
 .input-group .btn-outline-secondary:hover {
   background-color: #f8f9fa;
-  border-color: #4facfe;
+  border-color: #3b82f6;
 }
 
 /* Form actions */
@@ -510,21 +510,21 @@ export default {
 }
 
 .btn-primary {
-  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: #fff;
   border: none;
   border-radius: 10px;
   padding: 0.9rem 2rem;
   font-weight: 700;
   font-size: 1.05rem;
-  box-shadow: 0 2px 8px rgba(79,172,254,0.14);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
   transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(79, 172, 254, 0.22);
-  background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
 }
 
 .btn-secondary {
@@ -546,9 +546,18 @@ export default {
   padding: 0.7rem 1.3rem;
   font-weight: 700;
   background: #fff;
-  color: #4facfe;
-  border: 1px solid #4facfe;
-  box-shadow: 0 2px 8px rgba(79,172,254,0.10);
+  color: #3b82f6;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.btn-light:hover {
+  background: rgba(255, 255, 255, 0.95);
+  color: #1d4ed8;
+  border-color: white;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
 }
 
 /* Error states */

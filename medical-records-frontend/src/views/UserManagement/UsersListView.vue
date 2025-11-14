@@ -251,124 +251,230 @@
     </section>
 
     <!-- Modal Thêm/Sửa -->
-    <div v-if="showForm" class="modal-backdrop" @mousedown.self="closeForm">
-      <div class="modal-card">
-        <h2 class="h5 mb-3">{{ editingId ? 'Sửa thông tin người dùng' : 'Thêm người dùng' }}</h2>
+    <div v-if="showForm" class="modal-overlay" @mousedown.self="closeForm">
+      <div class="modal-container">
+        <div class="modal-header-custom">
+          <h3 class="modal-title-custom">
+            <i class="bi bi-person-plus-fill" v-if="!editingId"></i>
+            <i class="bi bi-pencil-square" v-else></i>
+            {{ editingId ? 'Sửa thông tin người dùng' : 'Thêm người dùng' }}
+          </h3>
+          <button type="button" class="modal-close-btn" @click="closeForm">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
 
-        <form @submit.prevent="save">
-          <div class="section-title">Thông tin cơ bản</div>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Username <span class="text-danger">*</span></label>
-              <input v-model.trim="form.username" type="text" class="form-control" required />
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Email <span class="text-danger">*</span></label>
-              <input v-model.trim="form.email" type="email" class="form-control" required />
-            </div>
+        <div class="modal-body-custom">
+          <form @submit.prevent="save">
+            <div class="form-section">
+              <div class="form-section-title">
+                <i class="bi bi-info-circle-fill"></i>
+                Thông tin cơ bản
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label-custom">
+                    <i class="bi bi-person-fill"></i>
+                    Username <span class="text-required">*</span>
+                  </label>
+                  <input
+                    v-model.trim="form.username"
+                    type="text"
+                    class="form-input-custom"
+                    placeholder="Nhập username"
+                    required
+                    :disabled="isEdit"
+                  />
+                </div>
 
-            <div class="col-md-6" v-if="!editingId">
-              <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
-              <input v-model="form.password" type="password" class="form-control" required
-                     placeholder="Nhập mật khẩu cho tài khoản mới" />
-            </div>
-            <div class="col-md-6" v-else>
-              <label class="form-label">Mật khẩu mới</label>
-              <input v-model="form.newPassword" type="password" class="form-control"
-                     placeholder="Bỏ trống nếu không đổi mật khẩu" />
-            </div>
+                <div class="form-group">
+                  <label class="form-label-custom">
+                    <i class="bi bi-envelope-fill"></i>
+                    Email <span class="text-required">*</span>
+                  </label>
+                  <input
+                    v-model.trim="form.email"
+                    type="email"
+                    class="form-input-custom"
+                    placeholder="Nhập email"
+                    required
+                  />
+                </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Vai trò <span class="text-danger">*</span></label>
-              <select v-model="form.role" class="form-select" required @change="onRoleChange">
-                <option value="">-- chọn vai trò --</option>
-                <option value="admin">admin</option>
-                <option value="doctor">doctor</option>
-                <option value="nurse">nurse</option>
-                <option value="receptionist">receptionist</option>
-                <option value="patient">patient</option>
-              </select>
-            </div>
+                <div class="form-group" v-if="!editingId">
+                  <label class="form-label-custom">
+                    <i class="bi bi-lock-fill"></i>
+                    Mật khẩu <span class="text-required">*</span>
+                  </label>
+                  <input
+                    v-model="form.password"
+                    type="password"
+                    class="form-input-custom"
+                    placeholder="Nhập mật khẩu cho tài khoản mới"
+                    :required="!editingId"
+                  />
+                </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Loại tài khoản <small class="text-muted">(auto từ vai trò)</small></label>
-              <select v-model="form.account_type" class="form-select" disabled>
-                <option value="staff">staff</option>
-                <option value="doctor">doctor</option>
-                <option value="patient">patient</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="section-title">
-            Liên kết
-            <small class="text-muted">
-              ({{ form.role === 'doctor' ? 'Bác sĩ' :
-                   form.role === 'patient' ? 'Bệnh nhân' :
-                   'Nhân viên' }})
-            </small>
-          </div>
-
-          <div class="row g-3">
-            <!-- Staff combobox - cho admin, nurse, receptionist -->
-            <div class="col-md-12" v-if="form.account_type === 'staff'">
-              <label class="form-label">
-                Linked Staff
-                <small class="text-muted">(cho {{ form.role || 'admin/nurse/receptionist' }})</small>
-              </label>
-              <select v-model="form.linked_staff_id" class="form-select">
-                <option value="">-- chọn Staff chưa liên kết --</option>
-                <option v-for="s in unlinked.staffs" :key="s.id" :value="s.id">
-                  {{ s.code ? `${s.code} - ${s.name}` : s.name }}
-                </option>
-              </select>
-            </div>
-
-            <!-- Doctor combobox - chỉ cho doctor -->
-            <div class="col-md-12" v-else-if="form.account_type === 'doctor'">
-              <label class="form-label">
-                Linked Doctor
-                <small class="text-muted">(cho vai trò doctor)</small>
-              </label>
-              <select v-model="form.linked_doctor_id" class="form-select">
-                <option value="">-- chọn Doctor chưa liên kết --</option>
-                <option v-for="d in unlinked.doctors" :key="d.id" :value="d.id">
-                  {{ d.code ? `${d.code} - ${d.name}` : d.name }}
-                </option>
-              </select>
+                <div class="form-group" v-if="editingId">
+                  <label class="form-label-custom">
+                    <i class="bi bi-key-fill"></i>
+                    Mật khẩu mới
+                    <span class="form-label-hint">Bỏ trống nếu không đổi mật khẩu</span>
+                  </label>
+                  <input
+                    v-model="form.newPassword"
+                    type="password"
+                    class="form-input-custom"
+                    placeholder="Nhập mật khẩu mới (nếu muốn đổi)"
+                  />
+                </div>
+              </div>
             </div>
 
-            <!-- Patient combobox - chỉ cho patient -->
-            <div class="col-md-12" v-else-if="form.account_type === 'patient'">
-              <label class="form-label">
-                Linked Patient
-                <small class="text-muted">(cho vai trò patient)</small>
-              </label>
-              <select v-model="form.linked_patient_id" class="form-select">
-                <option value="">-- chọn Patient chưa liên kết --</option>
-                <option v-for="p in unlinked.patients" :key="p.id" :value="p.id">
-                  {{ p.code ? `${p.code} - ${p.name}` : p.name }}
-                </option>
-              </select>
-            </div>
-          </div>
+            <div class="form-section">
+              <div class="form-section-title">
+                <i class="bi bi-shield-fill-check"></i>
+                Vai trò và quyền hạn
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label-custom">
+                    <i class="bi bi-person-badge-fill"></i>
+                    Vai trò <span class="text-required">*</span>
+                  </label>
+                  <select
+                    v-model="form.role"
+                    class="form-input-custom"
+                    required
+                    @change="onRoleChange"
+                  >
+                    <option value="">-- chọn vai trò --</option>
+                    <option value="admin">Admin</option>
+                    <option value="doctor">Bác sĩ (Doctor)</option>
+                    <option value="nurse">Y tá (Nurse)</option>
+                    <option value="receptionist">Lễ tân (Receptionist)</option>
+                    <option value="patient">Bệnh nhân (Patient)</option>
+                  </select>
+                </div>
 
-          <div class="section-title">Khác</div>
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">Trạng thái</label>
-              <select v-model="form.status" class="form-select">
-                <option value="active">Hoạt động</option>
-                <option value="inactive">Không hoạt động</option>
-              </select>
+                <div class="form-group">
+                  <label class="form-label-custom">
+                    <i class="bi bi-file-earmark-person-fill"></i>
+                    Loại tài khoản
+                    <span class="form-label-hint">(tự động từ vai trò)</span>
+                  </label>
+                  <select
+                    v-model="form.account_type"
+                    class="form-input-custom"
+                    disabled
+                  >
+                    <option value="staff">Nhân viên (Staff)</option>
+                    <option value="doctor">Bác sĩ (Doctor)</option>
+                    <option value="patient">Bệnh nhân (Patient)</option>
+                  </select>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div class="d-flex justify-content-end gap-2 mt-3">
-            <button type="button" class="btn btn-outline-secondary" @click="close">Huỷ</button>
-            <button class="btn btn-primary" type="submit" :disabled="saving">{{ saving ? 'Đang lưu…' : 'Lưu' }}</button>
-          </div>
-        </form>
+            <div class="form-section">
+              <div class="form-section-title">
+                <i class="bi bi-link-45deg"></i>
+                Liên kết
+                <span class="form-label-hint">
+                  ({{ form.role === 'doctor' ? 'Bác sĩ' :
+                       form.role === 'patient' ? 'Bệnh nhân' :
+                       'Nhân viên' }})
+                </span>
+              </div>
+              <div class="form-grid">
+                <!-- Staff combobox - cho admin, nurse, receptionist -->
+                <div class="form-group" v-if="form.account_type === 'staff'">
+                  <label class="form-label-custom">
+                    <i class="bi bi-person-lines-fill"></i>
+                    Nhân viên liên kết
+                    <span class="form-label-hint">(cho {{ form.role || 'admin/nurse/receptionist' }})</span>
+                  </label>
+                  <select v-model="form.linked_staff_id" class="form-input-custom">
+                    <option value="">-- chọn Staff chưa liên kết --</option>
+                    <option v-for="s in unlinked.staffs" :key="s.id" :value="s.id">
+                      {{ s.code ? `[${s.code}] ${s.name}` : s.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Doctor combobox - chỉ cho doctor -->
+                <div class="form-group" v-if="form.account_type === 'doctor'">
+                  <label class="form-label-custom">
+                    <i class="bi bi-person-fill-check"></i>
+                    Bác sĩ liên kết
+                    <span class="form-label-hint">(cho vai trò doctor)</span>
+                  </label>
+                  <select v-model="form.linked_doctor_id" class="form-input-custom">
+                    <option value="">-- chọn Doctor chưa liên kết --</option>
+                    <option v-for="d in unlinked.doctors" :key="d.id" :value="d.id">
+                      {{ d.code ? `[${d.code}] ${d.name}` : d.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Patient combobox - chỉ cho patient -->
+                <div class="form-group" v-if="form.account_type === 'patient'">
+                  <label class="form-label-custom">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                    Bệnh nhân liên kết
+                    <span class="form-label-hint">(cho vai trò patient)</span>
+                  </label>
+                  <select v-model="form.linked_patient_id" class="form-input-custom">
+                    <option value="">-- chọn Patient chưa liên kết --</option>
+                    <option v-for="p in unlinked.patients" :key="p.id" :value="p.id">
+                      {{ p.code ? `[${p.code}] ${p.name}` : p.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">
+                <i class="bi bi-gear-fill"></i>
+                Khác
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label-custom">
+                    <i class="bi bi-toggle-on"></i>
+                    Trạng thái
+                  </label>
+                  <select v-model="form.status" class="form-input-custom">
+                    <option value="active">Hoạt động</option>
+                    <option value="inactive">Không hoạt động</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer-custom">
+          <button
+            type="button"
+            class="btn-modal-cancel"
+            @click="closeForm"
+            :disabled="saving"
+          >
+            <i class="bi bi-x-circle"></i>
+            Hủy
+          </button>
+          <button
+            type="button"
+            class="btn-modal-save"
+            @click="save"
+            :disabled="saving"
+          >
+            <i class="bi bi-check-circle-fill"></i>
+            {{ saving ? 'Đang lưu...' : 'Lưu' }}
+          </button>
+        </div>
       </div>
     </div>
   </section>

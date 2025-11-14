@@ -4,7 +4,12 @@
       <!-- Left sidebar: Danh sách cuộc hội thoại -->
       <aside class="chat-sidebar">
         <div class="sidebar-header">
-          <h2 class="h5 mb-0">Tin nhắn tư vấn</h2>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-outline-primary" @click="goHome" title="Quay lại trang chủ">
+              🏠
+            </button>
+            <h2 class="h5 mb-0">Tin nhắn tư vấn</h2>
+          </div>
           <button class="btn btn-sm btn-outline-secondary" @click="loadConsultations" :disabled="loading">
             <i class="bi bi-arrow-clockwise"></i>
           </button>
@@ -438,6 +443,10 @@ export default {
         clearInterval(this.pollingInterval)
         this.pollingInterval = null
       }
+    },
+
+    goHome () {
+      this.$router.push('/')
     }
   }
 }
@@ -469,11 +478,41 @@ export default {
 
 .sidebar-header {
   padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 2px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.sidebar-header h2 {
+  color: white;
+}
+
+.sidebar-header .btn-outline-primary {
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-header .btn-outline-primary:hover {
+  background: white;
+  color: #3b82f6;
+  border-color: white;
+}
+
+.sidebar-header .btn-outline-secondary {
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.sidebar-header .btn-outline-secondary:hover {
+  background: white;
+  color: #3b82f6;
+  border-color: white;
 }
 
 .sidebar-filters {
@@ -501,8 +540,9 @@ export default {
 }
 
 .consultation-item.active {
-  background: #e0e7ff;
-  border-left: 3px solid #6366f1;
+  background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 100%);
+  border-left: 5px solid #3b82f6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
 
 .consultation-item.unread {
@@ -511,8 +551,19 @@ export default {
 
 .consultation-avatar {
   font-size: 36px;
-  color: #9ca3af;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   flex-shrink: 0;
+}
+
+.consultation-item.active .consultation-avatar {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: brightness(1.2);
 }
 
 .consultation-info {
@@ -551,6 +602,16 @@ export default {
   color: #9ca3af;
 }
 
+.consultation-meta .badge.bg-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.consultation-meta .badge.bg-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
 /* ========== Main Chat ========== */
 .chat-main {
   display: flex;
@@ -574,11 +635,12 @@ export default {
 
 .chat-header {
   padding: 16px 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 2px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .chat-header-info {
@@ -589,24 +651,56 @@ export default {
 
 .chat-avatar {
   font-size: 40px;
-  color: #6366f1;
+  color: white;
+  opacity: 0.95;
 }
 
 .chat-title {
   font-weight: 600;
   font-size: 16px;
-  color: #111827;
+  color: white;
 }
 
 .chat-subtitle {
   font-size: 13px;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .chat-header-actions {
   display: flex;
   gap: 8px;
   align-items: center;
+}
+
+.chat-header-actions .btn-primary {
+  background: white;
+  color: #3b82f6;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+}
+
+.chat-header-actions .btn-primary:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.chat-header-actions .btn-outline-danger {
+  border: 2px solid white;
+  color: white;
+  background: transparent;
+}
+
+.chat-header-actions .btn-outline-danger:hover {
+  background: white;
+  color: #dc2626;
+  border-color: white;
+}
+
+.chat-header-actions .badge {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #64748b !important;
 }
 
 .chat-messages {
@@ -625,14 +719,28 @@ export default {
   max-width: 70%;
   padding: 10px 14px;
   border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.message-bubble:hover {
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
+  border-color: #bfdbfe;
 }
 
 .message-staff .message-bubble {
   margin-left: auto;
-  background: #6366f1;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: #fff;
+  box-shadow: 0 3px 12px rgba(59, 130, 246, 0.4);
+}
+
+.message-staff .message-bubble:hover {
+  box-shadow: 0 5px 16px rgba(59, 130, 246, 0.5);
+  transform: translateY(-2px);
 }
 
 .message-sender {
@@ -658,6 +766,22 @@ export default {
   padding: 16px 24px;
   border-top: 1px solid #e5e7eb;
   background: #fff;
+}
+
+.chat-input .btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: none;
+  box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
+}
+
+.chat-input .btn-primary:hover {
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.chat-input .form-control:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .chat-input-closed {
