@@ -212,6 +212,7 @@ import MedicalTestService from '@/api/medicalTestService'
 import TreatmentService from '@/api/treatmentService'
 import MedicationService from '@/api/medicationService'
 import InvoiceService from '@/api/invoiceService'
+import ReportService from '@/api/reportService'
 
 export default {
   name: 'HomeView',
@@ -360,43 +361,54 @@ export default {
     async loadStatistics () {
       this.loading = true
       try {
-        // Tải tất cả dữ liệu song song
+        let dashboardStats = null
+        try {
+          dashboardStats = await ReportService.getDashboardStats()
+        } catch (err) {
+          console.warn('Không thể lấy dashboard stats, sẽ fallback sang đếm thủ công:', err?.message || err)
+        }
+
+        let patientCount = dashboardStats?.total_patients
+        let medicalRecordCount = dashboardStats?.total_records
+
+        if (patientCount === undefined || medicalRecordCount === undefined) {
+          const [patientFallback, medicalRecordFallback] = await Promise.allSettled([
+            this.getPatientCount(),
+            this.getMedicalRecordCount()
+          ])
+
+          patientCount = patientFallback.status === 'fulfilled' ? patientFallback.value : 0
+          medicalRecordCount = medicalRecordFallback.status === 'fulfilled' ? medicalRecordFallback.value : 0
+        }
+
+        this.statistics[0].value = this.formatNumber(patientCount || 0)
+        this.updateManagementCount('Bệnh nhân', patientCount || 0)
+
+        this.statistics[1].value = this.formatNumber(medicalRecordCount || 0)
+        this.updateManagementCount('Hồ sơ y tế', medicalRecordCount || 0)
+        this.updateManagementCount('Báo cáo', medicalRecordCount || 0)
+
         const [
-          patientsRes,
           staffRes,
           doctorsRes,
           usersRes,
           rolesRes,
-          medicalRecordsRes,
           appointmentsRes,
           medicalTestsRes,
           treatmentsRes,
           medicationsRes,
           invoicesRes
         ] = await Promise.allSettled([
-          this.getPatientCount(),
           this.getStaffCount(),
           this.getDoctorCount(),
           this.getUserCount(),
           this.getRoleCount(),
-          this.getMedicalRecordCount(),
           this.getAppointmentCount(),
           this.getMedicalTestCount(),
           this.getTreatmentCount(),
           this.getMedicationCount(),
           this.getInvoiceCount()
         ])
-
-        // Cập nhật thống kê chính
-        if (patientsRes.status === 'fulfilled') {
-          this.statistics[0].value = this.formatNumber(patientsRes.value)
-          this.updateManagementCount('Bệnh nhân', patientsRes.value)
-        }
-
-        if (medicalRecordsRes.status === 'fulfilled') {
-          this.statistics[1].value = this.formatNumber(medicalRecordsRes.value)
-          this.updateManagementCount('Hồ sơ y tế', medicalRecordsRes.value)
-        }
 
         if (staffRes.status === 'fulfilled') {
           this.statistics[2].value = this.formatNumber(staffRes.value)
@@ -408,7 +420,6 @@ export default {
           this.updateManagementCount('Người dùng', usersRes.value)
         }
 
-        // Cập nhật các management counts khác
         if (doctorsRes.status === 'fulfilled') {
           this.updateManagementCount('Bác sĩ', doctorsRes.value)
         }
@@ -437,7 +448,6 @@ export default {
           this.updateManagementCount('Hóa đơn', invoicesRes.value)
         }
 
-        // Cập nhật hoạt động gần đây
         this.updateRecentActivities()
       } catch (error) {
         console.error('Lỗi khi tải dữ liệu thống kê:', error)
@@ -599,10 +609,6 @@ export default {
       // Thử các cấu trúc response khác nhau
       if (typeof res.total === 'number') return res.total
       if (typeof res.total_rows === 'number') {
-        // Nếu có rows, đếm sau khi filter _design docs
-        if (Array.isArray(res.rows)) {
-          return filterDesignDocs(res.rows).length
-        }
         return res.total_rows
       }
       if (typeof res.count === 'number') return res.count

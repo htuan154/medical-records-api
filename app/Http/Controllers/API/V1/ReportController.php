@@ -13,6 +13,9 @@ use App\Services\CouchDB\TreatmentService;
 use App\Services\CouchDB\ConsultationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use DateInterval;
+use DatePeriod;
+use DateTime;
 use Exception;
 
 class ReportController extends Controller
@@ -37,6 +40,9 @@ class ReportController extends Controller
         try {
             // Debug: Log user info
             $auth = $request->attributes->get('auth');
+            if (is_object($auth)) {
+                $auth = (array) $auth;
+            }
             Log::info('Dashboard access attempt', [
                 'user_id' => $auth['sub'] ?? 'unknown',
                 'auth_data' => $auth
@@ -160,63 +166,130 @@ class ReportController extends Controller
     public function getRevenueStats(Request $request)
     {
         try {
-            $recordsResult = $this->medicalRecordService->list(1000);
-            $records = $recordsResult['rows'] ?? $recordsResult['data'] ?? [];
-            
-            // Thử lấy invoices
-            try {
-                $invoicesResult = $this->invoiceService->list(1000);
-                $invoices = $invoicesResult['rows'] ?? $invoicesResult['data'] ?? [];
-            } catch (Exception $e) {
-                $invoices = [];
-            }
-            
-            $monthlyRevenue = [];
-            
-            // Nếu có hóa đơn thực
-            if (count($invoices) > 0) {
-                foreach ($invoices as $invoiceItem) {
-                    $invoice = $invoiceItem['doc'] ?? $invoiceItem;
-                    $date = $invoice['created_at'] ?? $invoice['invoice_date'] ?? date('Y-m-d');
-                    $month = date('Y-m', strtotime($date));
-                    
-                    if (!isset($monthlyRevenue[$month])) {
-                        $monthlyRevenue[$month] = 0;
-                    }
-                    
-                    $monthlyRevenue[$month] += floatval($invoice['total_amount'] ?? $invoice['amount'] ?? 0);
+            [$startDate, $endDate] = $this->normalizeDateRange(
+                $request->query('start_date'),
+                $request->query('end_date')
+            );
+
+            $invoiceResult = $this->invoiceService->list(2000);
+            $invoiceRows = $invoiceResult['rows'] ?? $invoiceResult['data'] ?? [];
+
+            $patientResult = $this->patientService->list(5000);
+            $patientRows = $patientResult['rows'] ?? $patientResult['data'] ?? [];
+
+            $patientBirthMap = [];
+            foreach ($patientRows as $patientRow) {
+                $patient = $patientRow['doc'] ?? $patientRow;
+                if (!isset($patient['_id'])) {
+                    continue;
                 }
-            } else {
-                // Ước lượng từ medical records
-                foreach ($records as $recordItem) {
-                    $record = $recordItem['doc'] ?? $recordItem;
-                    $date = $record['created_at'] ?? date('Y-m-d');
-                    $month = date('Y-m', strtotime($date));
-                    
-                    if (!isset($monthlyRevenue[$month])) {
-                        $monthlyRevenue[$month] = 0;
+                $patientBirthMap[$patient['_id']] = $patient['birth_date']
+                    ?? ($patient['personal_info']['birth_date'] ?? null);
+            }
+
+            $monthlyTotals = [];
+            $over40 = 0;
+            $under40 = 0;
+            $totalRevenue = 0;
+
+            foreach ($invoiceRows as $invoiceRow) {
+                $invoice = $invoiceRow['doc'] ?? $invoiceRow;
+
+                $invoiceDateValue = $this->resolveInvoiceDate($invoice);
+                if (!$invoiceDateValue) {
+                    continue;
+                }
+
+                $invoiceDate = new DateTime($invoiceDateValue);
+                if ($invoiceDate < $startDate || $invoiceDate > $endDate) {
+                    continue;
+                }
+
+                $amount = $this->extractInvoiceAmount($invoice);
+                if ($amount <= 0) {
+                    continue;
+                }
+
+                $monthKey = $invoiceDate->format('Y-m');
+                $monthlyTotals[$monthKey] = ($monthlyTotals[$monthKey] ?? 0) + $amount;
+                $totalRevenue += $amount;
+
+                $patientId = $invoice['patient_id'] ?? null;
+                if ($patientId && isset($patientBirthMap[$patientId])) {
+                    $age = $this->calculateAge($patientBirthMap[$patientId]);
+                    if ($age >= 40) {
+                        $over40++;
+                    } else {
+                        $under40++;
                     }
-                    
-                    $monthlyRevenue[$month] += 500000; // 500k/khám
                 }
             }
-            
-            // Convert to array format
-            $result = [];
-            foreach ($monthlyRevenue as $month => $revenue) {
-                $result[] = [
-                    'period' => $month,
-                    'revenue' => $revenue
+
+            $monthlyData = [];
+            $monthPeriod = new DatePeriod(
+                (clone $startDate)->modify('first day of this month'),
+                new DateInterval('P1M'),
+                (clone $endDate)->modify('first day of next month')
+            );
+
+            foreach ($monthPeriod as $month) {
+                $key = $month->format('Y-m');
+                $monthlyData[] = [
+                    'month' => $key,
+                    'label' => $month->format('m/Y'),
+                    'revenue' => round($monthlyTotals[$key] ?? 0, 2)
                 ];
             }
-            
-            // Sort by month
-            usort($result, function($a, $b) {
-                return strcmp($a['period'], $b['period']);
-            });
-            
-            return response()->json($result);
-            
+
+            $highest = null;
+            $lowest = null;
+            foreach ($monthlyData as $entry) {
+                if ($highest === null || $entry['revenue'] > $highest['revenue']) {
+                    $highest = $entry;
+                }
+                if ($lowest === null || $entry['revenue'] < $lowest['revenue']) {
+                    $lowest = $entry;
+                }
+            }
+
+            $trendDirection = 'flat';
+            if (count($monthlyData) >= 2) {
+                $first = $monthlyData[0]['revenue'];
+                $last = $monthlyData[count($monthlyData) - 1]['revenue'];
+                if ($last > $first) {
+                    $trendDirection = 'up';
+                } elseif ($last < $first) {
+                    $trendDirection = 'down';
+                }
+            }
+
+            $ageTotal = max(1, $over40 + $under40);
+            $ageDistribution = [
+                'over_40' => [
+                    'label' => '>= 40 tuổi',
+                    'count' => $over40,
+                    'percentage' => round(($over40 / $ageTotal) * 100, 2)
+                ],
+                'under_40' => [
+                    'label' => '< 40 tuổi',
+                    'count' => $under40,
+                    'percentage' => round(($under40 / $ageTotal) * 100, 2)
+                ]
+            ];
+
+            return response()->json([
+                'start_date' => $startDate->format('Y-m-d'),
+                'end_date' => $endDate->format('Y-m-d'),
+                'total_revenue' => round($totalRevenue, 2),
+                'monthly' => $monthlyData,
+                'age_distribution' => $ageDistribution,
+                'trend' => [
+                    'direction' => $trendDirection,
+                    'highest_month' => $highest,
+                    'lowest_month' => $lowest
+                ]
+            ]);
+
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'Failed to load revenue stats',
@@ -359,47 +432,99 @@ class ReportController extends Controller
     public function getAppointmentStats(Request $request)
     {
         try {
-            $appointmentsResult = $this->appointmentService->list(1000);
+            [$startDate, $endDate] = $this->normalizeDateRange(
+                $request->query('start_date'),
+                $request->query('end_date')
+            );
+
+            $appointmentsResult = $this->appointmentService->list(2000);
             $appointments = $appointmentsResult['rows'] ?? $appointmentsResult['data'] ?? [];
             
             $dailyStats = [];
-            $now = new \DateTime();
-            
-            // Get last 7 days
-            for ($i = 6; $i >= 0; $i--) {
-                $date = clone $now;
-                $date->sub(new \DateInterval("P{$i}D"));
-                $dateStr = $date->format('Y-m-d');
-                
-                $dailyStats[$dateStr] = [
+            $typeDistribution = [];
+            $totalAppointments = 0;
+
+            $dayPeriod = new DatePeriod(
+                (clone $startDate),
+                new DateInterval('P1D'),
+                (clone $endDate)->modify('+1 day')
+            );
+
+            foreach ($dayPeriod as $day) {
+                $dailyStats[$day->format('Y-m-d')] = [
                     'total_appointments' => 0,
                     'completed' => 0,
-                    'cancelled' => 0
+                    'cancelled' => 0,
+                    'scheduled' => 0
                 ];
             }
             
             foreach ($appointments as $appointmentItem) {
                 $appointment = $appointmentItem['doc'] ?? $appointmentItem;
-                $appDate = date('Y-m-d', strtotime($appointment['appointment_date'] ?? ''));
-                
-                if (isset($dailyStats[$appDate])) {
-                    $dailyStats[$appDate]['total_appointments']++;
-                    
-                    $status = $appointment['status'] ?? 'pending';
-                    if ($status === 'completed') {
-                        $dailyStats[$appDate]['completed']++;
-                    } elseif ($status === 'cancelled') {
-                        $dailyStats[$appDate]['cancelled']++;
-                    }
+                $appointmentInfo = $appointment['appointment_info'] ?? [];
+                $scheduled = $appointmentInfo['scheduled_date'] ?? $appointmentInfo['date'] ?? null;
+                $scheduled ??= $appointment['appointment_date'] ?? $appointment['created_at'] ?? null;
+                if (!$scheduled) {
+                    continue;
                 }
+
+                $appointmentDate = new DateTime($scheduled);
+                if ($appointmentDate < $startDate || $appointmentDate > $endDate) {
+                    continue;
+                }
+
+                $dayKey = $appointmentDate->format('Y-m-d');
+                
+                if (!isset($dailyStats[$dayKey])) {
+                    $dailyStats[$dayKey] = [
+                        'total_appointments' => 0,
+                        'completed' => 0,
+                        'cancelled' => 0,
+                        'scheduled' => 0
+                    ];
+                }
+                
+                $dailyStats[$dayKey]['total_appointments']++;
+                $totalAppointments++;
+                    
+                $status = $appointment['status'] ?? 'scheduled';
+                if ($status === 'completed') {
+                    $dailyStats[$dayKey]['completed']++;
+                } elseif ($status === 'cancelled') {
+                    $dailyStats[$dayKey]['cancelled']++;
+                } else {
+                    $dailyStats[$dayKey]['scheduled']++;
+                }
+
+                $typeKey = $appointment['appointment_type']
+                    ?? $appointment['type']
+                    ?? $appointment['category']
+                    ?? 'other';
+                $typeDistribution[$typeKey] = ($typeDistribution[$typeKey] ?? 0) + 1;
             }
             
             $result = [];
             foreach ($dailyStats as $date => $stats) {
                 $result[] = array_merge(['date' => $date], $stats);
             }
+
+            $typeChart = [];
+            $distributionTotal = array_sum($typeDistribution) ?: 1;
+            foreach ($typeDistribution as $type => $count) {
+                $typeChart[] = [
+                    'type' => $type,
+                    'count' => $count,
+                    'percentage' => round(($count / $distributionTotal) * 100, 2)
+                ];
+            }
             
-            return response()->json($result);
+            return response()->json([
+                'start_date' => $startDate->format('Y-m-d'),
+                'end_date' => $endDate->format('Y-m-d'),
+                'total_appointments' => $totalAppointments,
+                'daily' => $result,
+                'type_distribution' => $typeChart
+            ]);
             
         } catch (Exception $e) {
             return response()->json([
@@ -539,6 +664,33 @@ class ReportController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    private function normalizeDateRange(?string $start = null, ?string $end = null): array
+    {
+        $endDate = $end ? new DateTime($end) : new DateTime();
+        $startDate = $start ? new DateTime($start) : (clone $endDate)->modify('-11 months');
+
+        $startDate->setTime(0, 0, 0);
+        $endDate->setTime(23, 59, 59);
+
+        if ($startDate > $endDate) {
+            [$startDate, $endDate] = [$endDate, $startDate];
+        }
+
+        return [$startDate, $endDate];
+    }
+
+    private function resolveInvoiceDate(array $invoice): ?string
+    {
+        $invoiceInfo = $invoice['invoice_info']['invoice_date'] ?? null;
+        if ($invoiceInfo) {
+            return $invoiceInfo;
+        }
+
+        return $invoice['invoice_date']
+            ?? $invoice['created_at']
+            ?? null;
     }
 
     /**
