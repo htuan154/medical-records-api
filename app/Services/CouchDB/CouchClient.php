@@ -16,6 +16,7 @@ class CouchClient
     protected string $password;
     protected int $timeout;
     protected int $connectTimeout;
+    protected bool $verifySsl;
     protected ?string $db = null;
 
     public function __construct()
@@ -33,6 +34,7 @@ class CouchClient
         $this->password = $config['password'] ?? env('COUCHDB_PASSWORD', '');
         $this->timeout = max(1, (int) ($config['timeout'] ?? 10));
         $this->connectTimeout = max(1, (int) ($config['connect_timeout'] ?? 5));
+        $this->verifySsl = (bool) ($config['verify_ssl'] ?? true);
     }
 
 
@@ -53,7 +55,10 @@ class CouchClient
             ->acceptJson()
             ->asJson()
             ->timeout($this->timeout)
-            ->connectTimeout($this->connectTimeout);
+            ->connectTimeout($this->connectTimeout)
+            ->withOptions([
+                'verify' => $this->verifySsl,
+            ]);
     }
 
     /** Expose configured PendingRequest for setup/admin flows */
