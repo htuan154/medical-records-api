@@ -13,7 +13,6 @@
         <div class="header-actions">
       <button class="btn-action btn-back" @click="goHome" title="Quay lại Trang chủ">
         <i class="bi bi-arrow-left"></i>
-        Trang chủ
       </button>
           <div class="stats-badge">
             <i class="bi bi-bar-chart-fill"></i>
@@ -867,10 +866,13 @@ export default {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-  border: none;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: #fff !important;
+  color: #2563eb !important;
+  border: 1.5px solid #3b82f6 !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  transition: all 0.2s !important;
 }
 
 .btn-back {
@@ -889,8 +891,11 @@ export default {
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  background: #2563eb !important;
+  color: #fff !important;
+  border-color: #2563eb !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.12) !important;
 }
 
 /* Search Section */

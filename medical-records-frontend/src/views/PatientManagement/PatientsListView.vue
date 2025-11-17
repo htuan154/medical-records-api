@@ -13,17 +13,19 @@
         <div class="header-actions">
           <button class="btn-action btn-back" @click="goHome" title="Quay lại Trang chủ">
             <i class="bi bi-arrow-left"></i>
-            Trang chủ
           </button>
-          <div class="stats-badge">
-            <i class="bi bi-bar-chart-fill"></i>
-            <span>Tổng: <strong>{{ items.length }}</strong></span>
-          </div>
           <button class="btn-action btn-refresh" @click="refreshPage" :disabled="loading" title="Tải lại">
             <i class="bi bi-arrow-clockwise"></i>
           </button>
-          <button class="btn-action btn-primary" @click="openCreate" :disabled="loading">
-            <i class="bi bi-plus-circle"></i>
+          <div class="stats-badge">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Tổng: <strong>{{ items.length }}</strong></span>
+          </div>
+          <select v-model.number="pageSize" class="page-size-select" title="Số bản ghi mỗi trang">
+            <option v-for="size in [10, 25, 50, 100]" :key="size" :value="size">{{ size }} / trang</option>
+          </select>
+          <button class="btn-action btn-add-new" @click="openCreate" :disabled="loading">
+            <i class="bi bi-plus-lg"></i>
             Thêm mới
           </button>
         </div>
@@ -93,33 +95,16 @@
                   </td>
                   <td class="cell-actions">
                     <div class="action-buttons">
-                      <button
-                        class="action-btn view-btn"
-                        @click="toggleExpand(p)"
-                        :title="expandedId === getId(p) ? 'Ẩn chi tiết' : 'Xem chi tiết'"
-                      >
-                        <i :class="expandedId === getId(p) ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                      <button class="action-btn view-btn" @click="toggleExpand(p)" :title="expandedId === getId(p) ? 'Thu gọn' : 'Xem chi tiết'">
+                        <i :class="expandedId === getId(p) ? 'bi bi-chevron-up' : 'bi bi-eye'" />
                       </button>
-                      <button
-                        class="action-btn edit-btn"
-                        @click="openEdit(p)"
-                        title="Chỉnh sửa"
-                      >
-                        <i class="bi bi-pencil"></i>
-                      </button>
-                      <button
-                        class="action-btn delete-btn"
-                        @click="confirmRemove(p)"
-                        :disabled="loading"
-                        title="Xóa bệnh nhân"
-                      >
-                        <i class="bi bi-trash"></i>
-                      </button>
+                      <button class="action-btn edit-btn" @click="openEdit(p)"><i class="bi bi-pencil-square"></i></button>
+                      <button class="action-btn delete-btn" @click="confirmRemove(p)" :disabled="deleting"><i class="bi bi-trash"></i></button>
                     </div>
                   </td>
                 </tr>
 
-                <!-- Detail Row -->
+                <!-- Detail Row (expanded view) -->
                 <tr v-if="expandedId === getId(p)" class="detail-row">
                   <td colspan="7" class="detail-cell">
                     <div class="patient-detail-card">
@@ -268,43 +253,34 @@
           </table>
         </div>
 
-        <!-- Pagination Section -->
+        <!-- Pagination Section (Material style) -->
         <div class="pagination-section">
-          <div class="pagination-info-row">
-            <span class="page-info">
-              <i class="bi bi-file-earmark-text"></i>
-              Trang <b>{{ page }} / {{ totalPages }}</b>
-              <span class="total-info">- Hiển thị {{ shownItems.length }} trong tổng số {{ (filtered.length || items.length) }} bệnh nhân</span>
+          <div class="pagination-info-row material-pagination-info">
+            <i class="bi bi-info-circle"></i>
+            <span>
+              Hiển thị {{ (page - 1) * pageSize + 1 }} - {{ Math.min(page * pageSize, filtered.length ? filtered.length : items.length) }} trong tổng số <b>{{ filtered.length ? filtered.length : items.length }}</b> bản ghi
             </span>
           </div>
-          <div class="pagination-controls-center">
-            <button
-              class="pagination-btn prev-btn"
-              @click="prevPage"
-              :disabled="page <= 1"
-              title="Trang trước"
-            >
+          <div class="material-pagination-controls">
+            <button class="material-pagination-btn" :disabled="page === 1" @click="goToPage(1)">
+              <i class="bi bi-chevron-double-left"></i>
+            </button>
+            <button class="material-pagination-btn" :disabled="page === 1" @click="prevPage">
               <i class="bi bi-chevron-left"></i>
             </button>
-            <div class="page-numbers">
-              <button
-                v-for="pageNum in getPageNumbers()"
-                :key="pageNum"
-                class="page-number-btn"
-                :class="{ 'active': pageNum === page, 'ellipsis': pageNum === '...' }"
-                @click="goToPage(pageNum)"
-                :disabled="pageNum === '...' || pageNum === page"
-              >
-                {{ pageNum }}
-              </button>
-            </div>
-            <button
-              class="pagination-btn next-btn"
-              @click="nextPage"
-              :disabled="page >= totalPages"
-              title="Trang sau"
+            <button v-for="num in getPageNumbers()" :key="num"
+              class="material-pagination-btn"
+              :class="{ active: num === page, ellipsis: num === '...' }"
+              :disabled="num === '...'"
+              @click="goToPage(num)"
             >
+              {{ num }}
+            </button>
+            <button class="material-pagination-btn" :disabled="page === totalPages" @click="nextPage">
               <i class="bi bi-chevron-right"></i>
+            </button>
+            <button class="material-pagination-btn" :disabled="page === totalPages" @click="goToPage(totalPages)">
+              <i class="bi bi-chevron-double-right"></i>
             </button>
           </div>
         </div>
@@ -1169,16 +1145,43 @@ function onPhoneInput (e) {
   transform: scale(1.05);
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-  border: none;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+/* Add New Button Custom Style */
+/* Đảm bảo nút Thêm mới có chiều rộng bằng với select */
+/* Đảm bảo nút Thêm mới có chiều rộng đúng bằng select */
+/* Đảm bảo chữ Thêm mới không bị xuống dòng */
+.btn-add-new {
+  background: #fff;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  min-width: 120px;
+  width: 120px;
+  min-height: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: none;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+.btn-add-new i {
+  font-size: 1.3rem;
+  color: #2563eb;
+  transition: color 0.2s;
+}
+.btn-add-new:hover:not(:disabled) {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.10);
+  transform: translateY(-1px) scale(1.04);
+}
+.btn-add-new:hover:not(:disabled) i {
+  color: #fff;
 }
 
 .btn-back {
@@ -1195,6 +1198,36 @@ function onPhoneInput (e) {
   color: #fff;
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(59, 130, 246, 0.18);
+}
+
+.page-size-select {
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232563eb' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  min-width: 120px;
+}
+
+.page-size-select:hover {
+  background: white;
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.page-size-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* Search Section */
@@ -1581,134 +1614,72 @@ function onPhoneInput (e) {
   margin: 0;
 }
 
-/* Pagination Section */
-.pagination-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 0 0.5rem;
-  border-top: 1px solid #e5e7eb;
-  margin-top: 1.5rem;
-  background: transparent;
-  gap: 0.5rem;
-}
-
-.pagination-info-row {
+/* Material style pagination */
+.material-pagination-info {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 1.04rem;
-  color: #374151;
-  margin-bottom: 0.15rem;
-  font-weight: 500;
-}
-
-.page-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-}
-
-.page-info i {
-  color: #3b82f6;
-}
-
-.total-info {
-  font-size: 0.85rem;
+  justify-content: flex-start;
+  font-size: 1.08rem;
   color: #64748b;
-  font-weight: 400;
-  margin-left: 0.5rem;
+  font-weight: 500;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
 }
-
-.pagination-controls-center {
+.material-pagination-info i {
+  color: #3b82f6;
+  font-size: 1.3rem;
+}
+.material-pagination-controls {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+/* Material pagination buttons: square style */
+.material-pagination-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
   background: #fff;
-  border-radius: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  border: 1px solid #e5e7eb;
-  padding: 0.15rem 0.5rem;
-  min-width: 120px;
-  max-width: 180px;
-  gap: 0;
-  height: 2.6rem;
-}
-
-.pagination-btn {
-  width: 2.4rem;
-  height: 2.4rem;
-  border: none;
-  background: transparent;
-  color: #b0b6be;
-  border-radius: 50%;
+  color: #2563eb;
+  border-radius: 12px;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, color 0.15s;
-  cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.18rem;
   margin: 0 0.1rem;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background: #f3f4f6;
-  color: #2563eb;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: transparent;
-  color: #e5e7eb;
-}
-
-.page-numbers {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  margin: 0;
-}
-
-.page-number-btn {
-  width: 2.4rem;
-  height: 2.4rem;
-  border: none;
-  background: transparent;
-  color: #2563eb;
-  border-radius: 50%;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s, color 0.15s;
+  box-shadow: 0 2px 12px rgba(37,99,235,0.08);
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
   cursor: pointer;
-  font-size: 1.1rem;
-  margin: 0 0.1rem;
+  outline: none;
+  position: relative;
 }
-
-.page-number-btn:hover:not(:disabled):not(.ellipsis) {
-  background: #f3f4f6;
-  color: #2563eb;
-}
-
-.page-number-btn.active {
+.material-pagination-btn.active {
   background: #2563eb;
   color: #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.10);
+  box-shadow: 0 4px 16px rgba(37,99,235,0.18);
   z-index: 1;
 }
 
-.page-number-btn.ellipsis {
-  border: none;
+.material-pagination-btn.ellipsis {
   background: transparent;
-  cursor: default;
   color: #b0b6be;
-  font-weight: 400;
+  cursor: default;
+  box-shadow: none;
+}
+.material-pagination-btn:disabled {
+  background: #f3f4f6;
+  color: #b0b6be;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.7;
+}
+.material-pagination-btn:hover:not(:disabled):not(.active):not(.ellipsis) {
+  background: #e0e7ff;
+  color: #2563eb;
+  box-shadow: 0 2px 12px rgba(37,99,235,0.13);
 }
 
 /* Responsive Design */

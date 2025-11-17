@@ -9,7 +9,7 @@
         </h1>
         <div class="header-actions">
           <button class="btn-action btn-action-home" @click="goHome">
-            <i class="bi bi-house-door"></i>
+            <i class="bi bi-arrow-left"></i>
           </button>
           <button class="btn-action btn-action-reload" @click="reload" :disabled="loading">
             <i class="bi bi-arrow-clockwise"></i>
@@ -692,6 +692,7 @@ export default {
     goToPage (p) {
       if (p === '...' || p === this.page) return
       this.page = p
+      this.fetch()
     },
 
     changePageSize () {
@@ -1466,7 +1467,7 @@ export default {
 .invoices-management {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem 1rem;
+  padding: 0 1rem;
 }
 
 /* =========================

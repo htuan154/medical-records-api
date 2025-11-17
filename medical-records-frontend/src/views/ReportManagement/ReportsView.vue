@@ -1,9 +1,13 @@
 <template>
   <section class="container py-4">
+    <!-- Back to Home Arrow (moved to header) -->
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="h3 mb-0">📊 Báo cáo & Thống kê</h1>
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 align-items-center">
+        <button class="btn btn-icon btn-outline-primary me-2" @click="goHome" title="Về trang chủ" style="padding: 0.5rem 0.7rem; font-size: 1.25rem;">
+          ←
+        </button>
         <button class="btn btn-outline-secondary" @click="refreshDashboard" :disabled="loading">
           🔄 Làm mới
         </button>
@@ -417,6 +421,14 @@ export default {
     }
   },
   methods: {
+    goHome () {
+      // Nếu dùng Vue Router
+      if (this.$router) {
+        this.$router.push({ name: 'home' })
+      } else {
+        window.location.href = '/'
+      }
+    },
     // Utility functions
     getDateString (daysFromNow) {
       const date = new Date()
@@ -1633,6 +1645,19 @@ export default {
 </script>
 
 <style scoped>
+/* Nút icon nhỏ cho mũi tên về trang chủ */
+.btn-icon {
+  background: #e7f0fd;
+  color: #1976d2;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+  transition: background 0.2s;
+}
+.btn-icon:hover, .btn-icon:focus {
+  background: #d0e3fa;
+  color: #125ea7;
+}
 .card {
   border: none;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);

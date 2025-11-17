@@ -13,7 +13,6 @@
         <div class="header-actions">
           <button class="btn-action btn-back" @click="$router.go(-1)">
             <i class="bi bi-arrow-left"></i>
-            Quay lại
           </button>
           <button class="btn-action btn-refresh" @click="reload" :disabled="loading">
             <i class="bi bi-arrow-clockwise"></i>
@@ -435,22 +434,20 @@ export default {
 
   computed: {
     visiblePages () {
-      const delta = 2
+      const totalPages = Math.max(1, Math.ceil(this.total / this.pageSize))
+      const current = this.page
       const pages = []
-      const totalPages = Math.ceil(this.total / this.pageSize)
-
-      for (let i = 1; i <= totalPages; i++) {
-        if (
-          i === 1 ||
-          i === totalPages ||
-          (i >= this.page - delta && i <= this.page + delta)
-        ) {
-          pages.push(i)
-        } else if (pages[pages.length - 1] !== '...') {
-          pages.push('...')
+      if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) pages.push(i)
+      } else {
+        if (current <= 3) {
+          pages.push(1, 2, 3, 4, '...', totalPages)
+        } else if (current >= totalPages - 2) {
+          pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages)
+        } else {
+          pages.push(1, '...', current - 1, current, current + 1, '...', totalPages)
         }
       }
-
       return pages
     }
   },
@@ -474,6 +471,7 @@ export default {
     goToPage (p) {
       if (p === '...' || p === this.page) return
       this.page = p
+      this.fetch()
     },
 
     changePageSize () {

@@ -14,7 +14,6 @@
           <div class="header-actions">
             <button class="btn-action btn-back" @click="$router.push('/')" title="Quay lại Trang chủ">
               <i class="bi bi-arrow-left"></i>
-              Trang chủ
             </button>
             <div class="stats-badge">
               <i class="bi bi-bar-chart-fill"></i>

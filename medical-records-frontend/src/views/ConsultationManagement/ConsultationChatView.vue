@@ -1,12 +1,49 @@
 <template>
   <section class="consultation-chat">
+    <!-- Notification Toast -->
+    <transition name="slide-down">
+      <div v-if="showNotification" class="notification-toast" :class="`notification-${notificationType}`">
+        <div class="notification-content">
+          <i class="bi" :class="{
+            'bi-check-circle-fill': notificationType === 'success',
+            'bi-exclamation-triangle-fill': notificationType === 'warning',
+            'bi-info-circle-fill': notificationType === 'info',
+            'bi-x-circle-fill': notificationType === 'error'
+          }"></i>
+          <span>{{ notificationMessage }}</span>
+          <button class="notification-close" @click="showNotification = false">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Confirmation Dialog -->
+    <transition name="fade">
+      <div v-if="showConfirmDialog" class="confirm-overlay" @click="cancelConfirm">
+        <div class="confirm-dialog" @click.stop>
+          <div class="confirm-header">
+            <i class="bi bi-exclamation-circle"></i>
+            <h3>Xác nhận</h3>
+          </div>
+          <div class="confirm-body">
+            <p>{{ confirmMessage }}</p>
+          </div>
+          <div class="confirm-footer">
+            <button class="btn btn-secondary" @click="cancelConfirm">Hủy</button>
+            <button class="btn btn-primary" @click="acceptConfirm">Xác nhận</button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
     <div class="chat-container">
       <!-- Left sidebar: Danh sách cuộc hội thoại -->
       <aside class="chat-sidebar">
         <div class="sidebar-header">
           <div class="d-flex align-items-center gap-2">
             <button class="btn btn-sm btn-outline-primary" @click="goHome" title="Quay lại trang chủ">
-              🏠
+              <i class="bi bi-arrow-left"></i>
             </button>
             <h2 class="h5 mb-0">Tin nhắn tư vấn</h2>
           </div>
@@ -175,7 +212,17 @@ export default {
       messageText: '',
 
       currentUser: null,
-      pollingInterval: null
+      pollingInterval: null,
+
+      // Notification
+      showNotification: false,
+      notificationMessage: '',
+      notificationType: 'success', // 'success', 'error', 'warning', 'info'
+
+      // Confirmation Dialog
+      showConfirmDialog: false,
+      confirmMessage: '',
+      confirmCallback: null
     }
   },
   async created () {
@@ -219,7 +266,7 @@ export default {
         }
       } catch (e) {
         console.error('Load consultations failed:', e)
-        alert(e?.response?.data?.message || e?.message || 'Không tải được danh sách')
+        this.showNotify(e?.response?.data?.message || e?.message || 'Không tải được danh sách', 'error')
       } finally {
         this.loading = false
       }
@@ -278,7 +325,7 @@ export default {
         }
       } catch (e) {
         console.error('Load messages failed:', e)
-        alert(e?.response?.data?.message || e?.message || 'Không tải được tin nhắn')
+        this.showNotify(e?.response?.data?.message || e?.message || 'Không tải được tin nhắn', 'error')
       } finally {
         this.loadingMessages = false
       }
@@ -314,7 +361,7 @@ export default {
         await this.loadConsultations()
       } catch (e) {
         console.error('Take consultation failed:', e)
-        alert(e?.response?.data?.message || e?.message || 'Không thể tiếp nhận')
+        this.showNotify(e?.response?.data?.message || e?.message || 'Không thể tiếp nhận', 'error')
       } finally {
         this.processing = false
       }
@@ -323,8 +370,12 @@ export default {
     async closeConsultation () {
       if (!this.selectedConsultation) return
 
-      if (!confirm('Bạn chắc chắn muốn đóng cuộc hội thoại này?')) return
+      this.showConfirm('Bạn chắc chắn muốn đóng cuộc hội thoại này?', async () => {
+        await this.performCloseConsultation()
+      })
+    },
 
+    async performCloseConsultation () {
       this.processing = true
       try {
         await ConsultationService.closeConsultation(this.selectedConsultation._id)
@@ -332,10 +383,10 @@ export default {
         await this.loadConsultations()
 
         // Thông báo thành công
-        alert('Đã đóng cuộc hội thoại thành công!')
+        this.showNotify('Đã đóng cuộc hội thoại thành công!', 'success')
       } catch (e) {
         console.error('Close consultation failed:', e)
-        alert(e?.response?.data?.message || e?.message || 'Không thể đóng')
+        this.showNotify(e?.response?.data?.message || e?.message || 'Không thể đóng', 'error')
       } finally {
         this.processing = false
       }
@@ -368,7 +419,7 @@ export default {
         await this.loadConsultations()
       } catch (e) {
         console.error('Send message failed:', e)
-        alert(e?.response?.data?.message || e?.message || 'Không gửi được tin nhắn')
+        this.showNotify(e?.response?.data?.message || e?.message || 'Không gửi được tin nhắn', 'error')
       } finally {
         this.sending = false
       }
@@ -447,6 +498,38 @@ export default {
 
     goHome () {
       this.$router.push('/')
+    },
+
+    // ========== Notification ==========
+    showNotify (message, type = 'info') {
+      this.notificationMessage = message
+      this.notificationType = type
+      this.showNotification = true
+
+      // Auto hide after 3 seconds
+      setTimeout(() => {
+        this.showNotification = false
+      }, 3000)
+    },
+
+    // ========== Confirmation Dialog ==========
+    showConfirm (message, callback) {
+      this.confirmMessage = message
+      this.confirmCallback = callback
+      this.showConfirmDialog = true
+    },
+
+    acceptConfirm () {
+      this.showConfirmDialog = false
+      if (this.confirmCallback) {
+        this.confirmCallback()
+      }
+      this.confirmCallback = null
+    },
+
+    cancelConfirm () {
+      this.showConfirmDialog = false
+      this.confirmCallback = null
     }
   }
 }
@@ -454,8 +537,15 @@ export default {
 
 <style scoped>
 .consultation-chat {
-  height: calc(100vh - 80px);
+  height: 100vh;
   padding: 0;
+  margin-top: 0;
+  /* Remove any default margin from body or parent if needed */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 1;
 }
 
 .chat-container {
@@ -463,9 +553,9 @@ export default {
   grid-template-columns: 320px 1fr;
   height: 100%;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 /* ========== Sidebar ========== */
@@ -474,6 +564,8 @@ export default {
   display: flex;
   flex-direction: column;
   background: #f9fafb;
+  height: 100%;
+  min-height: 0;
 }
 
 .sidebar-header {
@@ -521,8 +613,9 @@ export default {
 }
 
 .sidebar-list {
-  flex: 1;
+  flex: 1 1 0%;
   overflow-y: auto;
+  min-height: 0;
 }
 
 .consultation-item {
@@ -799,6 +892,247 @@ export default {
 
   .chat-sidebar {
     display: none;
+  }
+}
+
+/* ========== Notification Toast ========== */
+.notification-toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  min-width: 320px;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  animation: slideDown 0.3s ease-out;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.notification-content i.bi {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.notification-content span {
+  flex: 1;
+}
+
+.notification-close {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.notification-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.notification-close i {
+  font-size: 20px;
+}
+
+.notification-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.notification-error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.notification-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.notification-info {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+/* Transition */
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-down-enter-from {
+  transform: translateX(-50%) translateY(-100px);
+  opacity: 0;
+}
+
+.slide-down-leave-to {
+  transform: translateX(-50%) translateY(-100px);
+  opacity: 0;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateX(-50%) translateY(-100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ========== Confirmation Dialog ========== */
+.confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.confirm-dialog {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  min-width: 400px;
+  max-width: 500px;
+  overflow: hidden;
+  animation: scaleIn 0.3s ease-out;
+}
+
+.confirm-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+}
+
+.confirm-header i {
+  font-size: 28px;
+}
+
+.confirm-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.confirm-body {
+  padding: 24px;
+}
+
+.confirm-body p {
+  margin: 0;
+  font-size: 15px;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.confirm-footer {
+  padding: 16px 24px;
+  background: #f9fafb;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  border-top: 1px solid #e5e7eb;
+}
+
+.confirm-footer .btn {
+  min-width: 100px;
+  padding: 8px 20px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.confirm-footer .btn-secondary {
+  background: #e5e7eb;
+  border: none;
+  color: #374151;
+}
+
+.confirm-footer .btn-secondary:hover {
+  background: #d1d5db;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-footer .btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: none;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.confirm-footer .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Fade transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active .confirm-dialog {
+  animation: scaleIn 0.3s ease-out;
+}
+
+.fade-leave-active .confirm-dialog {
+  animation: scaleOut 0.2s ease-in;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .confirm-dialog {
+    min-width: 90%;
+    margin: 0 20px;
   }
 }
 </style>

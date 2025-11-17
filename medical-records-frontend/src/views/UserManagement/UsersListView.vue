@@ -15,6 +15,11 @@
             <i class="bi bi-database"></i>
             <span>{{ total }} người dùng</span>
           </div>
+          <div class="page-size-select-wrapper">
+            <select v-model.number="itemsPerPage" @change="onPageSizeChange" class="page-size-select">
+              <option v-for="size in [10, 25, 50, 100]" :key="size" :value="size">{{ size }} / trang</option>
+            </select>
+          </div>
           <button class="btn-action btn-refresh" @click="reload" :disabled="loading">
             <i class="bi bi-arrow-clockwise"></i>
           </button>
@@ -22,9 +27,8 @@
             <i class="bi bi-plus-lg"></i>
             Thêm mới
           </button>
-          <button class="btn-action btn-back" @click="goHome">
-            <i class="bi bi-house-door"></i>
-            Trang chủ
+          <button class="btn-action btn-back" @click="goHome" title="Quay lại">
+            <i class="bi bi-arrow-left"></i>
           </button>
         </div>
       </div>
@@ -221,20 +225,36 @@
         <div v-if="items.length > 0" class="pagination-section">
           <div class="pagination-info-row">
             <span class="page-info">
-              <i class="bi bi-file-earmark-text"></i>
-              Trang {{ currentPage }}/{{ totalPages }}
+              <i class="bi bi-info-circle"></i>
+              Hiển thị
+              <b>{{ paginatedItems.length ? ((currentPage - 1) * itemsPerPage + 1) : 0 }}</b>
+              -
+              <b>{{ (currentPage - 1) * itemsPerPage + paginatedItems.length }}</b>
+              trong tổng số <b>{{ total }}</b> người dùng
             </span>
-            <span class="total-info">({{ total }} người dùng)</span>
           </div>
-          <div class="pagination-controls-center">
-            <button class="pagination-btn" @click="prevPage" :disabled="currentPage === 1">
+          <div class="material-pagination-bar">
+            <button
+              class="material-pagination-btn"
+              @click="goToPage(1)"
+              :disabled="currentPage === 1"
+              title="Trang đầu"
+            >
+              <i class="bi bi-chevron-double-left"></i>
+            </button>
+            <button
+              class="material-pagination-btn"
+              @click="prevPage"
+              :disabled="currentPage === 1"
+              title="Trang trước"
+            >
               <i class="bi bi-chevron-left"></i>
             </button>
-            <div class="page-numbers">
+            <div class="material-page-numbers">
               <button
                 v-for="page in getPageNumbers()"
                 :key="page"
-                class="page-number-btn"
+                class="material-pagination-btn"
                 :class="{ active: page === currentPage, ellipsis: page === '...' }"
                 @click="page !== '...' && goToPage(page)"
                 :disabled="page === '...'"
@@ -242,8 +262,21 @@
                 {{ page }}
               </button>
             </div>
-            <button class="pagination-btn" @click="nextPage" :disabled="currentPage === totalPages">
+            <button
+              class="material-pagination-btn"
+              @click="nextPage"
+              :disabled="currentPage === totalPages"
+              title="Trang sau"
+            >
               <i class="bi bi-chevron-right"></i>
+            </button>
+            <button
+              class="material-pagination-btn"
+              @click="goToPage(totalPages)"
+              :disabled="currentPage === totalPages"
+              title="Trang cuối"
+            >
+              <i class="bi bi-chevron-double-right"></i>
             </button>
           </div>
         </div>
@@ -656,6 +689,10 @@ export default {
     goToPage (page) { this.currentPage = page },
     nextPage () { if (this.currentPage < this.totalPages) this.currentPage++ },
     prevPage () { if (this.currentPage > 1) this.currentPage-- },
+
+    onPageSizeChange () {
+      this.currentPage = 1
+    },
 
     // ================= API =================
     async fetch () {
@@ -1435,91 +1472,140 @@ export default {
 .pagination-section {
   padding: 24px;
   border-top: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
 .pagination-info-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 16px;
   font-size: 14px;
   color: #64748b;
+  font-weight: 500;
 }
 
-.page-info, .total-info {
+.page-info {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.pagination-controls-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-
-.pagination-btn {
-  width: 36px;
-  height: 36px;
-  border: 2px solid #e2e8f0;
-  background: white;
-  color: #64748b;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  border-color: #3b82f6;
+.page-info i {
   color: #3b82f6;
-  transform: translateY(-1px);
 }
 
-.pagination-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.page-numbers {
+.material-pagination-bar {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: none;
+  padding: 0.15rem 0.5rem;
+  min-width: 120px;
+  max-width: 400px;
+  gap: 0.1rem;
+  height: 2.6rem;
 }
 
-.page-number-btn {
-  min-width: 36px;
-  height: 36px;
-  padding: 0 12px;
-  border: 2px solid #e2e8f0;
-  background: white;
-  color: #64748b;
-  border-radius: 8px;
-  cursor: pointer;
+.material-pagination-btn {
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #2563eb;
+  border-radius: 12px;
   font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin: 0 0.1rem;
+  box-shadow: none;
 }
 
-.page-number-btn:hover:not(:disabled):not(.active) {
-  border-color: #3b82f6;
-  color: #3b82f6;
+.material-pagination-btn:hover:not(:disabled):not(.ellipsis) {
+  background: #f3f4f6;
+  color: #2563eb;
+  border-color: #bcd0f7;
 }
 
-.page-number-btn.active {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  color: white;
-  border-color: transparent;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+.material-pagination-btn.active {
+  background: #2563eb;
+  color: #fff;
+  border-radius: 12px;
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.10);
+  z-index: 1;
 }
 
-.page-number-btn.ellipsis {
+.material-pagination-btn.ellipsis {
   border: none;
   background: transparent;
   cursor: default;
+  color: #b0b6be;
+  font-weight: 400;
+}
+
+.material-pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #fff;
+  color: #b0b6be;
+  border-color: #e5e7eb;
+}
+
+.material-page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+}
+
+/* Page size select in header */
+.page-size-select-wrapper {
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.page-size-select {
+  background: #fff;
+  color: #2563eb;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 14px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 0.65rem 1.2rem 0.65rem 1.2rem;
+  box-shadow: 0 2px 8px rgba(255,255,255,0.15);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 130px;
+}
+
+.page-size-select:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.page-size-select:focus {
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.page-size-select option {
+  color: #1e293b;
+  background: #fff;
 }
 
 /* Modal */

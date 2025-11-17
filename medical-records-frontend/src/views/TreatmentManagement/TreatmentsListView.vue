@@ -13,7 +13,6 @@
         <div class="header-actions">
           <button class="btn-action btn-back" @click="$router.go(-1)">
             <i class="bi bi-arrow-left"></i>
-            Quay lại
           </button>
           <button class="btn-action btn-refresh" @click="reload" :disabled="loading">
             <i class="bi bi-arrow-clockwise"></i>
@@ -22,13 +21,16 @@
             <i class="bi bi-list-check"></i>
             Tổng: <strong>{{ total }}</strong>
           </div>
-          <div class="page-size-selector">
-            <select v-model.number="pageSize" @change="changePageSize">
-              <option :value="10">10 / trang</option>
-              <option :value="25">25 / trang</option>
-              <option :value="50">50 / trang</option>
-              <option :value="100">100 / trang</option>
-            </select>
+          <div class="page-size-selector custom-dropdown" @click="togglePageSizeDropdown" :tabindex="0" @blur="closePageSizeDropdown" style="position:relative;display:inline-block;min-width:140px;">
+            <div class="dropdown-selected" :class="{ open: pageSizeDropdownOpen }">
+              {{ pageSize }} / trang
+              <span class="dropdown-arrow" :class="{ open: pageSizeDropdownOpen }">&#9662;</span>
+            </div>
+            <div v-if="pageSizeDropdownOpen" class="dropdown-list">
+              <div v-for="size in [10,25,50,100]" :key="size" class="dropdown-item" :class="{ selected: pageSize === size }" @click.stop="selectPageSize(size)">
+                {{ size }} / trang
+              </div>
+            </div>
           </div>
           <button class="btn-action btn-primary" @click="openCreate" :disabled="loading">
             <i class="bi bi-plus-lg"></i>
@@ -488,7 +490,9 @@ export default {
       optionsLoaded: false,
       // ✅ Filter
       filterRecordId: '',
-      filteredItems: []
+      filteredItems: [],
+      // Custom dropdown
+      pageSizeDropdownOpen: false
     }
   },
   created () {
@@ -619,6 +623,19 @@ export default {
     changePageSize () {
       this.page = 1
       this.fetch()
+    },
+    togglePageSizeDropdown () {
+      this.pageSizeDropdownOpen = !this.pageSizeDropdownOpen
+    },
+    closePageSizeDropdown () {
+      this.pageSizeDropdownOpen = false
+    },
+    selectPageSize (size) {
+      if (this.pageSize !== size) {
+        this.pageSize = size
+        this.changePageSize()
+      }
+      this.pageSizeDropdownOpen = false
     },
     displayName (o) { return o?.full_name || o?.name || o?.display_name || o?.code || o?.username },
 
@@ -911,7 +928,6 @@ export default {
   background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
   padding-bottom: 2rem;
 }
-
 /* Header Section */
 .header-section {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
@@ -921,7 +937,6 @@ export default {
   top: 0;
   z-index: 100;
 }
-
 .header-content {
   max-width: 1400px;
   margin: 0 auto;
@@ -930,7 +945,6 @@ export default {
   align-items: center;
   gap: 2rem;
 }
-
 .header-left {
   flex: 1;
 }
@@ -1059,10 +1073,75 @@ export default {
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
 }
 
-.page-size-selector select option {
-  background: #1e293b;
+.custom-dropdown {
+  position: relative;
+  min-width: 140px;
+  user-select: none;
+}
+.dropdown-selected {
+  background: rgba(255,255,255,0.15);
   color: white;
-  padding: 0.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 0.7rem 1.5rem 0.7rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.dropdown-selected:hover {
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.dropdown-selected.open {
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.dropdown-arrow {
+  margin-left: 1rem;
+  font-size: 1.2em;
+  color: white;
+  transition: transform 0.2s;
+}
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+.dropdown-list {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(59,130,246,0.25);
+  z-index: 10;
+  border: 2px solid #3b82f6;
+  padding: 0.5rem 0;
+  animation: dropdownFadeIn 0.18s;
+}
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.dropdown-item {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-weight: 500;
+}
+.dropdown-item.selected {
+  background: #94a3b8;
+  color: white;
+}
+.dropdown-item:hover {
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 /* Search Section */
