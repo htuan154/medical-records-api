@@ -168,6 +168,9 @@
                         <button class="action-btn view-btn" @click="toggleRow(a)" :title="isExpanded(a) ? 'Ẩn chi tiết' : 'Xem chi tiết'">
                           <i :class="isExpanded(a) ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
                         </button>
+                        <button class="action-btn record-btn" @click="createRecordFromAppointment(a)" :disabled="loading" title="Tạo hồ sơ bệnh án">
+                          <i class="bi bi-journal-medical"></i>
+                        </button>
                         <button v-if="['scheduled', 'approved'].includes(a.status)" class="action-btn checkin-btn" @click="checkIn(a)" :disabled="loading" title="Check-in">
                           <i class="bi bi-check-circle"></i>
                         </button>
@@ -414,6 +417,27 @@
         </div>
       </div>
     </div>
+
+    <!-- Centered confirm modal -->
+    <div v-if="confirmModal.visible" class="overlay" @mousedown.self="closeConfirm">
+      <div class="dialog">
+        <div class="dialog-body" v-html="confirmModal.message"></div>
+        <div class="dialog-actions">
+          <button class="dialog-btn primary" @click="confirmOk">OK</button>
+          <button class="dialog-btn" @click="closeConfirm">Hủy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Centered info modal -->
+    <div v-if="infoModal.visible" class="overlay" @mousedown.self="closeInfo">
+      <div class="dialog">
+        <div class="dialog-body" v-html="infoModal.message"></div>
+        <div class="dialog-actions">
+          <button class="dialog-btn primary" @click="closeInfo">Đóng</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -501,7 +525,11 @@ export default {
         completed: 'Hoàn thành',
         canceled: 'Đã hủy',
         pending: 'Chờ xử lý'
-      }
+      },
+
+      // Simple modals
+      confirmModal: { visible: false, message: '', onConfirm: null, onCancel: null },
+      infoModal: { visible: false, message: '' }
     }
   },
   created () {
@@ -514,6 +542,7 @@ export default {
     rowKey (r, i) { return r._id || r.id || `${i}` },
     isExpanded (r) { return !!this.expanded[this.rowKey(r, 0)] },
     toggleRow (r) { const k = this.rowKey(r, 0); this.expanded = { ...this.expanded, [k]: !this.expanded[k] } },
+    toDateTimeLocal (v) { if (!v) return ''; try { return new Date(v).toISOString().slice(0, 16) } catch { return '' } },
     displayName (o) {
       if (!o) return ''
       return o?.personal_info?.full_name || o?.full_name || o?.name || o?.display_name || o?.code || o?.username || ''
@@ -665,6 +694,15 @@ export default {
         // Generate all possible slots
         const allSlots = this.generateTimeSlots(duration)
 
+        // Nếu đang chỉnh sửa, luôn add slot hiện tại để không bị mất hiển thị
+        const currentSlot = this.form.time_slot
+        const currentOption = currentSlot
+          ? {
+              value: currentSlot,
+              label: allSlots.find(s => s.value === currentSlot)?.label || `${currentSlot} - (hiện tại)`
+            }
+          : null
+
         // Get existing appointments for this doctor on this date
         const res = await AppointmentService.list({
           doctor_id: doctorId,
@@ -704,13 +742,19 @@ export default {
         })
 
         // Filter available slots
-        this.availableSlots = allSlots.filter(slot => {
+        let slots = allSlots.filter(slot => {
           // Check if slot conflicts with any busy range
           return !busyRanges.some(busy => {
             // Slot is busy if it overlaps with existing appointment
             return !(slot.endMinutes <= busy.startMinutes || slot.startMinutes >= busy.endMinutes)
           })
         })
+
+        // Đảm bảo slot hiện tại xuất hiện trong danh sách
+        if (currentOption && !slots.some(s => s.value === currentOption.value)) {
+          slots = [currentOption, ...slots]
+        }
+        this.availableSlots = slots
       } catch (e) {
         console.error('Error loading slots:', e)
         this.availableSlots = []
@@ -831,7 +875,7 @@ export default {
       this.showModal = true
       this.ensureOptionsLoaded()
     },
-    openEdit (row) {
+    async openEdit (row) {
       const f = this.flattenAppointment(row)
       this.editingId = f._id || f.id
 
@@ -851,8 +895,24 @@ export default {
         time_slot: timeSlot
       }
 
+      // Đảm bảo combobox đã có dữ liệu trước khi hiển thị form
+      await this.ensureOptionsLoaded()
+
+      // Nếu doctor/patient đang edit chưa có trong options (do filter/limit), thêm tạm để hiển thị
+      if (this.form.doctor_id && !this.doctorOptions.some(o => o.value === this.form.doctor_id)) {
+        this.doctorOptions = [
+          { value: this.form.doctor_id, label: this.form.doctor_id },
+          ...this.doctorOptions
+        ]
+      }
+      if (this.form.patient_id && !this.patientOptions.some(o => o.value === this.form.patient_id)) {
+        this.patientOptions = [
+          { value: this.form.patient_id, label: this.form.patient_id },
+          ...this.patientOptions
+        ]
+      }
+
       this.showModal = true
-      this.ensureOptionsLoaded()
 
       // Load available slots after form is populated
       if (this.form.doctor_id && this.form.appointment_date && this.form.duration) {
@@ -933,30 +993,82 @@ export default {
 
     /* ===== Check-in & Cancel ===== */
     async checkIn (row) {
-      if (!confirm(`Check-in bệnh nhân cho lịch hẹn?\n\nBệnh nhân: ${this.displayName(this.patientsMap[row.patient_id])}\nBác sĩ: ${this.displayName(this.doctorsMap[row.doctor_id])}\nThời gian: ${this.fmtDateTime(row.scheduled_date)}`)) {
-        return
-      }
+      const prevStatus = row.status || 'scheduled'
+      const msg = `
+        <div><strong>Check-in bệnh nhân cho lịch hẹn?</strong></div>
+        <div style="margin-top:8px;">Bệnh nhân: ${this.displayName(this.patientsMap[row.patient_id])}</div>
+        <div>Bác sĩ: ${this.displayName(this.doctorsMap[row.doctor_id])}</div>
+        <div>Thời gian: ${this.fmtDateTime(row.scheduled_date)}</div>
+      `
 
-      this.loading = true
-      try {
-        const id = row._id || row.id
-        const payload = {
-          _id: id,
-          _rev: row._rev,
-          status: 'completed',
-          updated_at: new Date().toISOString(),
-          notes: (row.notes || '') + `\n[Check-in lúc ${new Date().toLocaleString('vi-VN')}]`
+      this.showConfirm(msg, async () => {
+        this.loading = true
+        try {
+          const id = row._id || row.id
+          const payload = {
+            _id: id,
+            _rev: row._rev,
+            status: 'completed',
+            updated_at: new Date().toISOString(),
+            notes: (row.notes || '') + `\n[Check-in lúc ${new Date().toLocaleString('vi-VN')}]`
+          }
+
+          const res = await AppointmentService.update(id, payload)
+          const newRev = res?.rev || res?._rev || res?.data?.rev || res?.data?._rev
+
+          this.showInfo('✅ Check-in thành công!')
+          await this.fetch()
+
+          this.showConfirm('Tạo hồ sơ bệnh án từ lịch hẹn vừa check-in?', async () => {
+            this.createRecordFromAppointment({ ...row, _rev: newRev || row._rev })
+          }, async () => {
+            // Khôi phục trạng thái lịch hẹn như trước khi check-in
+            try {
+              await AppointmentService.update(id, {
+                _id: id,
+                _rev: newRev || row._rev,
+                status: prevStatus,
+                updated_at: new Date().toISOString(),
+                notes: (row.notes || '') + `\n[Hoãn check-in lúc ${new Date().toLocaleString('vi-VN')}]`
+              })
+              this.showInfo('Đã giữ nguyên trạng thái lịch hẹn, không tạo hồ sơ.')
+              await this.fetch()
+            } catch (revertErr) {
+              console.error('Revert check-in failed:', revertErr)
+              this.showInfo('Không thể khôi phục trạng thái lịch hẹn sau khi hủy tạo hồ sơ. Vui lòng kiểm tra lại.')
+            }
+          })
+        } catch (e) {
+          console.error(e)
+          this.showInfo(e?.response?.data?.message || e?.message || 'Check-in thất bại')
+        } finally {
+          this.loading = false
         }
+      })
+    },
 
-        await AppointmentService.update(id, payload)
-        alert('✅ Check-in thành công!')
-        await this.fetch()
-      } catch (e) {
-        console.error(e)
-        alert(e?.response?.data?.message || e?.message || 'Check-in thất bại')
-      } finally {
-        this.loading = false
-      }
+    createRecordFromAppointment (row) {
+      const scheduled = row.scheduled_date || row.appointment_info?.scheduled_date
+      const reason = row.reason || row.appointment_info?.reason || ''
+      const type = row.type || row.appointment_info?.type || 'consultation'
+
+      // Thông báo trước khi chuyển trang (modal info)
+      this.showInfo('Đang mở form Hồ sơ khám với dữ liệu lịch hẹn đã được điền sẵn.')
+
+      this.$router.push({
+        path: '/medical-records',
+        query: {
+          open_create: '1',
+          from_checkin: '1',
+          appointment_id: row._id || row.id,
+          patient_id: row.patient_id,
+          doctor_id: row.doctor_id,
+          visit_date: this.toDateTimeLocal(scheduled),
+          reason,
+          visit_type: type,
+          status: 'draft'
+        }
+      })
     },
 
     async cancelAppointment (row) {
@@ -979,14 +1091,35 @@ export default {
         }
 
         await AppointmentService.update(id, payload)
-        alert('✅ Đã hủy lịch hẹn!')
+        this.showInfo('✅ Đã hủy lịch hẹn!')
         await this.fetch()
       } catch (e) {
         console.error(e)
-        alert(e?.response?.data?.message || e?.message || 'Hủy lịch thất bại')
+        this.showInfo(e?.response?.data?.message || e?.message || 'Hủy lịch thất bại')
       } finally {
         this.loading = false
       }
+    },
+
+    /* ===== modal helpers ===== */
+    showConfirm (message, onConfirm, onCancel) {
+      this.confirmModal = { visible: true, message, onConfirm, onCancel }
+    },
+    closeConfirm () {
+      const cancelCb = this.confirmModal.onCancel
+      this.confirmModal = { visible: false, message: '', onConfirm: null, onCancel: null }
+      if (cancelCb) cancelCb()
+    },
+    async confirmOk () {
+      const handler = this.confirmModal.onConfirm
+      this.confirmModal = { visible: false, message: '', onConfirm: null, onCancel: null }
+      if (handler) await handler()
+    },
+    showInfo (message) {
+      this.infoModal = { visible: true, message }
+    },
+    closeInfo () {
+      this.infoModal = { visible: false, message: '' }
     }
   }
 }
@@ -1527,6 +1660,18 @@ export default {
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
+.record-btn {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.record-btn:hover:not(:disabled) {
+  background: #4338ca;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.3);
+}
+
 .cancel-btn {
   background: #fef3c7;
   color: #f59e0b;
@@ -1944,5 +2089,49 @@ export default {
 
 .text-warning {
   color: #f59e0b;
+}
+
+/* Simple centered dialogs */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.dialog {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+.dialog-body {
+  font-size: 14px;
+  color: #1f2937;
+}
+.dialog-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.dialog-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #e5e7eb;
+  color: #374151;
+}
+.dialog-btn.primary {
+  background: #3b82f6;
+  color: white;
+}
+.dialog-btn:hover {
+  filter: brightness(0.95);
 }
 </style>

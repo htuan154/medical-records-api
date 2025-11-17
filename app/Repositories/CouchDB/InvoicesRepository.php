@@ -44,6 +44,15 @@ class InvoicesRepository extends BaseCouchRepository implements InvoicesReposito
         ]);
     }
 
+    /** BỔ SUNG: theo medical record ID */
+    public function byMedicalRecord(string $medicalRecordId, int $limit = 50, int $skip = 0): array
+    {
+        return $this->view('invoices', 'by_medical_record', [
+            'key' => json_encode($medicalRecordId),
+            'include_docs' => true, 'limit' => $limit, 'skip' => $skip,
+        ]);
+    }
+
     /** BỔ SUNG: theo khoảng ngày hóa đơn */
     public function byDateRange(string $startIso, string $endIso, int $limit = 50, int $skip = 0): array
     {

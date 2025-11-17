@@ -207,17 +207,26 @@
                     <div><b>Tái khám:</b> {{ r.follow_up?.date || 'Không có' }}<span v-if="r.follow_up?.notes"> — {{ r.follow_up.notes }}</span></div>
                   </div>
 
-                  <div v-if="r.test_requests" class="detail-title">
-                    Yêu cầu xét nghiệm
-                    <button
-                      class="btn btn-sm btn-outline-info ms-2"
-                      @click="viewTests(r._id || r.id)"
-                      title="Xem kết quả xét nghiệm"
-                    >
-                      <i class="bi bi-file-medical"></i> Xem Test
-                    </button>
+                <div class="detail-title d-flex align-items-center" style="gap: 8px;">
+                  <span>Yêu cầu xét nghiệm</span>
+                  <button
+                    v-if="testsCount[r._id || r.id]"
+                    class="btn btn-sm btn-outline-info"
+                    @click="viewTests(r._id || r.id)"
+                    title="Xem kết quả xét nghiệm"
+                  >
+                    <i class="bi bi-file-medical"></i>
+                    Xem Test
+                    <span>({{ testsCount[r._id || r.id] }})</span>
+                  </button>
+                </div>
+                <div class="mb-2" style="white-space: pre-wrap;">
+                  <div v-if="r.test_requests">{{ r.test_requests }}</div>
+                  <div v-else-if="testNames[r._id || r.id]?.length">
+                    <b>Các xét nghiệm:</b> {{ testNames[r._id || r.id].join(', ') }}
                   </div>
-                  <div v-if="r.test_requests" class="mb-2" style="white-space: pre-wrap;">{{ r.test_requests }}</div>
+                  <div v-else>Không có yêu cầu xét nghiệm</div>
+                </div>
 
                   <div class="detail-title">Đính kèm</div>
                   <ul class="mb-2">
@@ -694,8 +703,17 @@
           {{ saving ? 'Đang lưu...' : 'Lưu hồ sơ' }}
         </button>
       </div>
+      </div>
     </div>
   </div>
+  <!-- Info modal -->
+  <div v-if="infoModal.visible" class="overlay" @mousedown.self="closeInfo">
+    <div class="dialog">
+      <div class="dialog-body" v-html="infoModal.message"></div>
+      <div class="dialog-actions">
+        <button class="dialog-btn primary" @click="closeInfo">Đóng</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -735,17 +753,27 @@ export default {
       doctorsMap: {},
       patientsMap: {},
       appointmentsMap: {},
+      testsCount: {},
+      testNames: {},
       optionsLoaded: false,
+      infoModal: { visible: false, message: '' },
       filteredItems: [],
       // ✅ Medication autocomplete
       allMedications: [],
       medicationsMap: {},
       // ✅ SUC-08: Previous records for follow-up visits
       previousRecords: [],
-      showPreviousRecords: true
+      showPreviousRecords: true,
+
+      // Prefill khi được điều hướng từ lịch hẹn
+      prefillParams: null,
+      prefillApplied: false
     }
   },
-  created () { this.fetch() },
+  created () {
+    this.prefillParams = { ...this.$route.query }
+    this.fetch()
+  },
   computed: {
     visiblePages () {
       const total = Math.max(1, Math.ceil((this.total || 0) / this.pageSize))
@@ -978,11 +1006,12 @@ export default {
     async ensureOptionsLoaded () {
       if (this.optionsLoaded) return
       try {
-        const [dRes, pRes, aRes, mRes] = await Promise.all([
+        const [dRes, pRes, aRes, mRes, tRes] = await Promise.all([
           DoctorService.list({ limit: 1000 }),
           PatientService.list({ limit: 1000 }),
           AppointmentService.list({ limit: 1000 }),
-          MedicationService.list({ limit: 500 })
+          MedicationService.list({ limit: 500 }),
+          MedicalTestService.list({ limit: 1000 })
         ])
 
         const arr = (r) => {
@@ -1000,8 +1029,9 @@ export default {
         const dList = arr(dRes)
         const pList = arr(pRes)
         const aList = arr(aRes)
+        const tList = arr(tRes)
 
-        const key = (o) => o._id || o.id || o.code || o.username
+        const key = (o) => (o && (o._id || o.id || o.code || o.username)) || ''
         const label = (o) => o?.personal_info?.full_name || o.full_name || o.name || o.display_name || o.code || o.username || key(o)
 
         this.doctorOptions = dList.map(o => ({
@@ -1019,10 +1049,12 @@ export default {
           const doctor = dList.find(d => key(d) === apt.doctor_id)
           const scheduledDate = apt.appointment_info?.scheduled_date || apt.scheduled_date
           const dateStr = scheduledDate ? new Date(scheduledDate).toLocaleString('vi-VN') : ''
+          const patientLabel = patient ? label(patient) : (apt.patient_id || '')
+          const doctorLabel = doctor ? label(doctor) : (apt.doctor_id || '')
 
           return {
             value: key(apt),
-            label: `${dateStr} - ${label(patient)} - ${label(doctor)}`,
+            label: `${dateStr} - ${patientLabel} - ${doctorLabel}`,
             patient_id: apt.patient_id,
             doctor_id: apt.doctor_id
           }
@@ -1062,7 +1094,30 @@ export default {
           this.medicationsMap[key(o)] = o
         })
 
+        // build tests count and names by medical_record_id
+        const testCount = {}
+        const testNames = {}
+        tList.forEach(t => {
+          const rid = t.medical_record_id
+          if (rid) {
+            testCount[rid] = (testCount[rid] || 0) + 1
+            const name = t.test_info?.test_name || t.name || t._id || t.id
+            if (!testNames[rid]) testNames[rid] = []
+            if (name) testNames[rid].push(name)
+          }
+        })
+        this.testsCount = testCount
+        this.testNames = testNames
+
         this.optionsLoaded = true
+
+        // Nếu có tham số prefill (đi từ lịch hẹn), mở form và nạp dữ liệu
+        if (this.prefillParams && Object.keys(this.prefillParams).length) {
+          this.applyPrefillFromRoute()
+        } else if (!this.prefillApplied && this.form.appointment_id) {
+          // Trường hợp đã set sẵn appointment_id nhưng options vừa load xong
+          this.applyPrefillFromRoute()
+        }
       } catch (e) {
         console.error(e)
         this.doctorOptions = []
@@ -1070,6 +1125,47 @@ export default {
         this.appointmentOptions = []
         this.allMedications = []
       }
+    },
+
+    // Nhận dữ liệu tạo hồ sơ từ query (đi từ màn lịch hẹn)
+    applyPrefillFromRoute () {
+      const p = this.prefillParams || {}
+      if (!p.appointment_id && !p.patient_id && this.prefillApplied) return
+
+      // Mở modal tạo mới trước rồi đổ dữ liệu
+      this.openCreate()
+      this.prefillApplied = true
+      this.prefillParams = null
+
+      // Gán trực tiếp từ query (kể cả khi chưa load options)
+      if (p.appointment_id) this.form.appointment_id = p.appointment_id
+      if (p.patient_id) this.form.patient_id = p.patient_id
+      if (p.doctor_id) this.form.doctor_id = p.doctor_id
+      if (p.visit_date) this.form.visit_date = p.visit_date
+      if (p.reason) this.form.chief_complaint = p.reason
+      if (p.visit_type) this.form.visit_type = p.visit_type
+      if (p.status) this.form.status = p.status
+
+      // Bảo đảm combo có option cho patient/doctor dù chưa load được chi tiết
+      const ensureOption = (listName, value) => {
+        if (!value) return
+        if (!Array.isArray(this[listName])) this[listName] = []
+        if (!this[listName].some(o => o.value === value)) {
+          this[listName] = [{ value, label: value }, ...this[listName]]
+        }
+      }
+      ensureOption('patientOptions', this.form.patient_id)
+      ensureOption('doctorOptions', this.form.doctor_id)
+
+      // Nếu đã có options & map thì áp dụng chi tiết từ lịch hẹn
+      if (this.form.appointment_id && this.appointmentOptions.length) {
+        this.onAppointmentChange()
+      } else if (this.form.appointment_id && !this.appointmentOptions.length) {
+        // Fallback: thêm option tạm để hiện mã lịch hẹn trên select
+        this.appointmentOptions = [{ value: this.form.appointment_id, label: this.form.appointment_id }, ...this.appointmentOptions]
+      }
+
+      // Không hiển thị alert cho flow check-in
     },
 
     // Auto-fill patient, doctor, visit_date and chief_complaint from selected appointment
@@ -1104,6 +1200,12 @@ export default {
         if (type) {
           this.form.visit_type = type
         }
+      } else {
+        // Nếu chưa có aptData (options chưa load chi tiết), giữ nguyên appointment_id đã chọn
+        const tempLabel = selectedApt ? selectedApt.label : this.form.appointment_id
+        if (this.form.appointment_id && !this.appointmentOptions.some(o => o.value === this.form.appointment_id)) {
+          this.appointmentOptions = [{ value: this.form.appointment_id, label: tempLabel || this.form.appointment_id }, ...this.appointmentOptions]
+        }
       }
     },
 
@@ -1130,8 +1232,23 @@ export default {
         // ✅ FIX: Giữ lại test_requests khi edit
         test_requests: f.test_requests || ''
       }
+
+      // Đảm bảo options đã load để giữ lại selections
+      await this.ensureOptionsLoaded()
+
+      // Thêm option tạm nếu hồ sơ chứa doctor/patient/appointment không nằm trong danh sách (do giới hạn/role)
+      const ensureOption = (listName, value) => {
+        if (!value) return
+        if (!Array.isArray(this[listName])) this[listName] = []
+        if (!this[listName].some(o => o.value === value)) {
+          this[listName] = [{ value, label: value }, ...this[listName]]
+        }
+      }
+      ensureOption('patientOptions', this.form.patient_id)
+      ensureOption('doctorOptions', this.form.doctor_id)
+      ensureOption('appointmentOptions', this.form.appointment_id)
+
       this.showModal = true
-      this.ensureOptionsLoaded()
 
       // ✅ SUC-08: Load previous records for this patient
       if (f.patient_id) {
@@ -1532,23 +1649,23 @@ export default {
       try {
         const id = row._id || row.id
         if (!id) {
-          alert('Không tìm thấy ID hồ sơ')
+          this.showInfo('Không tìm thấy ID hồ sơ')
           return
         }
 
         const rev = row._rev
         if (!rev) {
-          alert('Không tìm thấy revision của document')
+          this.showInfo('Không tìm thấy revision của document')
           return
         }
 
         // ✅ Truyền cả id và rev
         await MedicalRecordService.remove(id, rev)
-        alert('Xóa thành công!')
+        this.showInfo('Xóa thành công!')
         await this.fetch()
       } catch (e) {
         console.error(e)
-        alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
+        this.showInfo(e?.response?.data?.message || e?.message || 'Xóa thất bại')
       }
     },
 
@@ -1574,7 +1691,7 @@ export default {
     async createInvoiceFromRecord (record) {
       const recordId = record._id || record.id
       if (!recordId) {
-        alert('Không tìm thấy ID bệnh án!')
+        this.showInfo('Không tìm thấy ID bệnh án!')
         return
       }
 
@@ -1582,10 +1699,20 @@ export default {
         // ✅ Ensure patient data is loaded
         await this.ensureOptionsLoaded()
 
-        // Get patient name
-        const patientName = this.displayName(this.patientsMap[record.patient_id]) || 'N/A'
+        // Check if invoice already exists for this record (client filter để chắc chắn)
+        const invRes = await InvoiceService.list({ limit: 1000 })
+        let existingInvoice = null
+        if (invRes) {
+          const rows = Array.isArray(invRes.rows)
+            ? invRes.rows.map(r => r.doc || r.value || r)
+            : (Array.isArray(invRes.data) ? invRes.data : (Array.isArray(invRes) ? invRes : []))
+          existingInvoice = rows.find(i => (i.medical_record_id === recordId))
+        }
 
-        if (!confirm(`Tạo hóa đơn cho Bệnh án này?\n\nBệnh nhân: ${patientName}`)) {
+        if (existingInvoice) {
+          const invNum = existingInvoice.invoice_info?.invoice_number || existingInvoice.invoice_number || existingInvoice._id
+          this.showInfo(`Hồ sơ này đã có hóa đơn <b>${invNum}</b>. Đang mở hóa đơn này...`)
+          this.$router.push({ path: '/invoices', query: { medical_record_id: recordId, q: invNum } })
           return
         }
 
@@ -1675,16 +1802,23 @@ export default {
         try {
           const tests = await MedicalTestService.list({
             medical_record_id: recordId,
-            limit: 10
+            limit: 1000
           })
 
           console.log('🧪 Found medical tests:', tests)
+          const arr = (r) => {
+            if (Array.isArray(r?.rows)) return r.rows.map(x => x.doc || x.value || x)
+            if (Array.isArray(r?.data)) return r.data
+            if (Array.isArray(r)) return r
+            return []
+          }
+          const testsArr = arr(tests).filter(t => t.medical_record_id === recordId)
 
-          if (tests?.data?.length > 0) {
-            tests.data.forEach(test => {
+          if (testsArr.length > 0) {
+            testsArr.forEach(test => {
               const testInfo = test.test_info || {}
               const testName = testInfo.test_name || 'Xét nghiệm'
-              const unitPrice = testInfo.unit_price || 150000 // Get price from test record
+              const unitPrice = Number(testInfo.unit_price || 150000)
 
               services.push({
                 service_type: 'test',
@@ -1741,18 +1875,24 @@ export default {
         const result = await InvoiceService.create(invoicePayload)
         console.log('💰 Invoice created:', result)
 
-        alert(`✅ Đã tạo hóa đơn thành công!\n\nSố HĐ: ${invoicePayload.invoice_number}\nTổng tiền: ${totalAmount.toLocaleString()} VNĐ\n\nVui lòng vào menu "Hóa đơn" để xác nhận thanh toán.`)
+        this.showInfo(`✅ Đã tạo hóa đơn <b>${invoicePayload.invoice_number}</b><br/>Tổng tiền: ${totalAmount.toLocaleString()} VNĐ`)
 
-        // Optionally navigate to invoices page
-        if (confirm('Chuyển đến trang Hóa đơn?')) {
-          this.$router.push('/invoices')
-        }
+        // Tự chuyển sang trang Hóa đơn, lọc theo hồ sơ và số HĐ
+        this.$router.push({ path: '/invoices', query: { medical_record_id: recordId, q: invoicePayload.invoice_number } })
       } catch (e) {
         console.error('Create invoice error:', e)
-        alert(e?.response?.data?.message || e?.message || 'Không thể tạo hóa đơn')
+        this.showInfo(e?.response?.data?.message || e?.message || 'Không thể tạo hóa đơn')
       } finally {
         this.loading = false
       }
+    },
+
+    // simple info modal
+    showInfo (message) {
+      this.infoModal = { visible: true, message }
+    },
+    closeInfo () {
+      this.infoModal = { visible: false, message: '' }
     }
   }
 }
@@ -2674,5 +2814,49 @@ export default {
 .autocomplete-item strong {
   font-size: 0.95rem;
   color: #1976d2;
+}
+
+/* Simple centered dialogs */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+.dialog {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+.dialog-body {
+  font-size: 14px;
+  color: #1f2937;
+}
+.dialog-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.dialog-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #e5e7eb;
+  color: #374151;
+}
+.dialog-btn.primary {
+  background: #3b82f6;
+  color: white;
+}
+.dialog-btn:hover {
+  filter: brightness(0.95);
 }
 </style>

@@ -260,20 +260,17 @@
                   <small class="form-label-hint">Chọn hồ sơ khám để tự động điền bệnh nhân và bác sĩ</small>
                 </div>
                 <div class="form-group">
-                  <label class="form-label-custom">
-                    <i class="bi bi-clipboard-pulse"></i>
-                    Loại xét nghiệm <span class="text-required">*</span>
-                  </label>
-                  <select v-model="form.type" class="form-input-custom" required>
-                    <option value="">-- Chọn loại --</option>
-                    <option value="blood_work">Xét nghiệm máu</option>
-                    <option value="urine_analysis">Xét nghiệm nước tiểu</option>
-                    <option value="imaging">Chẩn đoán hình ảnh</option>
-                    <option value="biopsy">Sinh thiết</option>
-                    <option value="culture">Cấy mẫu</option>
-                    <option value="pathology">Giải phẫu bệnh</option>
-                  </select>
-                </div>
+              <label class="form-label-custom">
+                <i class="bi bi-clipboard-pulse"></i>
+                Loại xét nghiệm <span class="text-required">*</span>
+              </label>
+              <select v-model="form.type" class="form-input-custom" required>
+                <option value="">-- Chọn loại --</option>
+                <option v-for="opt in typeOptions" :key="opt.value" :value="opt.value">
+                  {{ opt.label }}
+                </option>
+              </select>
+            </div>
                 <div class="form-group">
                   <label class="form-label-custom">
                     <i class="bi bi-toggle-on"></i>
@@ -428,6 +425,15 @@ import MedicalRecordService from '@/api/medicalRecordService'
 export default {
   name: 'MedicalTestsListView',
   computed: {
+    typeOptions () {
+      const base = this.typeOptionsBase || []
+      const map = {}
+      base.forEach(o => { if (o?.value) map[o.value] = o.label || o.value })
+      ;(this.dynamicTypes || []).forEach(t => {
+        if (t) map[t] = map[t] || t
+      })
+      return Object.entries(map).map(([value, label]) => ({ value, label }))
+    },
     visiblePages () {
       const totalPages = Math.max(1, Math.ceil((this.total || 0) / this.pageSize))
       const current = this.page
@@ -482,7 +488,16 @@ export default {
       optionsLoaded: false,
       // ✅ Filter
       filterRecordId: '',
-      filteredItems: []
+      filteredItems: [],
+      typeOptionsBase: [
+        { value: 'blood_work', label: 'Xét nghiệm máu' },
+        { value: 'urine_analysis', label: 'Xét nghiệm nước tiểu' },
+        { value: 'imaging', label: 'Chẩn đoán hình ảnh' },
+        { value: 'biopsy', label: 'Sinh thiết' },
+        { value: 'culture', label: 'Cấy mẫu' },
+        { value: 'pathology', label: 'Giải phẫu bệnh' }
+      ],
+      dynamicTypes: []
     }
   },
   created () {
@@ -672,6 +687,7 @@ export default {
         const skip = (this.page - 1) * this.pageSize
         const res = await MedicalTestService.list({
           q: this.q || undefined,
+          medical_record_id: this.filterRecordId || undefined, // ✅ fetch trực tiếp theo hồ sơ
           limit: this.pageSize,
           offset: skip,
           skip
@@ -705,6 +721,10 @@ export default {
 
         // Flatten các test records
         this.items = (raw || []).map(d => this.flattenTest(d))
+        // Cập nhật dynamic test types từ dữ liệu nhận được
+        const dyn = new Set(this.dynamicTypes || [])
+        this.items.forEach(t => { if (t.type) dyn.add(t.type) })
+        this.dynamicTypes = Array.from(dyn)
         this.total = total
         this.hasMore = (offset != null)
           ? (offset + this.items.length) < (this.total || 0)
@@ -723,11 +743,12 @@ export default {
 
     // ✅ Apply filter by medical record
     applyFilter () {
-      if (!this.filterRecordId) {
-        this.filteredItems = [...this.items]
-      } else {
-        this.filteredItems = this.items.filter(t => t.medical_record_id === this.filterRecordId)
-      }
+      const q = (this.q || '').toLowerCase().trim()
+      this.filteredItems = this.items.filter(t => {
+        const matchRecord = !this.filterRecordId || t.medical_record_id === this.filterRecordId
+        const matchQuery = !q || (t.name?.toLowerCase().includes(q) || t.type?.toLowerCase().includes(q))
+        return matchRecord && matchQuery
+      })
     },
 
     clearFilter () {
@@ -852,6 +873,10 @@ export default {
       this.form = { ...this.emptyForm(), ...f }
       this.showModal = true
       await this.ensureOptionsLoaded()
+      // Bổ sung option nếu type hiện tại chưa có trong danh sách
+      if (this.form.type && !this.typeOptions.some(o => o.value === this.form.type)) {
+        this.dynamicTypes = Array.from(new Set([...(this.dynamicTypes || []), this.form.type]))
+      }
 
       // ✅ TỰ ĐỘNG điền thông tin từ hồ sơ khi edit
       if (this.form.medical_record_id) {

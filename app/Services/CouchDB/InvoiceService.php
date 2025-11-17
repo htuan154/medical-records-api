@@ -65,6 +65,15 @@ function (doc) {
 }
 JS
             ],
+            'by_medical_record' => [
+                'map' => <<<JS
+function (doc) {
+  if (doc.type === 'invoice' && doc.medical_record_id) {
+    emit(doc.medical_record_id, null);
+  }
+}
+JS
+            ],
             'all' => [
                 'map' => <<<JS
 function (doc) {
@@ -91,6 +100,9 @@ JS
     {
         if (!empty($filters['patient_id'])) {
             return $this->repo->byPatient($filters['patient_id'], $limit, $skip);
+        }
+        if (!empty($filters['medical_record_id'])) {
+            return $this->repo->byMedicalRecord($filters['medical_record_id'], $limit, $skip);
         }
         if (!empty($filters['number'])) {
             return $this->repo->byNumber($filters['number']);

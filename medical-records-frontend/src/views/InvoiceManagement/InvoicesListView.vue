@@ -560,6 +560,7 @@
 <script>
 import InvoiceService from '@/api/invoiceService'
 import PatientService from '@/api/patientService'
+import MedicalRecordService from '@/api/medicalRecordService'
 import MedicationService from '@/api/medicationService' // ✅ Import MedicationService
 
 // Helper function tạo số hóa đơn random
@@ -613,7 +614,19 @@ export default {
       invoiceHtmlUrl: null
     }
   },
-  created () { this.fetch() },
+  created () {
+    // Check if there's a q (invoice number) query param from URL
+    const invoiceNumber = this.$route.query.q
+
+    if (invoiceNumber) {
+      // Set search query from URL
+      this.q = invoiceNumber
+      console.log('🔍 Auto-search by invoice number:', this.q)
+    }
+
+    // Always fetch (will use medical_record_id from $route.query if present)
+    this.fetch()
+  },
   computed: {
     // ✅ UPDATED: Enhanced auto payment status
     autoPaymentStatus () {
@@ -785,7 +798,8 @@ export default {
       try {
         const skip = (this.page - 1) * this.pageSize
         const res = await InvoiceService.list({
-          q: this.q || undefined,
+          number: this.q || undefined,
+          medical_record_id: this.$route.query?.medical_record_id || undefined,
           limit: this.pageSize,
           offset: skip,
           skip
@@ -822,7 +836,14 @@ export default {
       }
     },
 
-    search () { this.page = 1; this.fetch() },
+    search () {
+      this.page = 1
+      // Clear query params from URL when doing manual search
+      if (this.$route.query.medical_record_id || this.$route.query.q) {
+        this.$router.replace({ query: {} }).catch(() => {})
+      }
+      this.fetch()
+    },
     reload () { this.fetch() },
     goHome () { this.$router.push('/') },
     next () { if (this.hasMore) { this.page++; this.fetch() } },
@@ -871,14 +892,14 @@ export default {
           return
         }
 
-        const r = await PatientService.records(patientId, { limit: 1000 })
+        const r = await MedicalRecordService.list({ limit: 1000, patient_id: patientId })
         const arr = Array.isArray(r?.rows)
           ? r.rows.map(x => x.doc || x.value || x)
           : (Array.isArray(r?.data) ? r.data : (Array.isArray(r) ? r : []))
 
         this.recordOptions = arr.map(rec => ({
           value: rec._id || rec.id,
-          label: `${(rec.visit_info?.visit_date || rec.visit_date || '').toString().slice(0, 10)} — ${(rec.visit_info?.visit_type || rec.visit_type || 'khám')}`
+          label: rec._id || rec.id || 'record'
         }))
       } catch (e) {
         console.error(e)

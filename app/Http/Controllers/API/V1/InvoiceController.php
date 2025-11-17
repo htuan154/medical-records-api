@@ -51,11 +51,12 @@ class InvoiceController extends Controller
             $limit = (int) $req->query('limit', 50);
             $skip  = (int) $req->query('skip', 0);
             $filters = [
-                'patient_id'     => $req->query('patient_id'),
-                'number'         => $req->query('number'),
-                'start'          => $req->query('start'),
-                'end'            => $req->query('end'),
-                'payment_status' => $req->query('payment_status'),
+                'patient_id'        => $req->query('patient_id'),
+                'medical_record_id' => $req->query('medical_record_id'),
+                'number'            => $req->query('number') ?: $req->query('q'),
+                'start'             => $req->query('start'),
+                'end'               => $req->query('end'),
+                'payment_status'    => $req->query('payment_status'),
             ];
 
             return response()->json($this->svc->list($limit, $skip, $filters), 200);
