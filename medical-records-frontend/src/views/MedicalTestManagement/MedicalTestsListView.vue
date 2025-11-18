@@ -421,6 +421,7 @@ import MedicalTestService from '@/api/medicalTestService'
 import DoctorService from '@/api/doctorService'
 import PatientService from '@/api/patientService'
 import MedicalRecordService from '@/api/medicalRecordService'
+import TreatmentService from '@/api/treatmentService'
 
 export default {
   name: 'MedicalTestsListView',
@@ -954,6 +955,11 @@ export default {
           await MedicalTestService.create(payload)
         }
 
+        // ✅ Auto-update medical record status if this test is completed
+        if (payload.status === 'completed' && payload.medical_record_id) {
+          await this.checkAndUpdateRecordStatus(payload.medical_record_id)
+        }
+
         this.showModal = false
         await this.fetch()
       } catch (e) {
@@ -988,6 +994,51 @@ export default {
       } catch (e) {
         console.error('Remove error:', e)
         alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
+      }
+    },
+
+    // ✅ Check and update medical record status when all treatments and tests are completed
+    async checkAndUpdateRecordStatus (recordId) {
+      try {
+        // Get all treatments for this record
+        const treatmentsRes = await TreatmentService.list({
+          medical_record_id: recordId,
+          limit: 1000
+        })
+        const treatments = treatmentsRes?.data || []
+
+        // Get all tests for this record
+        const testsRes = await MedicalTestService.list({
+          medical_record_id: recordId,
+          limit: 1000
+        })
+        const arr = (r) => {
+          if (Array.isArray(r?.rows)) return r.rows.map(x => x.doc || x.value || x)
+          if (Array.isArray(r?.data)) return r.data
+          if (Array.isArray(r)) return r
+          return []
+        }
+        const tests = arr(testsRes).filter(t => t.medical_record_id === recordId)
+
+        // Check if all are completed
+        const allTreatmentsCompleted = treatments.length === 0 || treatments.every(t => t.status === 'completed')
+        const allTestsCompleted = tests.length === 0 || tests.every(t => t.status === 'completed')
+
+        if (allTreatmentsCompleted && allTestsCompleted) {
+          const recordRes = await MedicalRecordService.get(recordId)
+          const recordData = recordRes?.data || recordRes
+
+          if (recordData && recordData.status !== 'completed') {
+            console.log('✅ All treatments and tests completed, updating record status')
+            await MedicalRecordService.update(recordId, {
+              ...recordData,
+              status: 'completed',
+              updated_at: new Date().toISOString()
+            })
+          }
+        }
+      } catch (e) {
+        console.error('❌ Failed to check/update record status:', e)
       }
     }
   }
