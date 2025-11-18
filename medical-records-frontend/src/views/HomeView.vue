@@ -19,32 +19,22 @@
                 <small class="d-block opacity-75">Lần đăng nhập cuối</small>
                 <small class="fw-bold">{{ currentDateTime }}</small>
               </div>
-              <div class="user-avatar me-3">
-                <i class="bi bi-person-circle" style="font-size: 2.5rem;"></i>
+              <div class="text-end me-3">
+                <div class="fw-semibold">{{ displayName }}</div>
+                <small class="opacity-90">{{ displayRole }}</small>
               </div>
-              <!-- Logout Button -->
-              <div class="dropdown">
-                <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="bi bi-gear me-1"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a class="dropdown-item" href="#" @click="goToProfile">
-                      <i class="bi bi-person me-2"></i>Hồ sơ cá nhân
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#" @click="goToSettings">
-                      <i class="bi bi-gear me-2"></i>Cài đặt
-                    </a>
-                  </li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li>
-                    <a class="dropdown-item text-danger" href="#" @click="logout">
-                      <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
-                    </a>
-                  </li>
-                </ul>
+              <div class="position-relative">
+                <div class="user-avatar me-3 cursor-pointer" @click="toggleUserMenu">
+                  <i class="bi bi-person-circle" style="font-size: 2.5rem;"></i>
+                </div>
+                <div v-if="showUserMenu" class="user-menu card shadow-sm border-0 p-2">
+                  <button class="btn btn-outline-primary btn-sm w-100 d-flex align-items-center justify-content-center mb-2" type="button" @click="goToProfile">
+                    <i class="bi bi-person me-2"></i>Hồ sơ
+                  </button>
+                  <button class="btn btn-light btn-sm text-danger w-100 d-flex align-items-center justify-content-center" type="button" @click="logout">
+                    <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -53,31 +43,6 @@
     </div>
 
     <div class="container-fluid">
-      <!-- Statistics Cards -->
-      <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-3" v-for="stat in statistics" :key="stat.title">
-          <div class="card stat-card h-100 border-0 shadow-sm" :class="{ loading: loading }">
-            <div class="card-body p-3">
-              <div class="d-flex align-items-center">
-                <div class="stat-icon me-3" :style="{ background: stat.gradient }">
-                  <i :class="stat.icon" class="text-white"></i>
-                </div>
-                <div class="flex-grow-1">
-                  <div class="stat-number">{{ stat.value }}</div>
-                  <div class="stat-title">{{ stat.title }}</div>
-                </div>
-              </div>
-              <div class="stat-trend mt-2">
-                <small :class="stat.trend.isPositive ? 'text-success' : 'text-danger'">
-                  <i :class="stat.trend.isPositive ? 'bi bi-arrow-up' : 'bi bi-arrow-down'"></i>
-                  {{ stat.trend.percentage }}% so với tháng trước
-                </small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Quick Actions & Recent Activity -->
       <div class="row">
         <!-- Quick Actions -->
@@ -91,7 +56,7 @@
             </div>
             <div class="card-body">
               <div class="row g-3">
-                <div class="col-lg-4 col-md-6" v-for="action in quickActions" :key="action.name">
+                <div class="col-lg-4 col-md-6" v-for="action in filteredQuickActions" :key="action.name">
                   <div class="quick-action-card" @click="navigateTo(action.route)">
                     <div class="action-icon" :style="{ background: action.color }">
                       <i :class="action.icon" class="text-white"></i>
@@ -161,7 +126,6 @@
                       <i :class="[item.icon, item.colorClass]"></i>
                     </div>
                     <div class="item-title">{{ item.title }}</div>
-                    <div class="item-count">{{ item.count }}</div>
                   </div>
                 </div>
               </div>
@@ -186,7 +150,6 @@
                       <i :class="[item.icon, item.colorClass]"></i>
                     </div>
                     <div class="item-title">{{ item.title }}</div>
-                    <div class="item-count">{{ item.count }}</div>
                   </div>
                 </div>
               </div>
@@ -212,6 +175,7 @@ import MedicalTestService from '@/api/medicalTestService'
 import TreatmentService from '@/api/treatmentService'
 import MedicationService from '@/api/medicationService'
 import InvoiceService from '@/api/invoiceService'
+import ReportService from '@/api/reportService'
 
 export default {
   name: 'HomeView',
@@ -335,7 +299,28 @@ export default {
         }
       ],
       // Trạng thái loading
-      loading: true
+      loading: true,
+      showUserMenu: false
+    }
+  },
+  computed: {
+    displayName () {
+      const user = this.$store.state.user
+      return user?.name || user?.username || 'Người dùng'
+    },
+    displayRole () {
+      const roles = this.$store.getters.roles || []
+      if (Array.isArray(roles) && roles.length) return roles.join(', ')
+      const user = this.$store.state.user
+      return user?.role || 'Vai trò'
+    },
+    filteredQuickActions () {
+      const roles = this.$store.getters.roles || []
+      const isStaff = roles.includes('staff')
+      return this.quickActions.filter(action => {
+        if (action.route === 'roles' && isStaff) return false
+        return true
+      })
     }
   },
   async mounted () {
@@ -345,6 +330,10 @@ export default {
     await this.loadStatistics()
   },
   methods: {
+    toggleUserMenu () {
+      this.showUserMenu = !this.showUserMenu
+    },
+
     updateDateTime () {
       const now = new Date()
       this.currentDateTime = now.toLocaleString('vi-VN', {
@@ -360,43 +349,54 @@ export default {
     async loadStatistics () {
       this.loading = true
       try {
-        // Tải tất cả dữ liệu song song
+        let dashboardStats = null
+        try {
+          dashboardStats = await ReportService.getDashboardStats()
+        } catch (err) {
+          console.warn('Không thể lấy dashboard stats, sẽ fallback sang đếm thủ công:', err?.message || err)
+        }
+
+        let patientCount = dashboardStats?.total_patients
+        let medicalRecordCount = dashboardStats?.total_records
+
+        if (patientCount === undefined || medicalRecordCount === undefined) {
+          const [patientFallback, medicalRecordFallback] = await Promise.allSettled([
+            this.getPatientCount(),
+            this.getMedicalRecordCount()
+          ])
+
+          patientCount = patientFallback.status === 'fulfilled' ? patientFallback.value : 0
+          medicalRecordCount = medicalRecordFallback.status === 'fulfilled' ? medicalRecordFallback.value : 0
+        }
+
+        this.statistics[0].value = this.formatNumber(patientCount || 0)
+        this.updateManagementCount('Bệnh nhân', patientCount || 0)
+
+        this.statistics[1].value = this.formatNumber(medicalRecordCount || 0)
+        this.updateManagementCount('Hồ sơ y tế', medicalRecordCount || 0)
+        this.updateManagementCount('Báo cáo', medicalRecordCount || 0)
+
         const [
-          patientsRes,
           staffRes,
           doctorsRes,
           usersRes,
           rolesRes,
-          medicalRecordsRes,
           appointmentsRes,
           medicalTestsRes,
           treatmentsRes,
           medicationsRes,
           invoicesRes
         ] = await Promise.allSettled([
-          this.getPatientCount(),
           this.getStaffCount(),
           this.getDoctorCount(),
           this.getUserCount(),
           this.getRoleCount(),
-          this.getMedicalRecordCount(),
           this.getAppointmentCount(),
           this.getMedicalTestCount(),
           this.getTreatmentCount(),
           this.getMedicationCount(),
           this.getInvoiceCount()
         ])
-
-        // Cập nhật thống kê chính
-        if (patientsRes.status === 'fulfilled') {
-          this.statistics[0].value = this.formatNumber(patientsRes.value)
-          this.updateManagementCount('Bệnh nhân', patientsRes.value)
-        }
-
-        if (medicalRecordsRes.status === 'fulfilled') {
-          this.statistics[1].value = this.formatNumber(medicalRecordsRes.value)
-          this.updateManagementCount('Hồ sơ y tế', medicalRecordsRes.value)
-        }
 
         if (staffRes.status === 'fulfilled') {
           this.statistics[2].value = this.formatNumber(staffRes.value)
@@ -408,7 +408,6 @@ export default {
           this.updateManagementCount('Người dùng', usersRes.value)
         }
 
-        // Cập nhật các management counts khác
         if (doctorsRes.status === 'fulfilled') {
           this.updateManagementCount('Bác sĩ', doctorsRes.value)
         }
@@ -437,7 +436,6 @@ export default {
           this.updateManagementCount('Hóa đơn', invoicesRes.value)
         }
 
-        // Cập nhật hoạt động gần đây
         this.updateRecentActivities()
       } catch (error) {
         console.error('Lỗi khi tải dữ liệu thống kê:', error)
@@ -599,10 +597,6 @@ export default {
       // Thử các cấu trúc response khác nhau
       if (typeof res.total === 'number') return res.total
       if (typeof res.total_rows === 'number') {
-        // Nếu có rows, đếm sau khi filter _design docs
-        if (Array.isArray(res.rows)) {
-          return filterDesignDocs(res.rows).length
-        }
         return res.total_rows
       }
       if (typeof res.count === 'number') return res.count
@@ -671,6 +665,13 @@ export default {
     },
 
     navigateTo (routeName) {
+      const roles = this.$store.getters.roles || []
+      const isStaff = roles.includes('staff')
+      if (routeName === 'roles' && isStaff) {
+        console.warn('⚠️ Staff không được phép vào trang phân quyền')
+        return
+      }
+
       console.log('🔍 Navigating to:', routeName)
       console.log('🔍 Has route?', this.$router.hasRoute(routeName))
       console.log('🔍 Current user:', this.$store.state.user)
@@ -715,6 +716,7 @@ export default {
     },
 
     goToProfile () {
+      this.showUserMenu = false
       this.$router.push({ name: 'profile' })
     },
 
@@ -853,12 +855,6 @@ export default {
   margin-bottom: 0.25rem;
 }
 
-.item-count {
-  font-size: 0.875rem;
-  font-weight: bold;
-  color: #495057;
-}
-
 .activity-list {
   max-height: 300px;
   overflow-y: auto;
@@ -927,6 +923,22 @@ export default {
 
 .user-avatar {
   opacity: 0.9;
+}
+
+.user-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 140px;
+  z-index: 10;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.btn.btn-light.text-danger {
+  border-color: transparent;
 }
 
 .card {

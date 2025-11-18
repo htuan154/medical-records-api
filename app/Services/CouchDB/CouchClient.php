@@ -3,6 +3,7 @@
 namespace App\Services\CouchDB;
 
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -13,16 +14,27 @@ class CouchClient
     protected string $baseUrl;
     protected string $username;
     protected string $password;
+    protected int $timeout;
+    protected int $connectTimeout;
+    protected bool $verifySsl;
     protected ?string $db = null;
 
     public function __construct()
     {
-        $scheme   = env('COUCHDB_SCHEME', 'http');             // ✅ từ ENV
-        $host     = env('COUCHDB_HOST', '127.0.0.1');          // ✅
-        $port     = (int) env('COUCHDB_PORT', $scheme === 'https' ? 443 : 5984); // ✅
-        $this->baseUrl  = rtrim("{$scheme}://{$host}:{$port}", '/');
-        $this->username = env('COUCHDB_USERNAME', '');
-        $this->password = env('COUCHDB_PASSWORD', '');
+        $config = config('couchdb', []);
+        $scheme = $config['scheme'] ?? 'http';
+        $host = $config['host'] ?? '127.0.0.1';
+        $defaultPort = $scheme === 'https' ? 443 : 5984;
+        $port = (int) ($config['port'] ?? $defaultPort);
+        $useDefaultPort = ($scheme === 'https' && $port === 443) || ($scheme === 'http' && $port === 80);
+        $portPart = $useDefaultPort ? '' : ':' . $port;
+
+        $this->baseUrl = rtrim(sprintf('%s://%s%s', $scheme, $host, $portPart), '/');
+        $this->username = $config['username'] ?? env('COUCHDB_USERNAME', '');
+        $this->password = $config['password'] ?? env('COUCHDB_PASSWORD', '');
+        $this->timeout = max(1, (int) ($config['timeout'] ?? 10));
+        $this->connectTimeout = max(1, (int) ($config['connect_timeout'] ?? 5));
+        $this->verifySsl = (bool) ($config['verify_ssl'] ?? true);
     }
 
 
@@ -42,8 +54,17 @@ class CouchClient
             ->baseUrl($this->baseUrl)
             ->acceptJson()
             ->asJson()
-            ->timeout(10)
-            ->connectTimeout(5);
+            ->timeout($this->timeout)
+            ->connectTimeout($this->connectTimeout)
+            ->withOptions([
+                'verify' => $this->verifySsl,
+            ]);
+    }
+
+    /** Expose configured PendingRequest for setup/admin flows */
+    public function pendingRequest(): PendingRequest
+    {
+        return $this->http();
     }
 
     /** Đảm bảo đã chọn DB trước khi gọi */

@@ -14,7 +14,6 @@
         <div class="header-actions">
           <button class="btn-action btn-back" @click="$router.push('/')" title="Quay lại Trang chủ">
             <i class="bi bi-arrow-left"></i>
-            Trang chủ
           </button>
           <div class="stats-badge">
             <i class="bi bi-bar-chart-fill"></i>
@@ -208,17 +207,26 @@
                     <div><b>Tái khám:</b> {{ r.follow_up?.date || 'Không có' }}<span v-if="r.follow_up?.notes"> — {{ r.follow_up.notes }}</span></div>
                   </div>
 
-                  <div v-if="r.test_requests" class="detail-title">
-                    Yêu cầu xét nghiệm
-                    <button
-                      class="btn btn-sm btn-outline-info ms-2"
-                      @click="viewTests(r._id || r.id)"
-                      title="Xem kết quả xét nghiệm"
-                    >
-                      <i class="bi bi-file-medical"></i> Xem Test
-                    </button>
+                <div class="detail-title d-flex align-items-center" style="gap: 8px;">
+                  <span>Yêu cầu xét nghiệm</span>
+                  <button
+                    v-if="testsCount[r._id || r.id]"
+                    class="btn btn-sm btn-outline-info"
+                    @click="viewTests(r._id || r.id)"
+                    title="Xem kết quả xét nghiệm"
+                  >
+                    <i class="bi bi-file-medical"></i>
+                    Xem Test
+                    <span>({{ testsCount[r._id || r.id] }})</span>
+                  </button>
+                </div>
+                <div class="mb-2" style="white-space: pre-wrap;">
+                  <div v-if="r.test_requests">{{ r.test_requests }}</div>
+                  <div v-else-if="testNames[r._id || r.id]?.length">
+                    <b>Các xét nghiệm:</b> {{ testNames[r._id || r.id].join(', ') }}
                   </div>
-                  <div v-if="r.test_requests" class="mb-2" style="white-space: pre-wrap;">{{ r.test_requests }}</div>
+                  <div v-else>Không có yêu cầu xét nghiệm</div>
+                </div>
 
                   <div class="detail-title">Đính kèm</div>
                   <ul class="mb-2">
@@ -248,16 +256,12 @@
         <!-- Pagination Section -->
         <div class="pagination-section">
           <div class="pagination-info-row">
-            <span class="page-info">
-              <i class="bi bi-file-earmark-text"></i>
-              Trang <b>{{ page }} / {{ Math.ceil(total / pageSize) || 1 }}</b>
-              <span class="total-info">- Hiển thị {{ filteredItems.length }} trong tổng số {{ total }} hồ sơ</span>
-            </span>
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Trang <strong>{{ page }} / {{ Math.ceil(total / pageSize) || 1 }}</strong> - Hiển thị {{ filteredItems.length }} trong tổng số {{ total }} vai trò</span>
           </div>
-          <div class="pagination-controls">
+          <div class="pagination-controls-center">
             <button class="pagination-btn" @click="prev" :disabled="page <= 1 || loading">
               <i class="bi bi-chevron-left"></i>
-              Trước
             </button>
 
             <div class="page-numbers">
@@ -274,7 +278,6 @@
             </div>
 
             <button class="pagination-btn" @click="next" :disabled="!hasMore || loading">
-              Sau
               <i class="bi bi-chevron-right"></i>
             </button>
           </div>
@@ -284,10 +287,20 @@
   </section>
 
   <!-- MODAL: form đầy đủ + combobox BN/BS -->
-  <div v-if="showModal" class="modal-backdrop" @mousedown.self="close">
-    <div class="modal-card">
-      <h3 class="h6 mb-3">{{ editingId ? 'Sửa hồ sơ' : 'Thêm hồ sơ' }}</h3>
+  <div v-if="showModal" class="modal-overlay" @mousedown.self="close">
+    <div class="modal-container">
+      <div class="modal-header-custom">
+        <h3 class="modal-title-custom">
+          <i class="bi bi-file-medical-fill" v-if="!editingId"></i>
+          <i class="bi bi-pencil-square" v-else></i>
+          {{ editingId ? 'Sửa hồ sơ khám' : 'Thêm hồ sơ khám' }}
+        </h3>
+        <button type="button" class="modal-close-btn" @click="close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
 
+      <div class="modal-body-custom">
         <!-- ✅ SUC-08: Display previous medical records for follow-up visits -->
         <div v-if="previousRecords.length > 0" class="alert alert-info mb-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
@@ -329,19 +342,29 @@
 
         <form @submit.prevent="save">
           <!-- Thông tin chung -->
-          <div class="section-title">Thông tin chung</div>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Mã lịch hẹn</label>
-              <select v-model="form.appointment_id" class="form-select" @change="onAppointmentChange">
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-info-circle-fill"></i>
+              Thông tin chung
+            </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-calendar-check"></i>
+                Mã lịch hẹn
+              </label>
+              <select v-model="form.appointment_id" class="form-input-custom" @change="onAppointmentChange">
                 <option value="">-- Chọn lịch hẹn --</option>
                 <option v-for="a in appointmentOptions" :key="a.value" :value="a.value">{{ a.label }}</option>
               </select>
-              <small class="text-muted">Chọn lịch hẹn để tự động điền bệnh nhân và bác sĩ</small>
+              <small class="form-label-hint">Chọn lịch hẹn để tự động điền bệnh nhân và bác sĩ</small>
             </div>
-            <div class="col-md-3">
-              <label class="form-label">Loại khám</label>
-              <select v-model="form.visit_type" class="form-select">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-clipboard2-pulse"></i>
+                Loại khám
+              </label>
+              <select v-model="form.visit_type" class="form-input-custom">
                 <option value="">-- Chọn loại --</option>
                 <option value="consultation">Tư vấn</option>
                 <option value="follow_up">Tái khám</option>
@@ -349,9 +372,12 @@
                 <option value="emergency">Cấp cứu</option>
               </select>
             </div>
-            <div class="col-md-3">
-              <label class="form-label">Trạng thái</label>
-              <select v-model="form.status" class="form-select">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-toggle-on"></i>
+                Trạng thái
+              </label>
+              <select v-model="form.status" class="form-input-custom">
                 <option value="draft">Nháp</option>
                 <option value="in_progress">Đang khám</option>
                 <option value="completed">Hoàn thành</option>
@@ -359,113 +385,195 @@
               </select>
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label">Bệnh nhân <span class="text-danger">*</span></label>
-              <select v-model="form.patient_id" class="form-select" required>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-person-fill"></i>
+                Bệnh nhân <span class="text-required">*</span>
+              </label>
+              <select v-model="form.patient_id" class="form-input-custom" required>
                 <option value="">-- Chọn bệnh nhân --</option>
                 <option v-for="p in patientOptions" :key="p.value" :value="p.value">{{ p.label }}</option>
               </select>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">Bác sĩ <span class="text-danger">*</span></label>
-              <select v-model="form.doctor_id" class="form-select" required>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-person-badge"></i>
+                Bác sĩ <span class="text-required">*</span>
+              </label>
+              <select v-model="form.doctor_id" class="form-input-custom" required>
                 <option value="">-- Chọn bác sĩ --</option>
                 <option v-for="d in doctorOptions" :key="d.value" :value="d.value">{{ d.label }}</option>
               </select>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">Ngày khám <span class="text-danger">*</span></label>
-              <input v-model="form.visit_date" type="datetime-local" class="form-control" required />
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-calendar3"></i>
+                Ngày khám <span class="text-required">*</span>
+              </label>
+              <input v-model="form.visit_date" type="datetime-local" class="form-input-custom" required />
             </div>
 
-            <div class="col-12">
-              <label class="form-label">Lý do khám</label>
-              <textarea v-model.trim="form.chief_complaint" class="form-control" rows="2" placeholder="Mô tả lý do đến khám..."></textarea>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label-custom">
+                <i class="bi bi-chat-left-text"></i>
+                Lý do khám
+              </label>
+              <textarea v-model.trim="form.chief_complaint" class="form-input-custom" rows="2" placeholder="Mô tả lý do đến khám..."></textarea>
             </div>
+          </div>
           </div>
 
           <!-- Tình trạng -->
-          <div class="section-title">Tình trạng</div>
-          <div class="row g-3">
-            <div class="col-md-2">
-              <label class="form-label">Nhiệt độ (°C)</label>
-              <input v-model.number="form.vital.temperature" type="number" step="0.1" class="form-control"/>
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-heart-pulse-fill"></i>
+              Sinh hiệu - Vital Signs
             </div>
-            <div class="col-md-2">
-              <label class="form-label">HA tâm thu</label>
-              <input v-model.number="form.vital.bp_systolic" type="number" class="form-control"/>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-thermometer-half"></i>
+                Nhiệt độ (°C)
+              </label>
+              <input v-model.number="form.vital.temperature" type="number" step="0.1" class="form-input-custom" placeholder="36.5"/>
             </div>
-            <div class="col-md-2">
-              <label class="form-label">HA tâm trương</label>
-              <input v-model.number="form.vital.bp_diastolic" type="number" class="form-control"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-activity"></i>
+                HA tâm thu
+              </label>
+              <input v-model.number="form.vital.bp_systolic" type="number" class="form-input-custom" placeholder="120"/>
             </div>
-            <div class="col-md-2">
-              <label class="form-label">Mạch (bpm)</label>
-              <input v-model.number="form.vital.heart_rate" type="number" class="form-control"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-activity"></i>
+                HA tâm trương
+              </label>
+              <input v-model.number="form.vital.bp_diastolic" type="number" class="form-input-custom" placeholder="80"/>
             </div>
-            <div class="col-md-2">
-              <label class="form-label">Nhịp thở</label>
-              <input v-model.number="form.vital.respiratory_rate" type="number" class="form-control"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-heart"></i>
+                Mạch (bpm)
+              </label>
+              <input v-model.number="form.vital.heart_rate" type="number" class="form-input-custom" placeholder="72"/>
             </div>
-            <div class="col-md-2">
-              <label class="form-label">Cân nặng (kg)</label>
-              <input v-model.number="form.vital.weight" type="number" step="0.1" class="form-control"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-wind"></i>
+                Nhịp thở
+              </label>
+              <input v-model.number="form.vital.respiratory_rate" type="number" class="form-input-custom" placeholder="18"/>
             </div>
-            <div class="col-md-2">
-              <label class="form-label">Chiều cao (cm)</label>
-              <input v-model.number="form.vital.height" type="number" class="form-control"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-speedometer2"></i>
+                Cân nặng (kg)
+              </label>
+              <input v-model.number="form.vital.weight" type="number" step="0.1" class="form-input-custom" placeholder="65.0"/>
             </div>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-arrows-vertical"></i>
+                Chiều cao (cm)
+              </label>
+              <input v-model.number="form.vital.height" type="number" class="form-input-custom" placeholder="170"/>
+            </div>
+          </div>
           </div>
 
           <!-- Khám thực thể -->
-          <div class="section-title">Khám thực thể</div>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Toàn thân</label>
-              <textarea v-model.trim="form.physical.general" rows="2" class="form-control" />
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-person-check"></i>
+              Khám thực thể - Physical Exam
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Tim mạch</label>
-              <textarea v-model.trim="form.physical.cardiovascular" rows="2" class="form-control" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-person"></i>
+                Toàn thân
+              </label>
+              <textarea v-model.trim="form.physical.general" rows="2" class="form-input-custom" placeholder="Bệnh nhân tỉnh táo, tiếp xúc tốt..." />
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Hô hấp</label>
-              <textarea v-model.trim="form.physical.respiratory" rows="2" class="form-control" />
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-heart-pulse"></i>
+                Tim mạch
+              </label>
+              <textarea v-model.trim="form.physical.cardiovascular" rows="2" class="form-input-custom" placeholder="Nhịp tim đều, không tiếng thổi..." />
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Khác</label>
-              <textarea v-model.trim="form.physical.other_findings" rows="2" class="form-control" />
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-lungs"></i>
+                Hô hấp
+              </label>
+              <textarea v-model.trim="form.physical.respiratory" rows="2" class="form-input-custom" placeholder="Phổi trong, không ran..." />
             </div>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-clipboard2-pulse"></i>
+                Khác
+              </label>
+              <textarea v-model.trim="form.physical.other_findings" rows="2" class="form-input-custom" placeholder="Các phát hiện khác..." />
+            </div>
+          </div>
           </div>
 
           <!-- Chẩn đoán -->
-          <div class="section-title">Chẩn đoán</div>
-          <div class="row g-3">
-            <div class="col-md-3">
-              <label class="form-label">Mã chính (ICD)</label>
-              <input v-model.trim="form.dx_primary.code" class="form-control"/>
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-clipboard2-check"></i>
+              Chẩn đoán - Diagnosis
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Mô tả chính</label>
-              <input v-model.trim="form.dx_primary.description" class="form-control"/>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-file-medical"></i>
+                Mã chính (ICD)
+              </label>
+              <input v-model.trim="form.dx_primary.code" class="form-input-custom" placeholder="I10"/>
             </div>
-            <div class="col-md-3">
-              <label class="form-label">Mức độ</label>
-              <input v-model.trim="form.dx_primary.severity" class="form-control" placeholder="mild/moderate/severe"/>
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label-custom">
+                <i class="bi bi-journal-medical"></i>
+                Mô tả chính
+              </label>
+              <input v-model.trim="form.dx_primary.description" class="form-input-custom" placeholder="Tăng huyết áp nguyên phát"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-speedometer"></i>
+                Mức độ
+              </label>
+              <input v-model.trim="form.dx_primary.severity" class="form-input-custom" placeholder="mild/moderate/severe"/>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Chẩn đoán phụ (ngăn bởi dấu phẩy)</label>
-              <input v-model.trim="form.dx_secondary_text" class="form-control" placeholder="ĐTĐ type 2, RL lipid máu…"/>
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label-custom">
+                <i class="bi bi-list-ul"></i>
+                Chẩn đoán phụ
+                <span class="form-label-hint">(ngăn bởi dấu phẩy)</span>
+              </label>
+              <input v-model.trim="form.dx_secondary_text" class="form-input-custom" placeholder="ĐTĐ type 2, Rối loạn lipid máu..."/>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Chẩn đoán phân biệt (dấu phẩy)</label>
-              <input v-model.trim="form.dx_differential_text" class="form-control" placeholder="Bệnh mạch vành, Rối loạn lo âu…"/>
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label-custom">
+                <i class="bi bi-question-circle"></i>
+                Chẩn đoán phân biệt
+                <span class="form-label-hint">(dấu phẩy)</span>
+              </label>
+              <input v-model.trim="form.dx_differential_text" class="form-input-custom" placeholder="Bệnh mạch vành, Rối loạn lo âu..."/>
             </div>
+          </div>
           </div>
 
           <!-- Điều trị -->
-          <div class="section-title">Điều trị</div>
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-capsule"></i>
+              Điều trị - Treatment Plan
+            </div>
           <div class="table-responsive">
             <table class="table table-sm align-middle">
               <thead>
@@ -519,45 +627,91 @@
             <button type="button" class="btn btn-outline-secondary btn-sm" @click="addLifestyle">+ Thêm tư vấn</button>
           </div>
 
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Thủ thuật (dấu phẩy)</label>
-              <input v-model.trim="form.procedures_text" class="form-control" placeholder="ECG, Siêu âm tim…"/>
+          <div class="form-grid" style="margin-top: 1rem;">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-scissors"></i>
+                Thủ thuật
+                <span class="form-label-hint">(dấu phẩy)</span>
+              </label>
+              <input v-model.trim="form.procedures_text" class="form-input-custom" placeholder="ECG, Siêu âm tim..."/>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Tư vấn lối sống (dấu phẩy)</label>
-              <input v-model.trim="form.lifestyle_text" class="form-control" placeholder="Giảm muối, Tập thể dục…"/>
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-heart"></i>
+                Tư vấn lối sống
+                <span class="form-label-hint">(dấu phẩy)</span>
+              </label>
+              <input v-model.trim="form.lifestyle_text" class="form-input-custom" placeholder="Giảm muối, Tập thể dục..."/>
             </div>
           </div>
 
-          <div class="row g-3 mt-1">
-            <div class="col-md-4">
-              <label class="form-label">Ngày tái khám</label>
-              <input v-model="form.follow_up.date" type="date" class="form-control" />
+          <div class="form-grid" style="margin-top: 1rem;">
+            <div class="form-group">
+              <label class="form-label-custom">
+                <i class="bi bi-calendar-event"></i>
+                Ngày tái khám
+              </label>
+              <input v-model="form.follow_up.date" type="date" class="form-input-custom" />
             </div>
-            <div class="col-md-8">
-              <label class="form-label">Ghi chú tái khám</label>
-              <input v-model.trim="form.follow_up.notes" class="form-control" />
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label-custom">
+                <i class="bi bi-sticky"></i>
+                Ghi chú tái khám
+              </label>
+              <input v-model.trim="form.follow_up.notes" class="form-input-custom" placeholder="Lưu ý cho lần tái khám..." />
             </div>
+          </div>
           </div>
 
           <!-- Yêu cầu xét nghiệm -->
-          <div class="section-title">Yêu cầu xét nghiệm</div>
-          <div class="mb-3">
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="bi bi-clipboard2-data"></i>
+              Yêu cầu xét nghiệm - Test Requests
+            </div>
+          <div class="form-group">
             <textarea
               v-model.trim="form.test_requests"
-              class="form-control"
-              rows="3"
+              class="form-input-custom"
+              rows="4"
               placeholder="Ví dụ: Xét nghiệm máu: Công thức máu, Đường huyết, Lipid máu&#10;Chẩn đoán hình ảnh: X-quang ngực, Siêu âm bụng"
             ></textarea>
-            <small class="text-muted">Liệt kê các xét nghiệm cần làm (mỗi loại một dòng)</small>
+            <small class="form-label-hint">Liệt kê các xét nghiệm cần làm (mỗi loại một dòng)</small>
           </div>
-
-          <div class="d-flex justify-content-end gap-2 mt-3">
-            <button type="button" class="btn btn-outline-secondary" @click="close">Hủy</button>
-            <button class="btn btn-primary" type="submit" :disabled="saving">{{ saving ? 'Đang lưu…' : 'Lưu' }}</button>
           </div>
         </form>
+      </div>
+
+      <div class="modal-footer-custom">
+        <button
+          type="button"
+          class="btn-modal-cancel"
+          @click="close"
+          :disabled="saving"
+        >
+          <i class="bi bi-x-circle"></i>
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="btn-modal-save"
+          @click="save"
+          :disabled="saving"
+        >
+          <i class="bi bi-check-circle-fill"></i>
+          {{ saving ? 'Đang lưu...' : 'Lưu hồ sơ' }}
+        </button>
+      </div>
+      </div>
+    </div>
+  </div>
+  <!-- Info modal -->
+  <div v-if="infoModal.visible" class="overlay" @mousedown.self="closeInfo">
+    <div class="dialog">
+      <div class="dialog-body" v-html="infoModal.message"></div>
+      <div class="dialog-actions">
+        <button class="dialog-btn primary" @click="closeInfo">Đóng</button>
       </div>
     </div>
   </div>
@@ -599,17 +753,27 @@ export default {
       doctorsMap: {},
       patientsMap: {},
       appointmentsMap: {},
+      testsCount: {},
+      testNames: {},
       optionsLoaded: false,
+      infoModal: { visible: false, message: '' },
       filteredItems: [],
       // ✅ Medication autocomplete
       allMedications: [],
       medicationsMap: {},
       // ✅ SUC-08: Previous records for follow-up visits
       previousRecords: [],
-      showPreviousRecords: true
+      showPreviousRecords: true,
+
+      // Prefill khi được điều hướng từ lịch hẹn
+      prefillParams: null,
+      prefillApplied: false
     }
   },
-  created () { this.fetch() },
+  created () {
+    this.prefillParams = { ...this.$route.query }
+    this.fetch()
+  },
   computed: {
     visiblePages () {
       const total = Math.max(1, Math.ceil((this.total || 0) / this.pageSize))
@@ -842,11 +1006,12 @@ export default {
     async ensureOptionsLoaded () {
       if (this.optionsLoaded) return
       try {
-        const [dRes, pRes, aRes, mRes] = await Promise.all([
+        const [dRes, pRes, aRes, mRes, tRes] = await Promise.all([
           DoctorService.list({ limit: 1000 }),
           PatientService.list({ limit: 1000 }),
           AppointmentService.list({ limit: 1000 }),
-          MedicationService.list({ limit: 500 })
+          MedicationService.list({ limit: 500 }),
+          MedicalTestService.list({ limit: 1000 })
         ])
 
         const arr = (r) => {
@@ -864,8 +1029,9 @@ export default {
         const dList = arr(dRes)
         const pList = arr(pRes)
         const aList = arr(aRes)
+        const tList = arr(tRes)
 
-        const key = (o) => o._id || o.id || o.code || o.username
+        const key = (o) => (o && (o._id || o.id || o.code || o.username)) || ''
         const label = (o) => o?.personal_info?.full_name || o.full_name || o.name || o.display_name || o.code || o.username || key(o)
 
         this.doctorOptions = dList.map(o => ({
@@ -883,10 +1049,12 @@ export default {
           const doctor = dList.find(d => key(d) === apt.doctor_id)
           const scheduledDate = apt.appointment_info?.scheduled_date || apt.scheduled_date
           const dateStr = scheduledDate ? new Date(scheduledDate).toLocaleString('vi-VN') : ''
+          const patientLabel = patient ? label(patient) : (apt.patient_id || '')
+          const doctorLabel = doctor ? label(doctor) : (apt.doctor_id || '')
 
           return {
             value: key(apt),
-            label: `${dateStr} - ${label(patient)} - ${label(doctor)}`,
+            label: `${dateStr} - ${patientLabel} - ${doctorLabel}`,
             patient_id: apt.patient_id,
             doctor_id: apt.doctor_id
           }
@@ -926,7 +1094,30 @@ export default {
           this.medicationsMap[key(o)] = o
         })
 
+        // build tests count and names by medical_record_id
+        const testCount = {}
+        const testNames = {}
+        tList.forEach(t => {
+          const rid = t.medical_record_id
+          if (rid) {
+            testCount[rid] = (testCount[rid] || 0) + 1
+            const name = t.test_info?.test_name || t.name || t._id || t.id
+            if (!testNames[rid]) testNames[rid] = []
+            if (name) testNames[rid].push(name)
+          }
+        })
+        this.testsCount = testCount
+        this.testNames = testNames
+
         this.optionsLoaded = true
+
+        // Nếu có tham số prefill (đi từ lịch hẹn), mở form và nạp dữ liệu
+        if (this.prefillParams && Object.keys(this.prefillParams).length) {
+          this.applyPrefillFromRoute()
+        } else if (!this.prefillApplied && this.form.appointment_id) {
+          // Trường hợp đã set sẵn appointment_id nhưng options vừa load xong
+          this.applyPrefillFromRoute()
+        }
       } catch (e) {
         console.error(e)
         this.doctorOptions = []
@@ -934,6 +1125,47 @@ export default {
         this.appointmentOptions = []
         this.allMedications = []
       }
+    },
+
+    // Nhận dữ liệu tạo hồ sơ từ query (đi từ màn lịch hẹn)
+    applyPrefillFromRoute () {
+      const p = this.prefillParams || {}
+      if (!p.appointment_id && !p.patient_id && this.prefillApplied) return
+
+      // Mở modal tạo mới trước rồi đổ dữ liệu
+      this.openCreate()
+      this.prefillApplied = true
+      this.prefillParams = null
+
+      // Gán trực tiếp từ query (kể cả khi chưa load options)
+      if (p.appointment_id) this.form.appointment_id = p.appointment_id
+      if (p.patient_id) this.form.patient_id = p.patient_id
+      if (p.doctor_id) this.form.doctor_id = p.doctor_id
+      if (p.visit_date) this.form.visit_date = p.visit_date
+      if (p.reason) this.form.chief_complaint = p.reason
+      if (p.visit_type) this.form.visit_type = p.visit_type
+      if (p.status) this.form.status = p.status
+
+      // Bảo đảm combo có option cho patient/doctor dù chưa load được chi tiết
+      const ensureOption = (listName, value) => {
+        if (!value) return
+        if (!Array.isArray(this[listName])) this[listName] = []
+        if (!this[listName].some(o => o.value === value)) {
+          this[listName] = [{ value, label: value }, ...this[listName]]
+        }
+      }
+      ensureOption('patientOptions', this.form.patient_id)
+      ensureOption('doctorOptions', this.form.doctor_id)
+
+      // Nếu đã có options & map thì áp dụng chi tiết từ lịch hẹn
+      if (this.form.appointment_id && this.appointmentOptions.length) {
+        this.onAppointmentChange()
+      } else if (this.form.appointment_id && !this.appointmentOptions.length) {
+        // Fallback: thêm option tạm để hiện mã lịch hẹn trên select
+        this.appointmentOptions = [{ value: this.form.appointment_id, label: this.form.appointment_id }, ...this.appointmentOptions]
+      }
+
+      // Không hiển thị alert cho flow check-in
     },
 
     // Auto-fill patient, doctor, visit_date and chief_complaint from selected appointment
@@ -968,6 +1200,12 @@ export default {
         if (type) {
           this.form.visit_type = type
         }
+      } else {
+        // Nếu chưa có aptData (options chưa load chi tiết), giữ nguyên appointment_id đã chọn
+        const tempLabel = selectedApt ? selectedApt.label : this.form.appointment_id
+        if (this.form.appointment_id && !this.appointmentOptions.some(o => o.value === this.form.appointment_id)) {
+          this.appointmentOptions = [{ value: this.form.appointment_id, label: tempLabel || this.form.appointment_id }, ...this.appointmentOptions]
+        }
       }
     },
 
@@ -994,8 +1232,23 @@ export default {
         // ✅ FIX: Giữ lại test_requests khi edit
         test_requests: f.test_requests || ''
       }
+
+      // Đảm bảo options đã load để giữ lại selections
+      await this.ensureOptionsLoaded()
+
+      // Thêm option tạm nếu hồ sơ chứa doctor/patient/appointment không nằm trong danh sách (do giới hạn/role)
+      const ensureOption = (listName, value) => {
+        if (!value) return
+        if (!Array.isArray(this[listName])) this[listName] = []
+        if (!this[listName].some(o => o.value === value)) {
+          this[listName] = [{ value, label: value }, ...this[listName]]
+        }
+      }
+      ensureOption('patientOptions', this.form.patient_id)
+      ensureOption('doctorOptions', this.form.doctor_id)
+      ensureOption('appointmentOptions', this.form.appointment_id)
+
       this.showModal = true
-      this.ensureOptionsLoaded()
 
       // ✅ SUC-08: Load previous records for this patient
       if (f.patient_id) {
@@ -1396,23 +1649,23 @@ export default {
       try {
         const id = row._id || row.id
         if (!id) {
-          alert('Không tìm thấy ID hồ sơ')
+          this.showInfo('Không tìm thấy ID hồ sơ')
           return
         }
 
         const rev = row._rev
         if (!rev) {
-          alert('Không tìm thấy revision của document')
+          this.showInfo('Không tìm thấy revision của document')
           return
         }
 
         // ✅ Truyền cả id và rev
         await MedicalRecordService.remove(id, rev)
-        alert('Xóa thành công!')
+        this.showInfo('Xóa thành công!')
         await this.fetch()
       } catch (e) {
         console.error(e)
-        alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
+        this.showInfo(e?.response?.data?.message || e?.message || 'Xóa thất bại')
       }
     },
 
@@ -1438,7 +1691,7 @@ export default {
     async createInvoiceFromRecord (record) {
       const recordId = record._id || record.id
       if (!recordId) {
-        alert('Không tìm thấy ID bệnh án!')
+        this.showInfo('Không tìm thấy ID bệnh án!')
         return
       }
 
@@ -1446,10 +1699,20 @@ export default {
         // ✅ Ensure patient data is loaded
         await this.ensureOptionsLoaded()
 
-        // Get patient name
-        const patientName = this.displayName(this.patientsMap[record.patient_id]) || 'N/A'
+        // Check if invoice already exists for this record (client filter để chắc chắn)
+        const invRes = await InvoiceService.list({ limit: 1000 })
+        let existingInvoice = null
+        if (invRes) {
+          const rows = Array.isArray(invRes.rows)
+            ? invRes.rows.map(r => r.doc || r.value || r)
+            : (Array.isArray(invRes.data) ? invRes.data : (Array.isArray(invRes) ? invRes : []))
+          existingInvoice = rows.find(i => (i.medical_record_id === recordId))
+        }
 
-        if (!confirm(`Tạo hóa đơn cho Bệnh án này?\n\nBệnh nhân: ${patientName}`)) {
+        if (existingInvoice) {
+          const invNum = existingInvoice.invoice_info?.invoice_number || existingInvoice.invoice_number || existingInvoice._id
+          this.showInfo(`Hồ sơ này đã có hóa đơn <b>${invNum}</b>. Đang mở hóa đơn này...`)
+          this.$router.push({ path: '/invoices', query: { medical_record_id: recordId, q: invNum } })
           return
         }
 
@@ -1539,16 +1802,23 @@ export default {
         try {
           const tests = await MedicalTestService.list({
             medical_record_id: recordId,
-            limit: 10
+            limit: 1000
           })
 
           console.log('🧪 Found medical tests:', tests)
+          const arr = (r) => {
+            if (Array.isArray(r?.rows)) return r.rows.map(x => x.doc || x.value || x)
+            if (Array.isArray(r?.data)) return r.data
+            if (Array.isArray(r)) return r
+            return []
+          }
+          const testsArr = arr(tests).filter(t => t.medical_record_id === recordId)
 
-          if (tests?.data?.length > 0) {
-            tests.data.forEach(test => {
+          if (testsArr.length > 0) {
+            testsArr.forEach(test => {
               const testInfo = test.test_info || {}
               const testName = testInfo.test_name || 'Xét nghiệm'
-              const unitPrice = testInfo.unit_price || 150000 // Get price from test record
+              const unitPrice = Number(testInfo.unit_price || 150000)
 
               services.push({
                 service_type: 'test',
@@ -1605,18 +1875,24 @@ export default {
         const result = await InvoiceService.create(invoicePayload)
         console.log('💰 Invoice created:', result)
 
-        alert(`✅ Đã tạo hóa đơn thành công!\n\nSố HĐ: ${invoicePayload.invoice_number}\nTổng tiền: ${totalAmount.toLocaleString()} VNĐ\n\nVui lòng vào menu "Hóa đơn" để xác nhận thanh toán.`)
+        this.showInfo(`✅ Đã tạo hóa đơn <b>${invoicePayload.invoice_number}</b><br/>Tổng tiền: ${totalAmount.toLocaleString()} VNĐ`)
 
-        // Optionally navigate to invoices page
-        if (confirm('Chuyển đến trang Hóa đơn?')) {
-          this.$router.push('/invoices')
-        }
+        // Tự chuyển sang trang Hóa đơn, lọc theo hồ sơ và số HĐ
+        this.$router.push({ path: '/invoices', query: { medical_record_id: recordId, q: invoicePayload.invoice_number } })
       } catch (e) {
         console.error('Create invoice error:', e)
-        alert(e?.response?.data?.message || e?.message || 'Không thể tạo hóa đơn')
+        this.showInfo(e?.response?.data?.message || e?.message || 'Không thể tạo hóa đơn')
       } finally {
         this.loading = false
       }
+    },
+
+    // simple info modal
+    showInfo (message) {
+      this.infoModal = { visible: true, message }
+    },
+    closeInfo () {
+      this.infoModal = { visible: false, message: '' }
     }
   }
 }
@@ -2160,150 +2436,318 @@ export default {
 
 .pagination-info-row {
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 0.5rem 0 0.5rem;
-  border-top: 1px solid #e5e7eb;
-  margin-top: 1.5rem;
-  background: transparent;
+  align-items: center;
   gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: #334155;
 }
 
-.pagination-info {
-  text-align: center;
-  color: #64748b;
+.pagination-info-row i {
+  color: #3b82f6;
+  font-size: 1rem;
 }
 
-.page-info {
+.pagination-info-row strong {
+  color: #1e40af;
   font-weight: 600;
-  color: #374151;
+}
+
+.pagination-controls-center {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-  margin-bottom: 0.25rem;
-}
-
-.page-info b {
-  color: #374151;
-  font-weight: 700;
-}
-
-.total-info {
-  font-size: 0.85rem;
-  color: #64748b;
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
   justify-content: center;
-  background: #fff;
-  border-radius: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  border: 1px solid #e5e7eb;
-  padding: 0.15rem 0.5rem;
-  min-width: 120px;
-  max-width: 180px;
-  gap: 0;
-  height: 2.6rem;
+  align-items: center;
+  gap: 8px;
 }
 
 .pagination-btn {
-  width: 2.4rem;
-  height: 2.4rem;
-  border: none;
-  background: transparent;
-  color: #b0b6be;
-  border-radius: 50%;
-  font-weight: 600;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  border-radius: 8px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, color 0.15s;
-  cursor: pointer;
-  font-size: 1.2rem;
-  margin: 0 0.1rem;
+  transition: all 0.3s ease;
+  font-size: 16px;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: #f3f4f6;
-  color: #2563eb;
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-1px);
 }
 
 .pagination-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
-  background: transparent;
-  color: #e5e7eb;
 }
 
 .page-numbers {
   display: flex;
-  align-items: center;
-  gap: 0;
-  margin: 0;
+  gap: 6px;
 }
 
 .page-number-btn {
-  width: 2.4rem;
-  height: 2.4rem;
-  border: none;
-  background: transparent;
-  color: #2563eb;
-  border-radius: 50%;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  border-radius: 8px;
+  cursor: pointer;
   font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, color 0.15s;
-  cursor: pointer;
-  font-size: 1.1rem;
-  margin: 0 0.1rem;
 }
 
-.page-number-btn:hover:not(:disabled):not(.ellipsis) {
-  background: #f3f4f6;
-  color: #2563eb;
+.page-number-btn:hover:not(:disabled):not(.active) {
+  border-color: #3b82f6;
+  color: #3b82f6;
 }
 
 .page-number-btn.active {
-  background: #2563eb;
-  color: #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.10);
-  z-index: 1;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .page-number-btn.ellipsis {
   border: none;
   background: transparent;
   cursor: default;
-  color: #b0b6be;
-  font-weight: 400;
 }
 
 /* Modal */
-.modal-backdrop {
+.modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1050;
   overflow-y: auto;
   padding: 1rem;
 }
 
-.modal-card {
-  width: min(1000px, 95vw);
+.modal-container {
+  width: min(1100px, 95vw);
   background: white;
   border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header-custom {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-title-custom {
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.modal-body-custom {
+  padding: 32px;
   overflow-y: auto;
+  flex: 1;
+}
+
+.form-section {
+  margin-bottom: 32px;
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.form-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-section-title i {
+  color: #3b82f6;
+  font-size: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label-custom {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-label-custom i {
+  color: #3b82f6;
+  font-size: 16px;
+}
+
+.text-required {
+  color: #dc2626;
+}
+
+.form-label-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.form-input-custom {
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1e293b;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.form-input-custom:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input-custom:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+.form-input-custom::placeholder {
+  color: #94a3b8;
+}
+
+.modal-footer-custom {
+  padding: 20px 32px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-radius: 0 0 16px 16px;
+}
+
+.btn-modal-cancel {
+  padding: 12px 24px;
+  background: white;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-modal-cancel:hover:not(:disabled) {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.btn-modal-save {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-modal-save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+}
+
+.btn-modal-cancel:disabled,
+.btn-modal-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .section-title {
@@ -2370,5 +2814,49 @@ export default {
 .autocomplete-item strong {
   font-size: 0.95rem;
   color: #1976d2;
+}
+
+/* Simple centered dialogs */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+.dialog {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+.dialog-body {
+  font-size: 14px;
+  color: #1f2937;
+}
+.dialog-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.dialog-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #e5e7eb;
+  color: #374151;
+}
+.dialog-btn.primary {
+  background: #3b82f6;
+  color: white;
+}
+.dialog-btn:hover {
+  filter: brightness(0.95);
 }
 </style>

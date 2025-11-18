@@ -24,7 +24,8 @@ for file in os.listdir(BACKUP_FOLDER):
         continue
 
     dbname = file[:-5]  # bỏ .json
-    # 1) Tạo DB nếu chưa có
+    # 1) Xoá DB cũ (nếu có) rồi tạo mới để đảm bảo sạch dữ liệu
+    session.delete(f"{BASE_URL}/{dbname}")
     session.put(f"{BASE_URL}/{dbname}")
 
     # 2) Đọc dữ liệu

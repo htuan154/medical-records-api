@@ -15,6 +15,14 @@
             <i class="bi bi-database"></i>
             <span>{{ total }} nhân viên</span>
           </div>
+          <div class="page-size-selector-header">
+            <select v-model.number="pageSize" @change="changePageSize" class="page-size-select">
+              <option :value="10">10 / trang</option>
+              <option :value="25">25 / trang</option>
+              <option :value="50">50 / trang</option>
+              <option :value="100">100 / trang</option>
+            </select>
+          </div>
           <button class="btn-action btn-refresh" @click="refreshPage" :disabled="loading">
             <i class="bi bi-arrow-clockwise"></i>
           </button>
@@ -23,8 +31,7 @@
             Thêm mới
           </button>
           <button class="btn-action btn-back" @click="goHome">
-            <i class="bi bi-house-door"></i>
-            Trang chủ
+            <i class="bi bi-arrow-left"></i>
           </button>
         </div>
       </div>
@@ -81,10 +88,10 @@
             </tr>
           </thead>
           <tbody>
-            <template v-for="(s, idx) in paginatedItems" :key="s._id || s.id || idx">
+            <template v-for="(s, idx) in items" :key="s._id || s.id || idx">
               <tr class="staff-row" :class="{ expanded: isExpanded(s) }">
                 <td class="cell-number">
-                  <span class="row-number">{{ idx + 1 + (currentPage - 1) * itemsPerPage }}</span>
+                  <span class="row-number">{{ idx + 1 + (page - 1) * pageSize }}</span>
                 </td>
                 <td class="staff-name">
                   <strong>{{ s.full_name }}</strong>
@@ -232,33 +239,36 @@
         </table>
 
         <!-- Pagination -->
-        <div v-if="items.length > 0" class="pagination-section">
-          <div class="pagination-info-row">
-            <span class="page-info">
-              <i class="bi bi-file-earmark-text"></i>
-              Trang {{ currentPage }}/{{ totalPages }}
-            </span>
-            <span class="total-info">({{ total }} nhân viên)</span>
-          </div>
-          <div class="pagination-controls-center">
-            <button class="pagination-btn" @click="prevPage" :disabled="currentPage === 1">
-              <i class="bi bi-chevron-left"></i>
-            </button>
-            <div class="page-numbers">
-              <button
-                v-for="page in getPageNumbers()"
-                :key="page"
-                class="page-number-btn"
-                :class="{ active: page === currentPage, ellipsis: page === '...' }"
-                @click="page !== '...' && goToPage(page)"
-                :disabled="page === '...'"
-              >
-                {{ page }}
+        <div v-if="total > 0" class="pagination-section">
+          <div class="pagination-controls">
+            <!-- Pagination Buttons -->
+            <div class="pagination-buttons">
+              <button class="pagination-btn" @click="goToPage(1)" :disabled="page === 1" title="Trang đầu">
+                <i class="bi bi-chevron-double-left"></i>
+              </button>
+              <button class="pagination-btn" @click="prev" :disabled="page === 1" title="Trang trước">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+
+              <div class="page-numbers">
+                <button
+                  v-for="p in visiblePages"
+                  :key="p"
+                  class="page-number-btn"
+                  :class="{ active: p === page }"
+                  @click="goToPage(p)"
+                >
+                  {{ p }}
+                </button>
+              </div>
+
+              <button class="pagination-btn" @click="next" :disabled="page === Math.ceil(total / pageSize)" title="Trang sau">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+              <button class="pagination-btn" @click="goToPage(Math.ceil(total / pageSize))" :disabled="page === Math.ceil(total / pageSize)" title="Trang cuối">
+                <i class="bi bi-chevron-double-right"></i>
               </button>
             </div>
-            <button class="pagination-btn" @click="nextPage" :disabled="currentPage === totalPages">
-              <i class="bi bi-chevron-right"></i>
-            </button>
           </div>
         </div>
       </div>
@@ -368,7 +378,7 @@ export default {
       total: 0,
       q: '',
       page: 1,
-      pageSize: 5,
+      pageSize: 50,
       hasMore: false,
       loading: false,
       error: '',
@@ -395,13 +405,30 @@ export default {
     }
   },
   computed: {
-    paginatedItems () {
-      const start = (this.currentPage - 1) * this.itemsPerPage
-      const end = start + this.itemsPerPage
-      return this.items.slice(start, end)
-    },
-    totalPages () {
-      return Math.ceil(this.items.length / this.itemsPerPage)
+    visiblePages () {
+      const totalPages = Math.ceil(this.total / this.pageSize)
+      const maxVisible = 5
+      const pages = []
+
+      if (totalPages <= maxVisible) {
+        for (let i = 1; i <= totalPages; i++) {
+          pages.push(i)
+        }
+      } else {
+        const half = Math.floor(maxVisible / 2)
+        let start = Math.max(1, this.page - half)
+        const end = Math.min(totalPages, start + maxVisible - 1)
+
+        if (end - start < maxVisible - 1) {
+          start = Math.max(1, end - maxVisible + 1)
+        }
+
+        for (let i = start; i <= end; i++) {
+          pages.push(i)
+        }
+      }
+
+      return pages
     }
   },
   created () { this.fetch() },
@@ -523,13 +550,7 @@ export default {
     },
     reload () { this.fetch() },
     refreshPage () {
-      // Reset tất cả bộ lọc và trạng thái
-      this.q = ''
-      this.page = 1
-      this.expanded = {}
-      this.error = ''
-      // Tải lại dữ liệu
-      this.fetch()
+      window.location.reload()
     },
     changePageSize () { this.page = 1; this.fetch() },
     next () { if (this.hasMore) { this.page++; this.fetch() } },
@@ -628,47 +649,10 @@ export default {
     goHome () {
       this.$router.push('/')
     },
-    getPageNumbers () {
-      const pages = []
-      const total = this.totalPages
-      const current = this.currentPage
-
-      if (total <= 7) {
-        for (let i = 1; i <= total; i++) {
-          pages.push(i)
-        }
-      } else {
-        if (current <= 3) {
-          for (let i = 1; i <= 4; i++) pages.push(i)
-          pages.push('...')
-          pages.push(total)
-        } else if (current >= total - 2) {
-          pages.push(1)
-          pages.push('...')
-          for (let i = total - 3; i <= total; i++) pages.push(i)
-        } else {
-          pages.push(1)
-          pages.push('...')
-          for (let i = current - 1; i <= current + 1; i++) pages.push(i)
-          pages.push('...')
-          pages.push(total)
-        }
-      }
-      return pages
-    },
-    goToPage (page) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page
-      }
-    },
-    nextPage () {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++
-      }
-    },
-    prevPage () {
-      if (this.currentPage > 1) {
-        this.currentPage--
+    goToPage (p) {
+      if (p >= 1 && p <= Math.ceil(this.total / this.pageSize)) {
+        this.page = p
+        this.fetch()
       }
     }
   }
@@ -691,7 +675,7 @@ export default {
 .header-section {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
-  padding: 2rem 3rem;
+  padding: 2rem 1rem;
   box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
 }
 
@@ -699,8 +683,9 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .header-left .page-title {
@@ -774,15 +759,20 @@ export default {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
+  background: #fff;
+  color: #2563eb;
   border: none;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  border-radius: 16px;
+  font-weight: 700;
+  box-shadow: none;
+  transition: all 0.2s;
 }
 
 .btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+  color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.12);
 }
 
 .btn-back {
@@ -801,16 +791,53 @@ export default {
   box-shadow: 0 4px 16px rgba(59, 130, 246, 0.18);
 }
 
+/* Page Size Selector in Header */
+.page-size-selector-header {
+  position: relative;
+}
+
+.page-size-selector-header .page-size-select {
+  appearance: none;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 0.65rem 2.5rem 0.65rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2563eb;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 130px;
+  backdrop-filter: blur(10px);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232563eb' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px;
+}
+
+.page-size-selector-header .page-size-select:hover {
+  background: white;
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.page-size-selector-header .page-size-select:focus {
+  outline: none;
+  background: white;
+  border-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 /* Search Section */
 .search-section {
   background: white;
-  padding: 2rem 3rem;
+  padding: 1.5rem 1.5rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
 .search-container {
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
 }
 
 .search-input-group {
@@ -869,10 +896,13 @@ export default {
 }
 
 /* Content Section */
+
 .content-section {
-  padding: 2rem 3rem;
-  max-width: 1400px;
+  padding: 1.5rem 0;
+  max-width: 1300px;
   margin: 0 auto;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .alert {
@@ -917,16 +947,21 @@ export default {
 /* Table Container */
 .table-container {
   background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e5e7eb;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+  border: none;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .staff-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  table-layout: fixed;
 }
 
 .staff-table thead {
@@ -934,41 +969,41 @@ export default {
 }
 
 .staff-table th {
-  padding: 1.25rem 1rem;
+  padding: 1rem 0.75rem;
   text-align: left;
   font-weight: 700;
   color: #374151;
   border-bottom: 2px solid #e5e7eb;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.col-number { width: 80px; text-align: center; }
-.col-name { width: 160px; }
-.col-type { width: 120px; }
-.col-gender { width: 90px; }
-.col-phone { width: 120px; }
-.col-email { width: 180px; }
-.col-department { width: 120px; }
-.col-shift { width: 180px; }
-.col-status { width: 140px; text-align: center; }
-.col-actions { width: 140px; text-align: center; }
+.col-number { width: 60px; text-align: center; min-width: 60px; }
+.col-name { width: auto; min-width: 140px; }
+.col-type { width: auto; min-width: 110px; }
+.col-gender { width: 80px; min-width: 80px; }
+.col-phone { width: 110px; min-width: 110px; }
+.col-email { width: auto; min-width: 180px; }
+.col-department { width: auto; min-width: 130px; }
+.col-shift { width: auto; min-width: 180px; }
+.col-status { width: 140px; text-align: center; min-width: 140px; }
+.col-actions { width: 150px; text-align: center; min-width: 150px; }
 
 /* Shift Compact Styling */
 .shift-compact {
   display: flex;
-  flex-direction: row;
-  gap: 0.4rem;
+  flex-direction: column;
+  gap: 0.35rem;
   flex-wrap: wrap;
 }
 
 .shift-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.65rem;
-  border-radius: 12px;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 10px;
   font-size: 0.8rem;
   font-weight: 600;
   white-space: nowrap;
@@ -976,7 +1011,7 @@ export default {
 }
 
 .shift-badge i {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 .shift-badge-days {
@@ -1013,7 +1048,7 @@ export default {
 }
 
 .staff-table td {
-  padding: 1.25rem 1rem;
+  padding: 1rem 0.75rem;
   vertical-align: middle;
   color: #374151;
 }
@@ -1041,13 +1076,14 @@ export default {
 .status-badge {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 16px;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   border: 1px solid;
   display: inline-flex;
+  white-space: nowrap;
 }
 
 .status-active {
@@ -1063,9 +1099,12 @@ export default {
 }
 
 .action-buttons {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 140px;
+  flex-wrap: nowrap;
 }
 
 .action-btn {
@@ -1074,12 +1113,13 @@ export default {
   border-radius: 8px;
   border: 1px solid;
   background: white;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
   cursor: pointer;
   font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .view-btn {
@@ -1251,74 +1291,83 @@ export default {
 /* Pagination Section */
 .pagination-section {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 0 0.5rem;
+  padding: 1.5rem 1rem;
   border-top: 1px solid #e5e7eb;
-  margin-top: 1.5rem;
-  background: transparent;
-  gap: 0.5rem;
+  background: #fafbfc;
 }
 
-.pagination-info-row {
+.pagination-controls {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 1.04rem;
-  color: #374151;
-  margin-bottom: 0.15rem;
+  gap: 1.5rem;
+}
+
+/* Page Size Selector */
+.page-size-selector {
+  position: relative;
+}
+
+.page-size-select {
+  appearance: none;
+  background: white;
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  padding: 0.65rem 2.5rem 0.65rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2563eb;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 130px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232563eb' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px;
+}
+
+.page-size-select:hover {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.page-size-select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.page-size-select option {
+  padding: 0.5rem;
   font-weight: 500;
 }
 
-.page-info {
+/* Pagination Buttons */
+.pagination-buttons {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-}
-
-.page-info i {
-  color: #3b82f6;
-}
-
-.total-info {
-  font-size: 0.85rem;
-  color: #64748b;
-  font-weight: 400;
-  margin-left: 0.5rem;
-}
-
-.pagination-controls-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border-radius: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  border: 1px solid #e5e7eb;
-  padding: 0.15rem 0.5rem;
-  min-width: 120px;
-  max-width: 180px;
-  gap: 0;
-  height: 2.6rem;
+  gap: 0.25rem;
+  background: white;
+  padding: 0.35rem;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
 }
 
 .pagination-btn {
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border: none;
   background: transparent;
-  color: #b0b6be;
-  border-radius: 50%;
+  color: #6b7280;
+  border-radius: 8px;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, color 0.15s;
+  transition: all 0.2s;
   cursor: pointer;
-  font-size: 1.2rem;
-  margin: 0 0.1rem;
+  font-size: 1.1rem;
 }
 
 .pagination-btn:hover:not(:disabled) {
@@ -1327,55 +1376,44 @@ export default {
 }
 
 .pagination-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: not-allowed;
-  background: transparent;
-  color: #e5e7eb;
+  color: #d1d5db;
 }
 
 .page-numbers {
   display: flex;
   align-items: center;
-  gap: 0;
-  margin: 0;
+  gap: 0.25rem;
+  margin: 0 0.25rem;
 }
 
 .page-number-btn {
-  width: 2.4rem;
-  height: 2.4rem;
+  min-width: 2.75rem;
+  height: 2.75rem;
   border: none;
   background: transparent;
-  color: #2563eb;
-  border-radius: 50%;
+  color: #4b5563;
+  border-radius: 8px;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, color 0.15s;
+  transition: all 0.2s;
   cursor: pointer;
-  font-size: 1.1rem;
-  margin: 0 0.1rem;
+  font-size: 0.95rem;
+  padding: 0 0.5rem;
 }
 
-.page-number-btn:hover:not(:disabled):not(.ellipsis) {
+.page-number-btn:hover:not(.active) {
   background: #f3f4f6;
   color: #2563eb;
 }
 
 .page-number-btn.active {
   background: #2563eb;
-  color: #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.10);
-  z-index: 1;
-}
-
-.page-number-btn.ellipsis {
-  border: none;
-  background: transparent;
-  cursor: default;
-  color: #b0b6be;
-  font-weight: 400;
+  color: white;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
 }
 
 /* Responsive Design */

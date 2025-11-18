@@ -1,9 +1,13 @@
 <template>
   <section class="container py-4">
+    <!-- Back to Home Arrow (moved to header) -->
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="h3 mb-0">📊 Báo cáo & Thống kê</h1>
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 align-items-center">
+        <button class="btn btn-icon btn-outline-primary me-2" @click="goHome" title="Về trang chủ" style="padding: 0.5rem 0.7rem; font-size: 1.25rem;">
+          ←
+        </button>
         <button class="btn btn-outline-secondary" @click="refreshDashboard" :disabled="loading">
           🔄 Làm mới
         </button>
@@ -177,6 +181,33 @@
             </small>
           </div>
         </div>
+        <div
+          v-if="revenueTrend"
+          class="row text-center mt-4 g-3 border-top pt-3"
+        >
+          <div class="col-md-4">
+            <div class="text-muted text-uppercase small">Xu hướng</div>
+            <div class="h5 mb-0">
+              {{ revenueTrend.direction === 'up' ? '📈 Tăng' : revenueTrend.direction === 'down' ? '📉 Giảm' : '➖ Ổn định' }}
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="text-muted text-uppercase small">Tháng cao nhất</div>
+            <div class="h6 mb-0" v-if="revenueTrend.highest_month">
+              {{ revenueTrend.highest_month.label }}
+              <small class="d-block text-success">{{ formatCurrency(revenueTrend.highest_month.revenue) }}</small>
+            </div>
+            <div v-else class="text-muted">---</div>
+          </div>
+          <div class="col-md-4">
+            <div class="text-muted text-uppercase small">Tháng thấp nhất</div>
+            <div class="h6 mb-0" v-if="revenueTrend.lowest_month">
+              {{ revenueTrend.lowest_month.label }}
+              <small class="d-block text-danger">{{ formatCurrency(revenueTrend.lowest_month.revenue) }}</small>
+            </div>
+            <div v-else class="text-muted">---</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -204,7 +235,26 @@
       <div class="card-body">
         <!-- Biểu đồ -->
         <div v-if="showChart" class="mb-4">
-          <canvas ref="chartCanvas" width="400" height="200"></canvas>
+          <div v-if="!chartSections.length" class="text-center text-muted py-5 border rounded">
+            <i class="fas fa-chart-pie fa-2x mb-2"></i>
+            <p class="mb-0">Không có dữ liệu để vẽ biểu đồ</p>
+          </div>
+          <div v-else class="row g-4">
+            <div
+              class="col-12 col-lg-6"
+              v-for="(chart, index) in chartSections"
+              :key="chart.id || index"
+            >
+              <div class="border rounded p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6 class="mb-0">{{ chart.title }}</h6>
+                  <small class="text-muted" v-if="chart.legend">{{ chart.legend }}</small>
+                </div>
+                <canvas :ref="`chart-${index}`" width="480" height="320"></canvas>
+                <div v-if="chart.meta" class="small text-muted mt-2">{{ chart.meta }}</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Bảng dữ liệu -->
@@ -286,7 +336,6 @@ import PatientService from '@/api/patientService'
 import DoctorService from '@/api/doctorService'
 import MedicalRecordService from '@/api/medicalRecordService'
 import ReportService from '@/api/reportService'
-import AppointmentService from '@/api/appointmentService'
 import MedicationService from '@/api/medicationService'
 import TreatmentService from '@/api/treatmentService'
 import InvoiceService from '@/api/invoiceService'
@@ -317,7 +366,9 @@ export default {
       onlySeniorPatients: true,
       tableColumns: [],
       currentPage: 1,
-      pageSize: 10
+      pageSize: 10,
+      chartSections: [],
+      revenueTrend: null
     }
   },
   computed: {
@@ -354,9 +405,30 @@ export default {
       if (this.selectedReportType === 'revenue_stats' && this.reportGenerated) {
         this.generateReport()
       }
+    },
+    showChart (val) {
+      if (val) {
+        this.$nextTick(() => this.renderCharts())
+      }
+    },
+    chartSections: {
+      deep: true,
+      handler () {
+        if (this.showChart) {
+          this.$nextTick(() => this.renderCharts())
+        }
+      }
     }
   },
   methods: {
+    goHome () {
+      // Nếu dùng Vue Router
+      if (this.$router) {
+        this.$router.push({ name: 'home' })
+      } else {
+        window.location.href = '/'
+      }
+    },
     // Utility functions
     getDateString (daysFromNow) {
       const date = new Date()
@@ -560,6 +632,8 @@ export default {
 
       this.loading = true
       this.reportGenerated = false
+      this.chartSections = []
+      this.revenueTrend = null
       if (this.selectedReportType !== 'revenue_stats') {
         this.revenueSummary = null
       }
@@ -567,6 +641,9 @@ export default {
         // Gọi API lấy dữ liệu báo cáo
         const data = await this.fetchReportData()
         this.reportData = data
+        if (!this.chartSections.length) {
+          this.chartSections = this.buildDefaultChartFromTable()
+        }
         this.reportGenerated = true
       } catch (e) {
         console.error('Generate report failed:', e)
@@ -720,9 +797,17 @@ export default {
         min_age: this.advancedRevenueMinAge
       }
 
+      const revenueStatsPromise = ReportService.getRevenueStats(params)
+        .then(stats => this.applyRevenueChartData(stats))
+        .catch(err => {
+          console.warn('Revenue stats API failed', err?.message || err)
+          this.chartSections = []
+        })
+
       try {
         const summary = await ReportService.getAdvancedRevenueStats(params)
         this.revenueSummary = summary
+        await revenueStatsPromise
         return (summary?.invoices || []).map(item => ({
           invoice_number: item.invoice_number || item.invoice_id,
           patient_name: item.patient_name,
@@ -735,6 +820,7 @@ export default {
         console.warn('Advanced revenue API failed, falling back to local calculation', e)
         const fallback = await this.buildRevenueRowsFromInvoices()
         this.revenueSummary = fallback.summary
+        await revenueStatsPromise
         return fallback.rows
       }
     },
@@ -834,74 +920,126 @@ export default {
       return Number(amount) || 0
     },
 
-    async getAppointmentStatsFromAPI () {
-      try {
-        // Lấy data thật từ Appointment API với bộ lọc ngày
-        const response = await AppointmentService.list({ limit: 10000 })
-        const appointments = response?.rows || response?.data || []
+    applyRevenueChartData (stats) {
+      if (!stats) return
+      const sections = []
 
-        // Lọc appointments theo khoảng thời gian, dùng ngày hẹn thực tế
-        const filteredAppointments = appointments.filter(item => {
-          const appointment = item.doc || item
-          const scheduledDate = appointment.appointment_info?.scheduled_date || appointment.appointment_date
-          return this.isWithinDateRange(scheduledDate)
+      if (Array.isArray(stats.monthly) && stats.monthly.length) {
+        sections.push({
+          id: 'revenue-monthly',
+          type: 'bar',
+          title: 'Doanh thu theo tháng',
+          labels: stats.monthly.map(item => item.label),
+          values: stats.monthly.map(item => item.revenue || 0),
+          meta: `Tổng doanh thu: ${this.formatCurrency(stats.total_revenue || 0)}`
         })
-
-        // Group by ngày hẹn (scheduled_date)
-        const statsByDate = {}
-        filteredAppointments.forEach(item => {
-          const appointment = item.doc || item
-          const scheduledDate = appointment.appointment_info?.scheduled_date || appointment.appointment_date
-          const date = scheduledDate?.split('T')[0] || new Date().toISOString().split('T')[0]
-
-          if (!statsByDate[date]) {
-            statsByDate[date] = { total: 0, completed: 0, cancelled: 0, scheduled: 0 }
-          }
-
-          statsByDate[date].total++
-          if (appointment.status === 'completed') {
-            statsByDate[date].completed++
-          } else if (appointment.status === 'cancelled') {
-            statsByDate[date].cancelled++
-          } else if (appointment.status === 'scheduled') {
-            statsByDate[date].scheduled++
-          }
-        })
-
-        return Object.entries(statsByDate)
-          .sort(([a], [b]) => new Date(a) - new Date(b))
-          .map(([date, stats]) => ({
-            date,
-            total_appointments: stats.total,
-            completed: stats.completed,
-            cancelled: stats.cancelled,
-            scheduled: stats.scheduled
-          }))
-      } catch (e) {
-        console.warn('Appointment API failed, generating sample data within date range')
-        // Fallback: Tạo data mẫu trong khoảng thời gian đã chọn
-        const startDate = new Date(this.filters.startDate)
-        const endDate = new Date(this.filters.endDate)
-        const result = []
-
-        const diffTime = Math.abs(endDate - startDate)
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-        for (let i = 0; i <= diffDays; i++) {
-          const currentDate = new Date(startDate)
-          currentDate.setDate(startDate.getDate() + i)
-          const dateStr = currentDate.toISOString().split('T')[0]
-
-          result.push({
-            date: dateStr,
-            total_appointments: Math.floor(Math.random() * 20) + 5,
-            completed: Math.floor(Math.random() * 15) + 3,
-            cancelled: Math.floor(Math.random() * 5)
-          })
-        }
-
-        return result
       }
+
+      if (stats.age_distribution) {
+        const older = stats.age_distribution.over_40 || {}
+        const younger = stats.age_distribution.under_40 || {}
+        sections.push({
+          id: 'revenue-age',
+          type: 'pie',
+          title: 'Tỷ lệ tuổi bệnh nhân (theo hóa đơn)',
+          labels: [older.label || '>= 40', younger.label || '< 40'],
+          values: [older.count || 0, younger.count || 0],
+          legend: 'Nguồn: hoá đơn trong khoảng thời gian đã chọn'
+        })
+      }
+
+      this.chartSections = sections
+      this.revenueTrend = stats.trend || null
+    },
+
+    async getAppointmentStatsFromAPI () {
+      const params = {
+        start_date: this.filters.startDate,
+        end_date: this.filters.endDate
+      }
+
+      try {
+        const stats = await ReportService.getAppointmentStats(params)
+        this.chartSections = this.buildAppointmentTypeChart(stats?.type_distribution || [])
+        return (stats?.daily || []).map(item => ({
+          date: item.date,
+          total_appointments: item.total_appointments,
+          completed: item.completed,
+          cancelled: item.cancelled,
+          scheduled: item.scheduled
+        }))
+      } catch (e) {
+        console.warn('Appointment stats API failed, using fallback data', e?.message || e)
+        const fallback = this.buildAppointmentFallback()
+        this.chartSections = this.buildAppointmentTypeChart(fallback.type_distribution)
+        return fallback.daily
+      }
+    },
+
+    buildAppointmentTypeChart (distribution = []) {
+      if (!distribution.length) return this.buildDefaultChartFromTable()
+
+      return [{
+        id: 'appointment-types',
+        type: 'pie',
+        title: 'Tỷ lệ loại lịch hẹn',
+        labels: distribution.map(item => this.translateAppointmentType(item.type)),
+        values: distribution.map(item => item.count),
+        legend: 'Tính theo % số lượng lịch hẹn'
+      }]
+    },
+
+    buildAppointmentFallback () {
+      const startDate = new Date(this.filters.startDate)
+      const endDate = new Date(this.filters.endDate)
+      const result = []
+      const typeDistribution = {}
+
+      const diffTime = Math.abs(endDate - startDate)
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+      const possibleTypes = ['consultation', 'follow_up', 'checkup', 'emergency', 'procedure']
+
+      for (let i = 0; i <= diffDays; i++) {
+        const currentDate = new Date(startDate)
+        currentDate.setDate(startDate.getDate() + i)
+        const dateStr = currentDate.toISOString().split('T')[0]
+
+        const total = Math.floor(Math.random() * 20) + 5
+        const completed = Math.floor(total * 0.7)
+        const cancelled = Math.floor(total * 0.15)
+        const scheduled = total - completed - cancelled
+
+        result.push({
+          date: dateStr,
+          total_appointments: total,
+          completed,
+          cancelled,
+          scheduled
+        })
+
+        const randomType = possibleTypes[Math.floor(Math.random() * possibleTypes.length)]
+        typeDistribution[randomType] = (typeDistribution[randomType] || 0) + 1
+      }
+
+      const distributionArray = Object.entries(typeDistribution).map(([type, count]) => ({
+        type,
+        count,
+        percentage: 0
+      }))
+
+      return { daily: result, type_distribution: distributionArray }
+    },
+
+    translateAppointmentType (type) {
+      const map = {
+        consultation: 'Tư vấn',
+        follow_up: 'Tái khám',
+        checkup: 'Khám sức khỏe',
+        emergency: 'Cấp cứu',
+        procedure: 'Thủ thuật'
+      }
+      return map[type] || type || 'Khác'
     },
 
     async getMedicationStatsFromAPI () {
@@ -1262,22 +1400,30 @@ export default {
       this.showChart = !this.showChart
       if (this.showChart) {
         this.$nextTick(() => {
-          this.renderChart()
+          this.renderCharts()
         })
       }
     },
 
-    renderChart () {
-      if (!this.$refs.chartCanvas || !this.reportData.length) return
+    renderCharts () {
+      if (!this.showChart || !this.chartSections.length) return
 
-      const ctx = this.$refs.chartCanvas.getContext('2d')
+      this.chartSections.forEach((chart, index) => {
+        let canvas = this.$refs[`chart-${index}`]
+        if (Array.isArray(canvas)) {
+          canvas = canvas[0]
+        }
+        if (!canvas) return
 
-      // Xóa chart cũ
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+        const ctx = canvas.getContext('2d')
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // Vẽ biểu đồ đơn giản (Bar chart)
-      const data = this.prepareChartData()
-      this.drawBarChart(ctx, data)
+        if (chart.type === 'pie') {
+          this.drawPieChart(ctx, chart)
+        } else {
+          this.drawBarChart(ctx, chart)
+        }
+      })
     },
 
     prepareChartData () {
@@ -1294,8 +1440,30 @@ export default {
       }
     },
 
-    drawBarChart (ctx, data) {
-      if (!data.labels.length) return
+    buildDefaultChartFromTable () {
+      const data = this.prepareChartData()
+      if (!data.labels.length) return []
+
+      const maxBars = 12
+      return [{
+        id: `${this.selectedReportType}-default`,
+        type: 'bar',
+        title: `Biểu đồ ${this.getReportTitle().toLowerCase()}`,
+        labels: data.labels.slice(0, maxBars),
+        values: data.values.slice(0, maxBars)
+      }]
+    },
+
+    drawBarChart (ctx, chart) {
+      const labels = chart.labels || []
+      const values = chart.values || []
+      if (!labels.length || !values.length) {
+        ctx.fillStyle = '#6c757d'
+        ctx.font = '16px Arial'
+        ctx.textAlign = 'center'
+        ctx.fillText('Không đủ dữ liệu để vẽ biểu đồ', ctx.canvas.width / 2, ctx.canvas.height / 2)
+        return
+      }
 
       const canvas = ctx.canvas
       const padding = 40
@@ -1306,9 +1474,9 @@ export default {
       const chartWidth = canvas.width - padding * 2
       const chartHeight = canvas.height - padding * 2
 
-      const maxValue = Math.max(...data.values)
-      const barWidth = chartWidth / data.labels.length * 0.6
-      const barSpacing = chartWidth / data.labels.length * 0.4
+      const maxValue = Math.max(...values) || 1
+      const barWidth = chartWidth / labels.length * 0.6
+      const barSpacing = chartWidth / labels.length * 0.4
 
       // Vẽ trục
       ctx.strokeStyle = '#333'
@@ -1320,7 +1488,7 @@ export default {
       ctx.stroke()
 
       // Vẽ bars
-      data.values.forEach((value, index) => {
+      values.forEach((value, index) => {
         const barHeight = (value / maxValue) * chartHeight
         const x = padding + index * (barWidth + barSpacing) + barSpacing / 2
         const y = canvas.height - padding - barHeight
@@ -1333,13 +1501,68 @@ export default {
         ctx.fillStyle = '#333'
         ctx.font = '13px Arial'
         ctx.textAlign = 'center'
-        ctx.fillText(data.labels[index], x + barWidth / 2, canvas.height - padding + 15)
+        ctx.fillText(labels[index], x + barWidth / 2, canvas.height - padding + 15)
 
         // Vẽ giá trị
         ctx.fillStyle = '#333'
         ctx.font = 'bold 13px Arial'
         ctx.textAlign = 'center'
         ctx.fillText(value.toLocaleString(), x + barWidth / 2, y - 8)
+      })
+    },
+
+    drawPieChart (ctx, chart) {
+      const values = chart.values || []
+      const labels = chart.labels || []
+      const total = values.reduce((sum, val) => sum + val, 0)
+      const canvas = ctx.canvas
+      canvas.width = 480
+      canvas.height = 320
+      const centerX = canvas.width / 2
+      const centerY = canvas.height / 2
+      const radius = Math.min(centerX, centerY) - 20
+
+      if (!total) {
+        ctx.fillStyle = '#6c757d'
+        ctx.font = '16px Arial'
+        ctx.textAlign = 'center'
+        ctx.fillText('Không có dữ liệu', centerX, centerY)
+        return
+      }
+
+      let startAngle = -Math.PI / 2
+      const colors = ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#20c997', '#6f42c1']
+
+      values.forEach((value, index) => {
+        const sliceAngle = (value / total) * Math.PI * 2
+        ctx.beginPath()
+        ctx.moveTo(centerX, centerY)
+        ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle)
+        ctx.closePath()
+        ctx.fillStyle = colors[index % colors.length]
+        ctx.fill()
+
+        const midAngle = startAngle + sliceAngle / 2
+        const labelX = centerX + (radius - 30) * Math.cos(midAngle)
+        const labelY = centerY + (radius - 30) * Math.sin(midAngle)
+        const percent = Math.round((value / total) * 100)
+
+        ctx.fillStyle = '#fff'
+        ctx.font = 'bold 13px Arial'
+        ctx.textAlign = 'center'
+        ctx.fillText(`${percent}%`, labelX, labelY)
+
+        startAngle += sliceAngle
+      })
+
+      ctx.font = '13px Arial'
+      ctx.textAlign = 'left'
+      labels.forEach((label, index) => {
+        const y = 20 + index * 18
+        ctx.fillStyle = colors[index % colors.length]
+        ctx.fillRect(canvas.width - 150, y - 10, 12, 12)
+        ctx.fillStyle = '#333'
+        ctx.fillText(`${label} (${values[index]})`, canvas.width - 130, y)
       })
     },
 
@@ -1422,6 +1645,19 @@ export default {
 </script>
 
 <style scoped>
+/* Nút icon nhỏ cho mũi tên về trang chủ */
+.btn-icon {
+  background: #e7f0fd;
+  color: #1976d2;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+  transition: background 0.2s;
+}
+.btn-icon:hover, .btn-icon:focus {
+  background: #d0e3fa;
+  color: #125ea7;
+}
 .card {
   border: none;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);

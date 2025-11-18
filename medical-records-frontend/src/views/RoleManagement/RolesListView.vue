@@ -13,7 +13,6 @@
         <div class="header-actions">
       <button class="btn-action btn-back" @click="goHome" title="Quay lại Trang chủ">
         <i class="bi bi-arrow-left"></i>
-        Trang chủ
       </button>
           <div class="stats-badge">
             <i class="bi bi-bar-chart-fill"></i>
@@ -867,10 +866,13 @@ export default {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-  border: none;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: #fff !important;
+  color: #2563eb !important;
+  border: 1.5px solid #3b82f6 !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  transition: all 0.2s !important;
 }
 
 .btn-back {
@@ -889,8 +891,11 @@ export default {
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  background: #2563eb !important;
+  color: #fff !important;
+  border-color: #2563eb !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.12) !important;
 }
 
 /* Search Section */
@@ -1497,52 +1502,15 @@ export default {
 /* Modal styles (keeping existing modal styles) */
 .modal-backdrop {
   position: fixed;
-  .page-numbers {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    margin: 0;
-  }
-  .page-number-btn {
-    width: 2.4rem;
-    height: 2.4rem;
-    border: none;
-    background: transparent;
-    color: #2563eb;
-    border-radius: 50%;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s, color 0.15s;
-    cursor: pointer;
-    font-size: 1.1rem;
-    margin: 0 0.1rem;
-  }
-  .page-number-btn:hover:not(:disabled):not(.ellipsis) {
-    background: #f3f4f6;
-    color: #2563eb;
-  }
-  .page-number-btn.active {
-    background: #2563eb;
-    color: #fff;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(37,99,235,0.10);
-    z-index: 1;
-  }
-  .page-number-btn.ellipsis {
-    border: none;
-    background: transparent;
-    cursor: default;
-    color: #b0b6be;
-    font-weight: 400;
-  }
-  padding: 1.5rem 2.5rem 2rem;
-  border-top: 1px solid #e5e7eb;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
-  justify-content: end;
-  gap: 1rem;
-  background: #f8fafc;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  overflow-y: auto;
+  padding: 0;
 }
 
 .btn-close {
@@ -1859,7 +1827,8 @@ export default {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   max-height: 90vh;
   overflow-y: auto;
-  transform: scale(0.9);
+  margin: 0;
+  transform: none;
   animation: modalSlideIn 0.3s ease forwards;
 }
 
