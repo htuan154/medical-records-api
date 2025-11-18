@@ -155,21 +155,40 @@ JS
     // Decrease medication stock if service contains medication items
     private function decreaseMedicationStock(array $services): void
     {
-        foreach ($services as $service) {
-            if (($service['service_type'] ?? '') === 'medication' && !empty($service['medication_id']) && ($service['quantity'] ?? 0) > 0) {
+        error_log("🔍 decreaseMedicationStock called with " . count($services) . " services");
+        
+        foreach ($services as $index => $service) {
+            $serviceType = $service['service_type'] ?? '';
+            $medicationId = $service['medication_id'] ?? null;
+            $quantity = $service['quantity'] ?? 0;
+            
+            error_log("📦 Service #{$index}: type={$serviceType}, med_id={$medicationId}, qty={$quantity}");
+            
+            if ($serviceType === 'medication' && !empty($medicationId) && $quantity > 0) {
                 try {
-                    $medicationId = $service['medication_id'];
-                    $quantity = (int) $service['quantity'];
+                    error_log("💊 Decreasing stock for medication ID: {$medicationId}, quantity: {$quantity}");
+                    
                     $medicationDoc = $this->medicationsRepo->get($medicationId);
                     if (!isset($medicationDoc['error'])) {
                         $currentStock = (int) ($medicationDoc['inventory']['current_stock'] ?? 0);
-                        $medicationDoc['inventory']['current_stock'] = max(0, $currentStock - $quantity);
+                        $newStock = max(0, $currentStock - $quantity);
+                        
+                        error_log("📊 Stock update: {$currentStock} -> {$newStock} (decreased by {$quantity})");
+                        
+                        $medicationDoc['inventory']['current_stock'] = $newStock;
                         $medicationDoc['updated_at'] = now()->toIso8601String();
-                        $this->medicationsRepo->update($medicationId, $medicationDoc);
+                        $updateResult = $this->medicationsRepo->update($medicationId, $medicationDoc);
+                        
+                        error_log("✅ Stock decreased successfully: " . json_encode($updateResult));
+                    } else {
+                        error_log("❌ Medication not found: {$medicationId}");
                     }
                 } catch (\Exception $e) {
-                    // best-effort only
-                    error_log("Failed to decrease medication stock for {$service['medication_id']}:");
+                    error_log("❌ Failed to decrease medication stock for {$medicationId}: " . $e->getMessage());
+                }
+            } else {
+                if ($serviceType === 'medication') {
+                    error_log("⚠️ Skipping medication service: missing med_id or invalid quantity");
                 }
             }
         }
