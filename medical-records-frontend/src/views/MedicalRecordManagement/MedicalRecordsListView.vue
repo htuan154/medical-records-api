@@ -1649,10 +1649,9 @@ export default {
           console.log('⚠️ No test requests found, skipping Medical Test creation')
         }
 
-        // Check if record should be marked as completed
-        if (recordId) {
-          await this.checkAndUpdateRecordStatus(recordId)
-        }
+        // ✅ KHÔNG tự động update status ngay sau khi save
+        // User đã chọn status mình muốn, giữ nguyên nó
+        // Chỉ auto-update khi user update treatment/test status
 
         this.showModal = false
         await this.fetch()
@@ -1744,7 +1743,9 @@ export default {
           const recordRes = await MedicalRecordService.get(recordId)
           const recordData = recordRes?.data || recordRes
 
-          if (recordData && recordData.status !== 'completed') {
+          // ✅ Chỉ auto-update status nếu đang ở 'in_progress'
+          // KHÔNG đổi 'draft' hoặc các status khác
+          if (recordData && recordData.status === 'in_progress') {
             console.log('✅ All treatments and tests completed, updating record status to completed')
             await MedicalRecordService.update(recordId, {
               ...recordData,
