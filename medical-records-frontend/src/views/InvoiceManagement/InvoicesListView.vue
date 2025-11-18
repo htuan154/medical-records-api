@@ -719,6 +719,23 @@ export default {
     toggleRow (row) {
       const k = this.rowKey(row, 0)
       this.expanded = { ...this.expanded, [k]: !this.expanded[k] }
+      
+      // 🔍 Debug: Log full invoice document to check medication_id
+      if (!this.expanded[k]) {
+        console.log('📄 Invoice document:', row)
+        console.log('📄 Services:', row.services)
+        if (row.services) {
+          row.services.forEach((s, i) => {
+            console.log(`📄 Service #${i}:`, {
+              type: s.service_type,
+              desc: s.description,
+              med_id: s.medication_id,
+              qty: s.quantity,
+              price: s.unit_price
+            })
+          })
+        }
+      }
     },
     fmtDate (v) {
       if (!v) return '-'
