@@ -1020,8 +1020,8 @@ export default {
         }
         const tests = arr(testsRes).filter(t => t.medical_record_id === recordId)
 
-        // Check if all are completed
-        const allTreatmentsCompleted = treatments.length === 0 || treatments.every(t => t.status === 'completed')
+        // ✅ FIX: Check if all are completed - require at least 1 treatment exists
+        const allTreatmentsCompleted = treatments.length > 0 && treatments.every(t => t.status === 'completed')
         const allTestsCompleted = tests.length === 0 || tests.every(t => t.status === 'completed')
 
         if (allTreatmentsCompleted && allTestsCompleted) {

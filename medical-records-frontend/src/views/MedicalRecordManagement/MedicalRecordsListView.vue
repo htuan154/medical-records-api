@@ -1849,12 +1849,14 @@ export default {
                   let unitPrice = 50000 // Default if not found
                   const quantity = med.quantity_prescribed || 1
 
-                  if (medData && medData.medication_info) {
-                    // Get price from database
-                    unitPrice = medData.medication_info.unit_price || 50000
+                  if (medData) {
+                    // ✅ FIX: Get price from inventory.unit_cost (correct field)
+                    unitPrice = medData.inventory?.unit_cost || medData.medication_info?.unit_price || 50000
                   }
 
                   const totalPrice = unitPrice * quantity
+
+                  console.log(`💊 Adding medication to invoice: ${med.name} - Quantity: ${quantity} - Unit Price: ${unitPrice} - Total: ${totalPrice}`)
 
                   services.push({
                     service_type: 'medication',
