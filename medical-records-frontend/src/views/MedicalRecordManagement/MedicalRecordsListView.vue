@@ -1859,7 +1859,7 @@ export default {
             treatmentsList.forEach((treatment, idx) => {
               console.log(`📋 Treatment #${idx}:`, treatment)
               console.log(`📋 Treatment #${idx} medications:`, treatment.medications)
-              
+
               if (treatment.medications && treatment.medications.length > 0) {
                 treatment.medications.forEach(med => {
                   // Find medication in database to get real price
@@ -1889,25 +1889,25 @@ export default {
             })
           } else {
             console.warn('⚠️ No treatments found for this medical record')
-            
+
             // 🔄 FALLBACK: Try to get medications from medical record itself
             if (record.medications && record.medications.length > 0) {
               console.log('🔄 Using medications from medical record as fallback:', record.medications)
               await this.ensureOptionsLoaded()
-              
+
               record.medications.forEach(med => {
                 const medData = this.medicationsMap[med.medication_id] || null
                 let unitPrice = 50000
                 const quantity = med.quantity_prescribed || 1
-                
+
                 if (medData) {
                   unitPrice = medData.inventory?.unit_cost || medData.medication_info?.unit_price || 50000
                 }
-                
+
                 const totalPrice = unitPrice * quantity
-                
+
                 console.log(`💊 [Fallback] Adding medication: ${med.name} - Qty: ${quantity} - Price: ${unitPrice}`)
-                
+
                 services.push({
                   service_type: 'medication',
                   description: `${med.name} - ${med.dosage || ''} - ${med.frequency || ''}`,
@@ -1921,24 +1921,24 @@ export default {
           }
         } catch (e) {
           console.error('❌ Failed to load treatments:', e)
-          
+
           // 🔄 FALLBACK on error: Try medications from medical record
           if (record.medications && record.medications.length > 0) {
             console.log('🔄 [Error fallback] Using medications from medical record:', record.medications)
             try {
               await this.ensureOptionsLoaded()
-              
+
               record.medications.forEach(med => {
                 const medData = this.medicationsMap[med.medication_id] || null
                 let unitPrice = 50000
                 const quantity = med.quantity_prescribed || 1
-                
+
                 if (medData) {
                   unitPrice = medData.inventory?.unit_cost || medData.medication_info?.unit_price || 50000
                 }
-                
+
                 const totalPrice = unitPrice * quantity
-                
+
                 services.push({
                   service_type: 'medication',
                   description: `${med.name} - ${med.dosage || ''} - ${med.frequency || ''}`,
