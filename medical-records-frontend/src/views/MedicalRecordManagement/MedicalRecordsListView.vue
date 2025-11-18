@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="medical-records-page">
     <section class="medical-records-management">
       <!-- Header Section -->
       <div class="header-section">
@@ -128,8 +128,8 @@
                       <button
                         class="action-btn invoice-btn"
                         @click="createInvoiceFromRecord(r)"
-                        :disabled="loading"
-                        title="Tạo hóa đơn"
+                        :disabled="loading || r.status !== 'completed'"
+                        :title="r.status === 'completed' ? 'Tạo hóa đơn' : 'Hồ sơ chưa hoàn thành'"
                       >
                         <i class="bi bi-receipt"></i>
                       </button>
@@ -180,15 +180,17 @@
                     <div><b>Phân biệt:</b> {{ (r.dx_differential || []).join(', ') || '-' }}</div>
                   </div>
 
-                  <div class="detail-title">
-                    Điều trị
+                  <div class="detail-title d-flex align-items-center" style="gap: 8px;">
+                    <span>Điều trị</span>
                     <button
-                      v-if="r.medications && r.medications.length > 0"
-                      class="btn btn-sm btn-outline-primary ms-2"
+                      v-if="treatmentsCount[r._id || r.id]"
+                      class="btn btn-sm btn-outline-primary"
                       @click="viewTreatments(r._id || r.id)"
                       title="Xem phác đồ điều trị đầy đủ"
                     >
-                      <i class="bi bi-clipboard2-pulse"></i> Xem Treatment
+                      <i class="bi bi-clipboard2-pulse"></i>
+                      Xem Treatment
+                      <span>({{ treatmentsCount[r._id || r.id] }})</span>
                     </button>
                   </div>
                   <div class="detail-grid">
@@ -755,6 +757,7 @@ export default {
       appointmentsMap: {},
       testsCount: {},
       testNames: {},
+      treatmentsCount: {},
       optionsLoaded: false,
       infoModal: { visible: false, message: '' },
       filteredItems: [],
@@ -1108,6 +1111,21 @@ export default {
         })
         this.testsCount = testCount
         this.testNames = testNames
+
+        // ✅ Build treatments count by medical_record_id
+        const treatRes = await TreatmentService.list({ limit: 1000 })
+        const treatList = Array.isArray(treatRes?.rows)
+          ? treatRes.rows.map(x => x.doc || x.value || x)
+          : (Array.isArray(treatRes?.data) ? treatRes.data : (Array.isArray(treatRes) ? treatRes : []))
+
+        const treatmentCount = {}
+        treatList.forEach(t => {
+          const rid = t.medical_record_id
+          if (rid) {
+            treatmentCount[rid] = (treatmentCount[rid] || 0) + 1
+          }
+        })
+        this.treatmentsCount = treatmentCount
 
         this.optionsLoaded = true
 
@@ -1610,30 +1628,30 @@ export default {
         console.log('📋 Saved record ID:', recordId)
         console.log('📋 Saved record response:', savedRecord)
 
-        // ✅ CHỈ TẠO điều trị và test KHI TẠO MỚI record (không phải update)
-        if (!this.editingId) {
-          // Create Treatment record if medications are prescribed
-          const hasValidMedications = this.form.medications && this.form.medications.length > 0 &&
-                                      this.form.medications.some(m => m.name && m.dosage)
+        // ✅ TẠO điều trị và test nếu có medications hoặc test_requests
+        // Create Treatment record if medications are prescribed
+        const hasValidMedications = this.form.medications && this.form.medications.length > 0 &&
+                                    this.form.medications.some(m => m.name && m.dosage)
 
-          if (hasValidMedications && recordId) {
-            console.log('🩺 Creating treatment for medications...')
-            await this.createOrUpdateTreatmentFromMedications(recordId)
-          }
-
-          // Create Medical Test record if test requests exist
-          const hasTestRequests = this.form.test_requests && this.form.test_requests.trim().length > 0
-
-          if (hasTestRequests && recordId) {
-            console.log('🧪 Creating medical test for test requests...')
-            console.log('🧪 Test requests:', this.form.test_requests)
-            await this.createOrUpdateMedicalTestFromRequests(recordId)
-          } else if (!hasTestRequests) {
-            console.log('⚠️ No test requests found, skipping Medical Test creation')
-          }
-        } else {
-          console.log('⚠️ Đang cập nhật record, không tạo điều trị/test mới')
+        if (hasValidMedications && recordId) {
+          console.log('🩺 Creating/Updating treatment for medications...')
+          await this.createOrUpdateTreatmentFromMedications(recordId)
         }
+
+        // Create Medical Test record if test requests exist
+        const hasTestRequests = this.form.test_requests && this.form.test_requests.trim().length > 0
+
+        if (hasTestRequests && recordId) {
+          console.log('🧪 Creating medical test for test requests...')
+          console.log('🧪 Test requests:', this.form.test_requests)
+          await this.createOrUpdateMedicalTestFromRequests(recordId)
+        } else if (!hasTestRequests) {
+          console.log('⚠️ No test requests found, skipping Medical Test creation')
+        }
+
+        // ✅ KHÔNG tự động update status ngay sau khi save
+        // User đã chọn status mình muốn, giữ nguyên nó
+        // Chỉ auto-update khi user update treatment/test status
 
         this.showModal = false
         await this.fetch()
@@ -1687,11 +1705,81 @@ export default {
       })
     },
 
+    // ✅ Check and update medical record status based on treatments and tests completion
+    async checkAndUpdateRecordStatus (recordId) {
+      try {
+        // Get all treatments for this record
+        const treatmentsRes = await TreatmentService.list({
+          medical_record_id: recordId,
+          limit: 1000
+        })
+        const treatments = treatmentsRes?.data || []
+
+        // Get all tests for this record
+        const testsRes = await MedicalTestService.list({
+          medical_record_id: recordId,
+          limit: 1000
+        })
+        const arr = (r) => {
+          if (Array.isArray(r?.rows)) return r.rows.map(x => x.doc || x.value || x)
+          if (Array.isArray(r?.data)) return r.data
+          if (Array.isArray(r)) return r
+          return []
+        }
+        const tests = arr(testsRes).filter(t => t.medical_record_id === recordId)
+
+        console.log(`📊 Record ${recordId} has ${treatments.length} treatments, ${tests.length} tests`)
+
+        // Check if all treatments are completed
+        const allTreatmentsCompleted = treatments.length === 0 || treatments.every(t => t.status === 'completed')
+
+        // Check if all tests are completed
+        const allTestsCompleted = tests.length === 0 || tests.every(t => t.status === 'completed')
+
+        console.log(`📊 Treatments completed: ${allTreatmentsCompleted}, Tests completed: ${allTestsCompleted}`)
+
+        // If both treatments and tests are completed (or none exist), update record status to completed
+        if (allTreatmentsCompleted && allTestsCompleted) {
+          const recordRes = await MedicalRecordService.get(recordId)
+          const recordData = recordRes?.data || recordRes
+
+          // ✅ Chỉ auto-update status nếu đang ở 'in_progress'
+          // KHÔNG đổi 'draft' hoặc các status khác
+          if (recordData && recordData.status === 'in_progress') {
+            console.log('✅ All treatments and tests completed, updating record status to completed')
+            await MedicalRecordService.update(recordId, {
+              ...recordData,
+              status: 'completed',
+              updated_at: new Date().toISOString()
+            })
+            return true // Status was updated
+          }
+        }
+        return false // Status not updated
+      } catch (e) {
+        console.error('❌ Failed to check/update record status:', e)
+        return false
+      }
+    },
+
     // ✅ SUC-06: Create invoice from completed medical record
     async createInvoiceFromRecord (record) {
       const recordId = record._id || record.id
       if (!recordId) {
         this.showInfo('Không tìm thấy ID bệnh án!')
+        return
+      }
+
+      // ✅ Check if record is completed
+      if (record.status !== 'completed') {
+        // Try to update status first
+        const statusUpdated = await this.checkAndUpdateRecordStatus(recordId)
+        if (statusUpdated) {
+          await this.fetch() // Refresh list
+          this.showInfo('✅ Hồ sơ đã được cập nhật thành hoàn thành. Vui lòng thử lại tạo hóa đơn.')
+        } else {
+          this.showInfo('⚠️ Hồ sơ chưa hoàn thành! Vui lòng hoàn thành điều trị và xét nghiệm trước khi tạo hóa đơn.')
+        }
         return
       }
 
@@ -1747,13 +1835,31 @@ export default {
             limit: 10
           })
 
-          console.log('📋 Found treatments:', treatments)
+          console.log('📋 Found treatments response:', treatments)
+          console.log('📋 Treatments rows:', treatments?.rows)
+          console.log('📋 Treatments data:', treatments?.data)
 
-          if (treatments?.data?.length > 0) {
+          // ✅ Parse response - could be { rows: [...] } or { data: [...] }
+          let treatmentsList = []
+          if (Array.isArray(treatments?.rows)) {
+            treatmentsList = treatments.rows.map(r => r.doc || r.value || r)
+          } else if (Array.isArray(treatments?.data)) {
+            treatmentsList = treatments.data
+          } else if (Array.isArray(treatments)) {
+            treatmentsList = treatments
+          }
+
+          console.log('📋 Parsed treatments list:', treatmentsList)
+          console.log('📋 Treatments count:', treatmentsList.length)
+
+          if (treatmentsList.length > 0) {
             // Load medication prices from database
             await this.ensureOptionsLoaded()
 
-            treatments.data.forEach(treatment => {
+            treatmentsList.forEach((treatment, idx) => {
+              console.log(`📋 Treatment #${idx}:`, treatment)
+              console.log(`📋 Treatment #${idx} medications:`, treatment.medications)
+
               if (treatment.medications && treatment.medications.length > 0) {
                 treatment.medications.forEach(med => {
                   // Find medication in database to get real price
@@ -1761,28 +1867,91 @@ export default {
                   let unitPrice = 50000 // Default if not found
                   const quantity = med.quantity_prescribed || 1
 
-                  if (medData && medData.medication_info) {
-                    // Get price from database
-                    unitPrice = medData.medication_info.unit_price || 50000
+                  if (medData) {
+                    // ✅ FIX: Get price from inventory.unit_cost (correct field)
+                    unitPrice = medData.inventory?.unit_cost || medData.medication_info?.unit_price || 50000
                   }
 
                   const totalPrice = unitPrice * quantity
+
+                  console.log(`💊 Adding medication to invoice: ${med.name} - Quantity: ${quantity} - Unit Price: ${unitPrice} - Total: ${totalPrice}`)
 
                   services.push({
                     service_type: 'medication',
                     description: `${med.name} - ${med.dosage} - ${med.frequency}`,
                     quantity,
                     unit_price: unitPrice,
-                    total_price: totalPrice
+                    total_price: totalPrice,
+                    medication_id: med.medication_id // ✅ Include medication_id for stock decrease
                   })
                 })
               }
             })
           } else {
             console.warn('⚠️ No treatments found for this medical record')
+
+            // 🔄 FALLBACK: Try to get medications from medical record itself
+            if (record.medications && record.medications.length > 0) {
+              console.log('🔄 Using medications from medical record as fallback:', record.medications)
+              await this.ensureOptionsLoaded()
+
+              record.medications.forEach(med => {
+                const medData = this.medicationsMap[med.medication_id] || null
+                let unitPrice = 50000
+                const quantity = med.quantity_prescribed || 1
+
+                if (medData) {
+                  unitPrice = medData.inventory?.unit_cost || medData.medication_info?.unit_price || 50000
+                }
+
+                const totalPrice = unitPrice * quantity
+
+                console.log(`💊 [Fallback] Adding medication: ${med.name} - Qty: ${quantity} - Price: ${unitPrice}`)
+
+                services.push({
+                  service_type: 'medication',
+                  description: `${med.name} - ${med.dosage || ''} - ${med.frequency || ''}`,
+                  quantity,
+                  unit_price: unitPrice,
+                  total_price: totalPrice,
+                  medication_id: med.medication_id
+                })
+              })
+            }
           }
         } catch (e) {
           console.error('❌ Failed to load treatments:', e)
+
+          // 🔄 FALLBACK on error: Try medications from medical record
+          if (record.medications && record.medications.length > 0) {
+            console.log('🔄 [Error fallback] Using medications from medical record:', record.medications)
+            try {
+              await this.ensureOptionsLoaded()
+
+              record.medications.forEach(med => {
+                const medData = this.medicationsMap[med.medication_id] || null
+                let unitPrice = 50000
+                const quantity = med.quantity_prescribed || 1
+
+                if (medData) {
+                  unitPrice = medData.inventory?.unit_cost || medData.medication_info?.unit_price || 50000
+                }
+
+                const totalPrice = unitPrice * quantity
+
+                services.push({
+                  service_type: 'medication',
+                  description: `${med.name} - ${med.dosage || ''} - ${med.frequency || ''}`,
+                  quantity,
+                  unit_price: unitPrice,
+                  total_price: totalPrice,
+                  medication_id: med.medication_id
+                })
+              })
+            } catch (fallbackError) {
+              console.error('❌ Fallback also failed:', fallbackError)
+            }
+          }
         }
 
         // 3. Add procedures if any

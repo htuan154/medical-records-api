@@ -325,26 +325,6 @@
                 <td>
                   <!-- ✅ Medication lookup -->
                   <div v-if="s.service_type === 'medication'" class="position-relative">
-                    <!-- Select dropdown -->
-                    <select
-                      v-if="!s.medication_id"
-                      v-model="s.selected_medication_temp"
-                      class="form-select form-select-sm"
-                      @change="onMedicationSelect(i)"
-                      @focus="loadMedicationOptions"
-                    >
-                      <option value="">-- Chọn thuốc --</option>
-                      <optgroup v-for="group in groupedMedications" :key="group.label" :label="group.label">
-                        <option
-                          v-for="med in group.medications"
-                          :key="med._id"
-                          :value="med._id"
-                        >
-                          {{ getMedicationName(med) }} ({{ getMedicationStrength(med) }}) - {{ formatPrice(getMedicationPrice(med)) }}đ - Tồn: {{ getMedicationStock(med) }}
-                        </option>
-                      </optgroup>
-                    </select>
-
                     <!-- Selected medication display -->
                     <div v-if="s.medication_id" class="selected-medication">
                       <div class="fw-bold text-success">✓ {{ s.description }}</div>
@@ -357,6 +337,39 @@
                         >
                           Đổi thuốc
                         </button>
+                      </div>
+                    </div>
+
+                    <!-- Lookup + manual fallback khi chưa liên kết thuốc -->
+                    <div v-else class="medication-picker">
+                      <select
+                        v-model="s.selected_medication_temp"
+                        class="form-select form-select-sm"
+                        @change="onMedicationSelect(i)"
+                        @focus="loadMedicationOptions"
+                      >
+                        <option value="">-- Chọn thuốc --</option>
+                        <optgroup v-for="group in groupedMedications" :key="group.label" :label="group.label">
+                          <option
+                            v-for="med in group.medications"
+                            :key="med._id"
+                            :value="med._id"
+                          >
+                            {{ getMedicationName(med) }} ({{ getMedicationStrength(med) }}) - {{ formatPrice(getMedicationPrice(med)) }}đ - Tồn: {{ getMedicationStock(med) }}
+                          </option>
+                        </optgroup>
+                      </select>
+
+                      <div class="manual-medication-input">
+                        <label class="form-label small text-muted mb-1">Hoặc nhập mô tả thuốc</label>
+                        <input
+                          v-model.trim="s.description"
+                          class="form-control form-control-sm"
+                          placeholder="VD: Amlodipine 5mg x 30 viên"
+                        />
+                        <div class="manual-medication-note text-muted">
+                          Chưa liên kết kho – chọn thuốc trong danh sách để tự trừ tồn khi lưu hóa đơn.
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -554,6 +567,27 @@
         </div>
       </div>
     </div>
+
+    <!-- Centered confirm modal -->
+    <div v-if="confirmModal.visible" class="overlay" @mousedown.self="closeConfirm">
+      <div class="dialog">
+        <div class="dialog-body" v-html="confirmModal.message"></div>
+        <div class="dialog-actions">
+          <button class="dialog-btn primary" @click="confirmOk">OK</button>
+          <button class="dialog-btn" @click="closeConfirm">Hủy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Centered info modal -->
+    <div v-if="infoModal.visible" class="overlay" @mousedown.self="closeInfo">
+      <div class="dialog">
+        <div class="dialog-body" v-html="infoModal.message"></div>
+        <div class="dialog-actions">
+          <button class="dialog-btn primary" @click="closeInfo">Đóng</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -611,7 +645,11 @@ export default {
 
       // Invoice preview
       showInvoicePreview: false,
-      invoiceHtmlUrl: null
+      invoiceHtmlUrl: null,
+
+      // UI dialogs
+      confirmModal: { visible: false, message: '', onConfirm: null, onCancel: null },
+      infoModal: { visible: false, message: '' }
     }
   },
   created () {
@@ -719,6 +757,23 @@ export default {
     toggleRow (row) {
       const k = this.rowKey(row, 0)
       this.expanded = { ...this.expanded, [k]: !this.expanded[k] }
+
+      // 🔍 Debug: Log full invoice document to check medication_id
+      if (!this.expanded[k]) {
+        console.log('📄 Invoice document:', row)
+        console.log('📄 Services:', row.services)
+        if (row.services) {
+          row.services.forEach((s, i) => {
+            console.log(`📄 Service #${i}:`, {
+              type: s.service_type,
+              desc: s.description,
+              med_id: s.medication_id,
+              qty: s.quantity,
+              price: s.unit_price
+            })
+          })
+        }
+      }
     },
     fmtDate (v) {
       if (!v) return '-'
@@ -774,7 +829,10 @@ export default {
           description: s.description || '',
           quantity: s.quantity ?? 0,
           unit_price: s.unit_price ?? 0,
-          total_price: s.total_price ?? (Number(s.quantity || 0) * Number(s.unit_price || 0))
+          total_price: s.total_price ?? (Number(s.quantity || 0) * Number(s.unit_price || 0)),
+          medication_id: s.medication_id || null,
+          selected_medication_temp: s.medication_id || '', // ✅ Populate with medication_id if exists
+          available_stock: s.available_stock || undefined
         })),
         subtotal: pay.subtotal ?? 0,
         tax_rate: pay.tax_rate ?? 0,
@@ -1122,15 +1180,35 @@ export default {
       if (this.saving) return
       this.saving = true
       try {
+        // Tự liên kết thuốc (nếu mô tả khớp) để backend có medication_id và trừ kho
+        await this.loadMedicationOptions();
+        (this.form.services || []).forEach((service, idx) => {
+          if (service.service_type === 'medication' && !service.medication_id) {
+            const matched = this.findMedicationByDescription(service.description)
+            if (matched) {
+              this.applyMedicationMatch(service, matched)
+              this.recalcService(idx)
+            }
+          }
+        })
+
         // ✅ Validation: medication chỉ validate tồn tại, không validate stock
         for (const service of this.form.services) {
           if (service.service_type === 'medication' && service.medication_id) {
             if (service.quantity < 1) {
-              alert(`Số lượng thuốc "${service.description}" phải ít nhất là 1!`)
+              this.showInfo(`Số lượng thuốc "${service.description}" phải ít nhất là 1!`)
               return
             }
           }
         }
+
+        // 🔍 Debug: Log services with medication_id
+        console.log('🔍 Services before save:', this.form.services.map(s => ({
+          type: s.service_type,
+          desc: s.description,
+          med_id: s.medication_id,
+          qty: s.quantity
+        })))
 
         const payload = {
           type: 'invoice',
@@ -1166,6 +1244,9 @@ export default {
         if (this.form._id) payload._id = this.form._id
         if (this.form._rev) payload._rev = this.form._rev
 
+        // 🔍 Debug: Log final payload
+        console.log('💰 Invoice payload with services:', JSON.stringify(payload.services, null, 2))
+
         if (this.editingId) {
           await InvoiceService.update(this.editingId, payload)
         } else {
@@ -1176,36 +1257,37 @@ export default {
         await this.fetch()
       } catch (e) {
         console.error(e)
-        alert(e?.response?.data?.message || e?.message || 'Lưu thất bại')
+        this.showInfo(e?.response?.data?.message || e?.message || 'Lưu thất bại')
       } finally {
         this.saving = false
       }
     },
 
     async remove (row) {
-      if (!confirm(`Xóa hóa đơn "${row.invoice_number || 'này'}"?`)) return
+      const message = `Bạn có chắc muốn xóa hóa đơn <strong>${row.invoice_number || row._id || 'này'}</strong>?`
+      this.showConfirm(message, async () => {
+        try {
+          const id = row._id || row.id
+          if (!id) {
+            this.showInfo('Không tìm thấy ID hóa đơn')
+            return
+          }
 
-      try {
-        const id = row._id || row.id
-        if (!id) {
-          alert('Không tìm thấy ID hóa đơn')
-          return
+          const rev = row._rev
+          if (!rev) {
+            this.showInfo('Không tìm thấy revision của document')
+            return
+          }
+
+          // ✅ Truyền cả id và rev
+          await InvoiceService.remove(id, rev)
+          this.showInfo('Xóa thành công!')
+          await this.fetch()
+        } catch (e) {
+          console.error('Remove error:', e)
+          this.showInfo(e?.response?.data?.message || e?.message || 'Xóa thất bại')
         }
-
-        const rev = row._rev
-        if (!rev) {
-          alert('Không tìm thấy revision của document')
-          return
-        }
-
-        // ✅ Truyền cả id và rev
-        await InvoiceService.remove(id, rev)
-        alert('Xóa thành công!')
-        await this.fetch()
-      } catch (e) {
-        console.error('Remove error:', e)
-        alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
-      }
+      })
     },
 
     async loadPatientInsurance (patientId) {
@@ -1276,6 +1358,34 @@ export default {
              med.current_stock ||
              med.stock ||
              0
+    },
+
+    // Thử tự dò thuốc theo mô tả cũ (để không phải chọn lại)
+    findMedicationByDescription (description) {
+      const text = (description || '').toLowerCase()
+      if (!text) return null
+
+      return this.allMedications.find(med => {
+        const name = (this.getMedicationName(med) || '').toLowerCase()
+        const strength = (this.getMedicationStrength(med) || '').toLowerCase()
+        const combined = `${name} ${strength}`.trim()
+
+        return (name && text.includes(name)) ||
+               (combined && text.includes(combined))
+      }) || null
+    },
+
+    applyMedicationMatch (service, medication) {
+      service.medication_id = medication._id || medication.id
+      service.available_stock = Number(this.getMedicationStock(medication))
+
+      // Giữ nguyên mô tả/đơn giá nếu người dùng đã nhập; chỉ bổ sung nếu đang trống
+      if (!service.description) {
+        service.description = `${this.getMedicationName(medication)} (${this.getMedicationStrength(medication)})`
+      }
+      if (!service.unit_price) {
+        service.unit_price = Number(this.getMedicationPrice(medication))
+      }
     },
 
     // ✅ NEW: Quantity controls cho medication
@@ -1366,7 +1476,7 @@ export default {
 
       const medication = this.allMedications.find(m => m._id === medicationId || m.id === medicationId)
       if (!medication) {
-        alert('Không tìm thấy thông tin thuốc')
+        this.showInfo('Không tìm thấy thông tin thuốc')
         return
       }
 
@@ -1463,7 +1573,7 @@ export default {
         this.showInvoicePreview = true
       } catch (e) {
         console.error('Open invoice error:', e)
-        alert(e?.response?.data?.message || e?.message || 'Không thể mở hóa đơn')
+        this.showInfo(e?.response?.data?.message || e?.message || 'Không thể mở hóa đơn')
       } finally {
         this.loading = false
       }
@@ -1476,6 +1586,27 @@ export default {
         window.URL.revokeObjectURL(this.invoiceHtmlUrl)
         this.invoiceHtmlUrl = null
       }
+    },
+
+    /* ===== Simple centered dialogs ===== */
+    showConfirm (message, onConfirm, onCancel) {
+      this.confirmModal = { visible: true, message, onConfirm, onCancel }
+    },
+    async confirmOk () {
+      const handler = this.confirmModal.onConfirm
+      this.confirmModal = { visible: false, message: '', onConfirm: null, onCancel: null }
+      if (handler) await handler()
+    },
+    closeConfirm () {
+      const cancelCb = this.confirmModal.onCancel
+      this.confirmModal = { visible: false, message: '', onConfirm: null, onCancel: null }
+      if (cancelCb) cancelCb()
+    },
+    showInfo (message) {
+      this.infoModal = { visible: true, message }
+    },
+    closeInfo () {
+      this.infoModal = { visible: false, message: '' }
     }
   }
 }
@@ -2405,6 +2536,21 @@ export default {
   color: #198754;
 }
 
+.medication-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.manual-medication-input .form-control {
+  border-color: #e5e7eb;
+}
+
+.manual-medication-note {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
 /* Combobox styles */
 .form-select option {
   padding: 0.5rem;
@@ -2648,5 +2794,46 @@ input[readonly] {
   border: none;
   display: block;
   background: white;
+}
+
+/* Simple centered dialogs */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+.dialog {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+.dialog-body {
+  font-size: 14px;
+  color: #1f2937;
+}
+.dialog-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.dialog-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #e5e7eb;
+  color: #374151;
+}
+.dialog-btn.primary {
+  background: #3b82f6;
+  color: white;
 }
 </style>

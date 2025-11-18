@@ -926,7 +926,7 @@ export default {
 
       // Validate required fields
       if (!this.form.patient_id || !this.form.doctor_id || !this.form.appointment_date || !this.form.time_slot) {
-        alert('Vui lòng điền đầy đủ thông tin bắt buộc (Bệnh nhân, Bác sĩ, Ngày khám, Khung giờ)')
+        this.showInfo('Vui lòng điền đầy đủ thông tin bắt buộc (Bệnh nhân, Bác sĩ, Ngày khám, Khung giờ)')
         return
       }
 
@@ -971,24 +971,26 @@ export default {
 
         this.showModal = false
         await this.fetch()
-        alert('✅ Lưu lịch hẹn thành công!')
+        this.showInfo('✅ Lưu lịch hẹn thành công!')
       } catch (e) {
         console.error(e)
-        alert(e?.response?.data?.message || e?.message || 'Lưu thất bại')
+        this.showInfo(e?.response?.data?.message || e?.message || 'Lưu thất bại')
       } finally { this.saving = false }
     },
 
     async remove (row) {
-      if (!confirm(`Xóa lịch hẹn "${row._id || row.id}"?`)) return
-      try {
-        const id = row._id || row.id
-        await AppointmentService.remove(id)
-        await this.fetch()
-        alert('✅ Đã xóa lịch hẹn')
-      } catch (e) {
-        console.error(e)
-        alert(e?.response?.data?.message || e?.message || 'Xóa thất bại')
-      }
+      const msg = `Bạn có chắc muốn xóa lịch hẹn <strong>${row._id || row.id}</strong>?`
+      this.showConfirm(msg, async () => {
+        try {
+          const id = row._id || row.id
+          await AppointmentService.remove(id)
+          await this.fetch()
+          this.showInfo('✅ Đã xóa lịch hẹn')
+        } catch (e) {
+          console.error(e)
+          this.showInfo(e?.response?.data?.message || e?.message || 'Xóa thất bại')
+        }
+      })
     },
 
     /* ===== Check-in & Cancel ===== */
