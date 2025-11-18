@@ -774,7 +774,10 @@ export default {
           description: s.description || '',
           quantity: s.quantity ?? 0,
           unit_price: s.unit_price ?? 0,
-          total_price: s.total_price ?? (Number(s.quantity || 0) * Number(s.unit_price || 0))
+          total_price: s.total_price ?? (Number(s.quantity || 0) * Number(s.unit_price || 0)),
+          medication_id: s.medication_id || null, // ✅ FIX: Preserve medication_id
+          selected_medication_temp: '',
+          available_stock: undefined
         })),
         subtotal: pay.subtotal ?? 0,
         tax_rate: pay.tax_rate ?? 0,
@@ -1132,6 +1135,14 @@ export default {
           }
         }
 
+        // 🔍 Debug: Log services with medication_id
+        console.log('🔍 Services before save:', this.form.services.map(s => ({
+          type: s.service_type,
+          desc: s.description,
+          med_id: s.medication_id,
+          qty: s.quantity
+        })))
+
         const payload = {
           type: 'invoice',
           patient_id: this.form.patient_id || undefined,
@@ -1165,6 +1176,9 @@ export default {
 
         if (this.form._id) payload._id = this.form._id
         if (this.form._rev) payload._rev = this.form._rev
+
+        // 🔍 Debug: Log final payload
+        console.log('💰 Invoice payload with services:', JSON.stringify(payload.services, null, 2))
 
         if (this.editingId) {
           await InvoiceService.update(this.editingId, payload)
