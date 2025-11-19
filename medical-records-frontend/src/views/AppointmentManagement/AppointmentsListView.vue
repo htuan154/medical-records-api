@@ -168,7 +168,11 @@
                         <button class="action-btn view-btn" @click="toggleRow(a)" :title="isExpanded(a) ? 'Ẩn chi tiết' : 'Xem chi tiết'">
                           <i :class="isExpanded(a) ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
                         </button>
-                        <button class="action-btn record-btn" @click="createRecordFromAppointment(a)" :disabled="loading" title="Tạo hồ sơ bệnh án">
+                        <button
+                          class="action-btn record-btn"
+                          @click="createRecordFromAppointment(a)"
+                          :disabled="loading || !canCreateMedicalRecord(a)"
+                          :title="canCreateMedicalRecord(a) ? 'Tạo hồ sơ bệnh án' : 'Chỉ tạo hồ sơ sau khi check-in'">
                           <i class="bi bi-journal-medical"></i>
                         </button>
                         <button v-if="['scheduled', 'approved'].includes(a.status)" class="action-btn checkin-btn" @click="checkIn(a)" :disabled="loading" title="Check-in">
@@ -1022,7 +1026,7 @@ export default {
           await this.fetch()
 
           this.showConfirm('Tạo hồ sơ bệnh án từ lịch hẹn vừa check-in?', async () => {
-            this.createRecordFromAppointment({ ...row, _rev: newRev || row._rev })
+            this.createRecordFromAppointment({ ...row, status: 'completed', _rev: newRev || row._rev })
           }, async () => {
             // Khôi phục trạng thái lịch hẹn như trước khi check-in
             try {
@@ -1049,7 +1053,16 @@ export default {
       })
     },
 
+    canCreateMedicalRecord (row) {
+      return (row?.status || '').toLowerCase() === 'completed'
+    },
+
     createRecordFromAppointment (row) {
+      if (!this.canCreateMedicalRecord(row)) {
+        this.showInfo('Chỉ được tạo hồ sơ bệnh án sau khi lịch hẹn đã check-in.')
+        return
+      }
+
       const scheduled = row.scheduled_date || row.appointment_info?.scheduled_date
       const reason = row.reason || row.appointment_info?.reason || ''
       const type = row.type || row.appointment_info?.type || 'consultation'
