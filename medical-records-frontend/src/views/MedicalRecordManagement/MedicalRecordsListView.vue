@@ -30,7 +30,11 @@
           <button class="btn-action btn-refresh" @click="reload" :disabled="loading" title="Tải lại">
             <i class="bi bi-arrow-clockwise"></i>
           </button>
-          <button class="btn-action btn-primary" @click="openCreate" :disabled="loading">
+          <button
+            class="btn-action btn-primary"
+            @click="handleCreateClick"
+            :disabled="loading || !canCreateNewRecord"
+            :title="canCreateNewRecord ? 'Thêm mới hồ sơ sau khi check-in' : 'Chỉ được tạo hồ sơ bệnh án sau khi check-in lịch hẹn'">
             <i class="bi bi-plus-circle"></i>
             Thêm mới
           </button>
@@ -770,11 +774,14 @@ export default {
 
       // Prefill khi được điều hướng từ lịch hẹn
       prefillParams: null,
-      prefillApplied: false
+      prefillApplied: false,
+      fromCheckinContext: false
     }
   },
   created () {
-    this.prefillParams = { ...this.$route.query }
+    const query = { ...this.$route.query }
+    this.fromCheckinContext = query?.from_checkin === '1'
+    this.prefillParams = this.fromCheckinContext ? query : null
     this.fetch()
   },
   computed: {
@@ -804,6 +811,9 @@ export default {
       }
 
       return rangeWithDots
+    },
+    canCreateNewRecord () {
+      return this.fromCheckinContext
     }
   },
   watch: {
@@ -818,6 +828,13 @@ export default {
     /* ===== helpers ===== */
     rowKey (r, idx) { return r._id || r.id || `${idx}` },
     isExpanded (row) { return !!this.expanded[this.rowKey(row, 0)] },
+    handleCreateClick () {
+      if (!this.canCreateNewRecord) {
+        this.showInfo('Chỉ được tạo hồ sơ bệnh án sau khi bệnh nhân đã check-in lịch hẹn.')
+        return
+      }
+      this.openCreate()
+    },
     toggleRow (row) {
       const k = this.rowKey(row, 0)
       this.expanded = { ...this.expanded, [k]: !this.expanded[k] }
@@ -1147,6 +1164,8 @@ export default {
 
     // Nhận dữ liệu tạo hồ sơ từ query (đi từ màn lịch hẹn)
     applyPrefillFromRoute () {
+      if (!this.fromCheckinContext) return
+
       const p = this.prefillParams || {}
       if (!p.appointment_id && !p.patient_id && this.prefillApplied) return
 
@@ -1234,6 +1253,33 @@ export default {
       this.previousRecords = []
       this.showModal = true
       this.ensureOptionsLoaded()
+    },
+    clearCheckinContext () {
+      if (!this.fromCheckinContext) return
+      this.fromCheckinContext = false
+      this.prefillParams = null
+      const removableKeys = [
+        'open_create',
+        'from_checkin',
+        'appointment_id',
+        'patient_id',
+        'doctor_id',
+        'visit_date',
+        'reason',
+        'visit_type',
+        'status'
+      ]
+      const cleanedQuery = { ...this.$route.query }
+      let changed = false
+      removableKeys.forEach(key => {
+        if (key in cleanedQuery) {
+          delete cleanedQuery[key]
+          changed = true
+        }
+      })
+      if (changed) {
+        this.$router.replace({ path: this.$route.path, query: cleanedQuery }).catch(() => {})
+      }
     },
     async openEdit (row) {
       const f = this.flattenRecord(row)
@@ -1655,6 +1701,9 @@ export default {
 
         this.showModal = false
         await this.fetch()
+        if (!this.editingId) {
+          this.clearCheckinContext()
+        }
       } catch (e) {
         console.error(e)
         alert(e?.response?.data?.message || e?.message || 'Lưu thất bại')
