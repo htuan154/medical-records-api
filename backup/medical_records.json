@@ -1,5 +1,5 @@
 {
-  "total_rows": 22,
+  "total_rows": 35,
   "offset": 0,
   "rows": [
     {
@@ -1488,6 +1488,929 @@
         "status": "completed",
         "created_at": "2025-11-21T09:30:00Z",
         "updated_at": "2025-11-21T13:00:00Z"
+      }
+    },
+    {
+      "id": "record_under40_002",
+      "key": "record_under40_002",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_under40_002",
+        "type": "medical_record",
+        "patient_id": "patient_2025_002",
+        "doctor_id": "doctor_2025_002",
+        "visit_info": {
+          "visit_date": "2025-01-26T09:30:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Đau ngực, khó thở",
+          "appointment_id": "appointment_2025_002"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 125,
+              "diastolic": 78
+            },
+            "heart_rate": 76,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 165
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không ghi nhận bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "R07.9",
+            "description": "Đau ngực không đặc hiệu",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Atenolol",
+              "dosage": "50mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Tuân thủ hướng dẫn của bác sĩ"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Ngủ đủ giấc",
+            "Tập thể dục nhẹ"
+          ],
+          "follow_up": {
+            "date": "2025-02-25T09:30:00Z",
+            "notes": "Tái khám để đánh giá đáp ứng điều trị"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-01-26T10:15:00Z",
+        "updated_at": "2025-01-26T10:30:00Z"
+      }
+    },
+    {
+      "id": "record_under40_004",
+      "key": "record_under40_004",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_under40_004",
+        "type": "medical_record",
+        "patient_id": "patient_2025_004",
+        "doctor_id": "doctor_2025_003",
+        "visit_info": {
+          "visit_date": "2025-01-28T10:00:00Z",
+          "visit_type": "surgery",
+          "chief_complaint": "Phẫu thuật nội soi dạ dày",
+          "appointment_id": "appointment_2025_004"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 125,
+              "diastolic": 78
+            },
+            "heart_rate": 76,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 165
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không ghi nhận bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "K29",
+            "description": "Viêm dạ dày không đặc hiệu",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Omeprazole",
+              "dosage": "20mg",
+              "frequency": "1 lần/ngày",
+              "duration": "21 ngày",
+              "instructions": "Tuân thủ hướng dẫn của bác sĩ"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Ngủ đủ giấc",
+            "Tập thể dục nhẹ"
+          ],
+          "follow_up": {
+            "date": "2025-02-18T10:00:00Z",
+            "notes": "Tái khám để đánh giá đáp ứng điều trị"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-01-28T10:45:00Z",
+        "updated_at": "2025-01-28T11:00:00Z"
+      }
+    },
+    {
+      "id": "record_under40_005",
+      "key": "record_under40_005",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_under40_005",
+        "type": "medical_record",
+        "patient_id": "patient_2025_005",
+        "doctor_id": "doctor_2025_001",
+        "visit_info": {
+          "visit_date": "2025-02-01T08:30:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Đau đầu kéo dài",
+          "appointment_id": "appointment_2025_006"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 125,
+              "diastolic": 78
+            },
+            "heart_rate": 76,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 165
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không ghi nhận bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "G43.0",
+            "description": "Đau nửa đầu không có aura",
+            "severity": "mild"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Ibuprofen",
+              "dosage": "400mg",
+              "frequency": "1 lần/ngày",
+              "duration": "14 ngày",
+              "instructions": "Tuân thủ hướng dẫn của bác sĩ"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Ngủ đủ giấc",
+            "Tập thể dục nhẹ"
+          ],
+          "follow_up": {
+            "date": "2025-02-15T08:30:00Z",
+            "notes": "Tái khám để đánh giá đáp ứng điều trị"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-02-01T09:15:00Z",
+        "updated_at": "2025-02-01T09:30:00Z"
+      }
+    },
+    {
+      "id": "record_under40_006",
+      "key": "record_under40_006",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_under40_006",
+        "type": "medical_record",
+        "patient_id": "patient_2025_006",
+        "doctor_id": "doctor_2025_002",
+        "visit_info": {
+          "visit_date": "2025-02-03T10:00:00Z",
+          "visit_type": "checkup",
+          "chief_complaint": "Khám định kỳ tiểu đường",
+          "appointment_id": "appointment_2025_008"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 125,
+              "diastolic": 78
+            },
+            "heart_rate": 76,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 165
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không ghi nhận bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "E11",
+            "description": "Đái tháo đường type 2",
+            "severity": "mild"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Metformin",
+              "dosage": "500mg",
+              "frequency": "1 lần/ngày",
+              "duration": "28 ngày",
+              "instructions": "Tuân thủ hướng dẫn của bác sĩ"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Uống đủ nước",
+            "Ngủ đủ giấc",
+            "Tập thể dục nhẹ"
+          ],
+          "follow_up": {
+            "date": "2025-03-03T10:00:00Z",
+            "notes": "Tái khám để đánh giá đáp ứng điều trị"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-02-03T10:45:00Z",
+        "updated_at": "2025-02-03T11:00:00Z"
+      }
+    },
+    {
+      "id": "record_revenue_2025_02",
+      "key": "record_revenue_2025_02",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_revenue_2025_02",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "visit_info": {
+          "visit_date": "2025-02-15T09:00:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Tái khám định kỳ",
+          "appointment_id": "appointment_2025_rev_02"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 128,
+              "diastolic": 78
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Amlodipine",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Dùng theo chỉ định"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Giảm muối",
+            "Tập thể dục nhẹ",
+            "Theo dõi huyết áp"
+          ],
+          "follow_up": {
+            "date": "2025-03-17T09:00:00Z",
+            "notes": "Tái khám sau 1 tháng"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-02-15T10:00:00Z",
+        "updated_at": "2025-02-15T11:00:00Z"
+      }
+    },
+    {
+      "id": "record_revenue_2025_03",
+      "key": "record_revenue_2025_03",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_revenue_2025_03",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "visit_info": {
+          "visit_date": "2025-03-15T09:00:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Tái khám định kỳ",
+          "appointment_id": "appointment_2025_rev_03"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 128,
+              "diastolic": 78
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Amlodipine",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Dùng theo chỉ định"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Giảm muối",
+            "Tập thể dục nhẹ",
+            "Theo dõi huyết áp"
+          ],
+          "follow_up": {
+            "date": "2025-04-14T09:00:00Z",
+            "notes": "Tái khám sau 1 tháng"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-03-15T10:00:00Z",
+        "updated_at": "2025-03-15T11:00:00Z"
+      }
+    },
+    {
+      "id": "record_revenue_2025_04",
+      "key": "record_revenue_2025_04",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_revenue_2025_04",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "visit_info": {
+          "visit_date": "2025-04-15T09:00:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Tái khám định kỳ",
+          "appointment_id": "appointment_2025_rev_04"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 128,
+              "diastolic": 78
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Amlodipine",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Dùng theo chỉ định"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Giảm muối",
+            "Tập thể dục nhẹ",
+            "Theo dõi huyết áp"
+          ],
+          "follow_up": {
+            "date": "2025-05-15T09:00:00Z",
+            "notes": "Tái khám sau 1 tháng"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-04-15T10:00:00Z",
+        "updated_at": "2025-04-15T11:00:00Z"
+      }
+    },
+    {
+      "id": "record_revenue_2025_05",
+      "key": "record_revenue_2025_05",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_revenue_2025_05",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "visit_info": {
+          "visit_date": "2025-05-15T09:00:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Tái khám định kỳ",
+          "appointment_id": "appointment_2025_rev_05"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 128,
+              "diastolic": 78
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Amlodipine",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Dùng theo chỉ định"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Giảm muối",
+            "Tập thể dục nhẹ",
+            "Theo dõi huyết áp"
+          ],
+          "follow_up": {
+            "date": "2025-06-14T09:00:00Z",
+            "notes": "Tái khám sau 1 tháng"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-05-15T10:00:00Z",
+        "updated_at": "2025-05-15T11:00:00Z"
+      }
+    },
+    {
+      "id": "record_revenue_2025_06",
+      "key": "record_revenue_2025_06",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_revenue_2025_06",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "visit_info": {
+          "visit_date": "2025-06-15T09:00:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Tái khám định kỳ",
+          "appointment_id": "appointment_2025_rev_06"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 128,
+              "diastolic": 78
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Amlodipine",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Dùng theo chỉ định"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Giảm muối",
+            "Tập thể dục nhẹ",
+            "Theo dõi huyết áp"
+          ],
+          "follow_up": {
+            "date": "2025-07-15T09:00:00Z",
+            "notes": "Tái khám sau 1 tháng"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-06-15T10:00:00Z",
+        "updated_at": "2025-06-15T11:00:00Z"
+      }
+    },
+    {
+      "id": "record_revenue_2025_07",
+      "key": "record_revenue_2025_07",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_revenue_2025_07",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "visit_info": {
+          "visit_date": "2025-07-15T09:00:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Tái khám định kỳ",
+          "appointment_id": "appointment_2025_rev_07"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 128,
+              "diastolic": 78
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Amlodipine",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Dùng theo chỉ định"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Giảm muối",
+            "Tập thể dục nhẹ",
+            "Theo dõi huyết áp"
+          ],
+          "follow_up": {
+            "date": "2025-08-14T09:00:00Z",
+            "notes": "Tái khám sau 1 tháng"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-07-15T10:00:00Z",
+        "updated_at": "2025-07-15T11:00:00Z"
+      }
+    },
+    {
+      "id": "record_revenue_2025_08",
+      "key": "record_revenue_2025_08",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_revenue_2025_08",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "visit_info": {
+          "visit_date": "2025-08-15T09:00:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Tái khám định kỳ",
+          "appointment_id": "appointment_2025_rev_08"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 128,
+              "diastolic": 78
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Amlodipine",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Dùng theo chỉ định"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Giảm muối",
+            "Tập thể dục nhẹ",
+            "Theo dõi huyết áp"
+          ],
+          "follow_up": {
+            "date": "2025-09-14T09:00:00Z",
+            "notes": "Tái khám sau 1 tháng"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-08-15T10:00:00Z",
+        "updated_at": "2025-08-15T11:00:00Z"
+      }
+    },
+    {
+      "id": "record_revenue_2025_09",
+      "key": "record_revenue_2025_09",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_revenue_2025_09",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "visit_info": {
+          "visit_date": "2025-09-15T09:00:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Tái khám định kỳ",
+          "appointment_id": "appointment_2025_rev_09"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 128,
+              "diastolic": 78
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Amlodipine",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Dùng theo chỉ định"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Giảm muối",
+            "Tập thể dục nhẹ",
+            "Theo dõi huyết áp"
+          ],
+          "follow_up": {
+            "date": "2025-10-15T09:00:00Z",
+            "notes": "Tái khám sau 1 tháng"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-09-15T10:00:00Z",
+        "updated_at": "2025-09-15T11:00:00Z"
+      }
+    },
+    {
+      "id": "record_revenue_2025_10",
+      "key": "record_revenue_2025_10",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "record_revenue_2025_10",
+        "type": "medical_record",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "visit_info": {
+          "visit_date": "2025-10-15T09:00:00Z",
+          "visit_type": "consultation",
+          "chief_complaint": "Tái khám định kỳ",
+          "appointment_id": "appointment_2025_rev_10"
+        },
+        "examination": {
+          "vital_signs": {
+            "temperature": 36.6,
+            "blood_pressure": {
+              "systolic": 128,
+              "diastolic": 78
+            },
+            "heart_rate": 74,
+            "respiratory_rate": 18,
+            "weight": 62,
+            "height": 161
+          },
+          "physical_exam": {
+            "general": "Tỉnh táo, giao tiếp tốt",
+            "cardiovascular": "Nhịp đều",
+            "respiratory": "Phổi thông khí tốt",
+            "other_findings": "Không bất thường"
+          }
+        },
+        "diagnosis": {
+          "primary": {
+            "code": "I10",
+            "description": "Tăng huyết áp nguyên phát",
+            "severity": "moderate"
+          },
+          "secondary": [],
+          "differential": []
+        },
+        "treatment_plan": {
+          "medications": [
+            {
+              "name": "Amlodipine",
+              "dosage": "5mg",
+              "frequency": "1 lần/ngày",
+              "duration": "30 ngày",
+              "instructions": "Dùng theo chỉ định"
+            }
+          ],
+          "procedures": [],
+          "lifestyle_advice": [
+            "Giảm muối",
+            "Tập thể dục nhẹ",
+            "Theo dõi huyết áp"
+          ],
+          "follow_up": {
+            "date": "2025-11-14T09:00:00Z",
+            "notes": "Tái khám sau 1 tháng"
+          }
+        },
+        "status": "completed",
+        "created_at": "2025-10-15T10:00:00Z",
+        "updated_at": "2025-10-15T11:00:00Z"
       }
     }
   ]

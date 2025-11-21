@@ -1,5 +1,5 @@
 {
-  "total_rows": 22,
+  "total_rows": 35,
   "offset": 0,
   "rows": [
     {
@@ -1038,6 +1038,784 @@
         "paid_date": "2025-11-21T15:15:00Z",
         "created_at": "2025-11-21T14:00:00Z",
         "updated_at": "2025-11-21T15:20:00Z"
+      }
+    },
+    {
+      "id": "invoice_under40_002",
+      "key": "invoice_under40_002",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_under40_002",
+        "type": "invoice",
+        "patient_id": "patient_2025_002",
+        "medical_record_id": "record_under40_002",
+        "invoice_info": {
+          "invoice_number": "INV-2025-U40-002",
+          "invoice_date": "2025-01-26T10:30:00Z",
+          "due_date": "2025-02-02T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám chuyên khoa",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          },
+          {
+            "service_type": "lab",
+            "description": "Điện tâm đồ 12 chuyển đạo",
+            "quantity": 1,
+            "unit_price": 180000,
+            "total_price": 180000
+          },
+          {
+            "service_type": "medication",
+            "description": "Atenolol 50mg x 30 viên",
+            "quantity": 30,
+            "unit_price": 1500,
+            "total_price": 45000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 525000,
+          "tax_rate": 0.08,
+          "tax_amount": 42000,
+          "total_amount": 567000,
+          "patient_payment": 567000,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2025-01-26T11:00:00Z",
+        "created_at": "2025-01-26T10:30:00Z",
+        "updated_at": "2025-01-26T11:05:00Z"
+      }
+    },
+    {
+      "id": "invoice_under40_004",
+      "key": "invoice_under40_004",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_under40_004",
+        "type": "invoice",
+        "patient_id": "patient_2025_004",
+        "medical_record_id": "record_under40_004",
+        "invoice_info": {
+          "invoice_number": "INV-2025-U40-004",
+          "invoice_date": "2025-01-28T10:45:00Z",
+          "due_date": "2025-02-04T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám tiêu hóa",
+            "quantity": 1,
+            "unit_price": 320000,
+            "total_price": 320000
+          },
+          {
+            "service_type": "procedure",
+            "description": "Nội soi dạ dày",
+            "quantity": 1,
+            "unit_price": 450000,
+            "total_price": 450000
+          },
+          {
+            "service_type": "medication",
+            "description": "Omeprazole 20mg x 21 viên",
+            "quantity": 21,
+            "unit_price": 2000,
+            "total_price": 42000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 812000,
+          "tax_rate": 0.08,
+          "tax_amount": 64960,
+          "total_amount": 876960,
+          "patient_payment": 876960,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-01-28T11:30:00Z",
+        "created_at": "2025-01-28T10:30:00Z",
+        "updated_at": "2025-01-28T11:30:00Z"
+      }
+    },
+    {
+      "id": "invoice_under40_005",
+      "key": "invoice_under40_005",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_under40_005",
+        "type": "invoice",
+        "patient_id": "patient_2025_005",
+        "medical_record_id": "record_under40_005",
+        "invoice_info": {
+          "invoice_number": "INV-2025-U40-005",
+          "invoice_date": "2025-02-01T09:00:00Z",
+          "due_date": "2025-02-08T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám thần kinh",
+            "quantity": 1,
+            "unit_price": 280000,
+            "total_price": 280000
+          },
+          {
+            "service_type": "lab",
+            "description": "Đo điện não đồ",
+            "quantity": 1,
+            "unit_price": 220000,
+            "total_price": 220000
+          },
+          {
+            "service_type": "medication",
+            "description": "Ibuprofen 400mg x 14 viên",
+            "quantity": 14,
+            "unit_price": 1800,
+            "total_price": 25200
+          }
+        ],
+        "payment_info": {
+          "subtotal": 525200,
+          "tax_rate": 0.08,
+          "tax_amount": 42016,
+          "total_amount": 567216,
+          "patient_payment": 567216,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2025-02-01T09:30:00Z",
+        "created_at": "2025-02-01T09:00:00Z",
+        "updated_at": "2025-02-01T09:30:00Z"
+      }
+    },
+    {
+      "id": "invoice_under40_006",
+      "key": "invoice_under40_006",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_under40_006",
+        "type": "invoice",
+        "patient_id": "patient_2025_006",
+        "medical_record_id": "record_under40_006",
+        "invoice_info": {
+          "invoice_number": "INV-2025-U40-006",
+          "invoice_date": "2025-02-03T10:30:00Z",
+          "due_date": "2025-02-10T17:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám định kỳ tiểu đường",
+            "quantity": 1,
+            "unit_price": 260000,
+            "total_price": 260000
+          },
+          {
+            "service_type": "lab",
+            "description": "Đường huyết lúc đói",
+            "quantity": 1,
+            "unit_price": 160000,
+            "total_price": 160000
+          },
+          {
+            "service_type": "medication",
+            "description": "Metformin 500mg x 28 viên",
+            "quantity": 28,
+            "unit_price": 1800,
+            "total_price": 50400
+          }
+        ],
+        "payment_info": {
+          "subtotal": 470400,
+          "tax_rate": 0.08,
+          "tax_amount": 37632,
+          "total_amount": 508032,
+          "patient_payment": 508032,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "bank_transfer",
+        "paid_date": "2025-02-03T11:15:00Z",
+        "created_at": "2025-02-03T10:30:00Z",
+        "updated_at": "2025-02-03T11:15:00Z"
+      }
+    },
+    {
+      "id": "invoice_revenue_2025_02",
+      "key": "invoice_revenue_2025_02",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_revenue_2025_02",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_001",
+        "medical_record_id": "record_revenue_2025_02",
+        "invoice_info": {
+          "invoice_number": "INV-2025-REV-02",
+          "invoice_date": "2025-02-15T12:00:00Z",
+          "due_date": "2025-02-22T09:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám định kỳ",
+            "quantity": 1,
+            "unit_price": 400000,
+            "total_price": 400000
+          },
+          {
+            "service_type": "lab",
+            "description": "Sinh hóa máu định kỳ",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          },
+          {
+            "service_type": "medication",
+            "description": "Amlodipine 5mg x30",
+            "quantity": 30,
+            "unit_price": 2000,
+            "total_price": 60000
+          },
+          {
+            "service_type": "treatment",
+            "description": "Theo dõi huyết áp 1 tháng",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 1200000,
+          "tax_rate": 0.08,
+          "tax_amount": 96000,
+          "total_amount": 1296000,
+          "patient_payment": 1296000,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2025-02-15T13:00:00Z",
+        "created_at": "2025-02-15T12:00:00Z",
+        "updated_at": "2025-02-15T13:00:00Z"
+      }
+    },
+    {
+      "id": "invoice_revenue_2025_03",
+      "key": "invoice_revenue_2025_03",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_revenue_2025_03",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_001",
+        "medical_record_id": "record_revenue_2025_03",
+        "invoice_info": {
+          "invoice_number": "INV-2025-REV-03",
+          "invoice_date": "2025-03-15T12:00:00Z",
+          "due_date": "2025-03-22T09:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám định kỳ",
+            "quantity": 1,
+            "unit_price": 400000,
+            "total_price": 400000
+          },
+          {
+            "service_type": "lab",
+            "description": "Sinh hóa máu định kỳ",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          },
+          {
+            "service_type": "medication",
+            "description": "Amlodipine 5mg x30",
+            "quantity": 30,
+            "unit_price": 2000,
+            "total_price": 60000
+          },
+          {
+            "service_type": "treatment",
+            "description": "Theo dõi huyết áp 1 tháng",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 1200000,
+          "tax_rate": 0.08,
+          "tax_amount": 96000,
+          "total_amount": 1296000,
+          "patient_payment": 1296000,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2025-03-15T13:00:00Z",
+        "created_at": "2025-03-15T12:00:00Z",
+        "updated_at": "2025-03-15T13:00:00Z"
+      }
+    },
+    {
+      "id": "invoice_revenue_2025_04",
+      "key": "invoice_revenue_2025_04",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_revenue_2025_04",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_001",
+        "medical_record_id": "record_revenue_2025_04",
+        "invoice_info": {
+          "invoice_number": "INV-2025-REV-04",
+          "invoice_date": "2025-04-15T12:00:00Z",
+          "due_date": "2025-04-22T09:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám định kỳ",
+            "quantity": 1,
+            "unit_price": 400000,
+            "total_price": 400000
+          },
+          {
+            "service_type": "lab",
+            "description": "Sinh hóa máu định kỳ",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          },
+          {
+            "service_type": "medication",
+            "description": "Amlodipine 5mg x30",
+            "quantity": 30,
+            "unit_price": 2000,
+            "total_price": 60000
+          },
+          {
+            "service_type": "treatment",
+            "description": "Theo dõi huyết áp 1 tháng",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 1200000,
+          "tax_rate": 0.08,
+          "tax_amount": 96000,
+          "total_amount": 1296000,
+          "patient_payment": 1296000,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2025-04-15T13:00:00Z",
+        "created_at": "2025-04-15T12:00:00Z",
+        "updated_at": "2025-04-15T13:00:00Z"
+      }
+    },
+    {
+      "id": "invoice_revenue_2025_05",
+      "key": "invoice_revenue_2025_05",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_revenue_2025_05",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_001",
+        "medical_record_id": "record_revenue_2025_05",
+        "invoice_info": {
+          "invoice_number": "INV-2025-REV-05",
+          "invoice_date": "2025-05-15T12:00:00Z",
+          "due_date": "2025-05-22T09:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám định kỳ",
+            "quantity": 1,
+            "unit_price": 400000,
+            "total_price": 400000
+          },
+          {
+            "service_type": "lab",
+            "description": "Sinh hóa máu định kỳ",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          },
+          {
+            "service_type": "medication",
+            "description": "Amlodipine 5mg x30",
+            "quantity": 30,
+            "unit_price": 2000,
+            "total_price": 60000
+          },
+          {
+            "service_type": "treatment",
+            "description": "Theo dõi huyết áp 1 tháng",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 1200000,
+          "tax_rate": 0.08,
+          "tax_amount": 96000,
+          "total_amount": 1296000,
+          "patient_payment": 1296000,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2025-05-15T13:00:00Z",
+        "created_at": "2025-05-15T12:00:00Z",
+        "updated_at": "2025-05-15T13:00:00Z"
+      }
+    },
+    {
+      "id": "invoice_revenue_2025_06",
+      "key": "invoice_revenue_2025_06",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_revenue_2025_06",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_001",
+        "medical_record_id": "record_revenue_2025_06",
+        "invoice_info": {
+          "invoice_number": "INV-2025-REV-06",
+          "invoice_date": "2025-06-15T12:00:00Z",
+          "due_date": "2025-06-22T09:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám định kỳ",
+            "quantity": 1,
+            "unit_price": 400000,
+            "total_price": 400000
+          },
+          {
+            "service_type": "lab",
+            "description": "Sinh hóa máu định kỳ",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          },
+          {
+            "service_type": "medication",
+            "description": "Amlodipine 5mg x30",
+            "quantity": 30,
+            "unit_price": 2000,
+            "total_price": 60000
+          },
+          {
+            "service_type": "treatment",
+            "description": "Theo dõi huyết áp 1 tháng",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 1200000,
+          "tax_rate": 0.08,
+          "tax_amount": 96000,
+          "total_amount": 1296000,
+          "patient_payment": 1296000,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2025-06-15T13:00:00Z",
+        "created_at": "2025-06-15T12:00:00Z",
+        "updated_at": "2025-06-15T13:00:00Z"
+      }
+    },
+    {
+      "id": "invoice_revenue_2025_07",
+      "key": "invoice_revenue_2025_07",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_revenue_2025_07",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_001",
+        "medical_record_id": "record_revenue_2025_07",
+        "invoice_info": {
+          "invoice_number": "INV-2025-REV-07",
+          "invoice_date": "2025-07-15T12:00:00Z",
+          "due_date": "2025-07-22T09:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám định kỳ",
+            "quantity": 1,
+            "unit_price": 400000,
+            "total_price": 400000
+          },
+          {
+            "service_type": "lab",
+            "description": "Sinh hóa máu định kỳ",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          },
+          {
+            "service_type": "medication",
+            "description": "Amlodipine 5mg x30",
+            "quantity": 30,
+            "unit_price": 2000,
+            "total_price": 60000
+          },
+          {
+            "service_type": "treatment",
+            "description": "Theo dõi huyết áp 1 tháng",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 1200000,
+          "tax_rate": 0.08,
+          "tax_amount": 96000,
+          "total_amount": 1296000,
+          "patient_payment": 1296000,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2025-07-15T13:00:00Z",
+        "created_at": "2025-07-15T12:00:00Z",
+        "updated_at": "2025-07-15T13:00:00Z"
+      }
+    },
+    {
+      "id": "invoice_revenue_2025_08",
+      "key": "invoice_revenue_2025_08",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_revenue_2025_08",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_001",
+        "medical_record_id": "record_revenue_2025_08",
+        "invoice_info": {
+          "invoice_number": "INV-2025-REV-08",
+          "invoice_date": "2025-08-15T12:00:00Z",
+          "due_date": "2025-08-22T09:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám định kỳ",
+            "quantity": 1,
+            "unit_price": 400000,
+            "total_price": 400000
+          },
+          {
+            "service_type": "lab",
+            "description": "Sinh hóa máu định kỳ",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          },
+          {
+            "service_type": "medication",
+            "description": "Amlodipine 5mg x30",
+            "quantity": 30,
+            "unit_price": 2000,
+            "total_price": 60000
+          },
+          {
+            "service_type": "treatment",
+            "description": "Theo dõi huyết áp 1 tháng",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 1200000,
+          "tax_rate": 0.08,
+          "tax_amount": 96000,
+          "total_amount": 1296000,
+          "patient_payment": 1296000,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2025-08-15T13:00:00Z",
+        "created_at": "2025-08-15T12:00:00Z",
+        "updated_at": "2025-08-15T13:00:00Z"
+      }
+    },
+    {
+      "id": "invoice_revenue_2025_09",
+      "key": "invoice_revenue_2025_09",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_revenue_2025_09",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_001",
+        "medical_record_id": "record_revenue_2025_09",
+        "invoice_info": {
+          "invoice_number": "INV-2025-REV-09",
+          "invoice_date": "2025-09-15T12:00:00Z",
+          "due_date": "2025-09-22T09:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám định kỳ",
+            "quantity": 1,
+            "unit_price": 400000,
+            "total_price": 400000
+          },
+          {
+            "service_type": "lab",
+            "description": "Sinh hóa máu định kỳ",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          },
+          {
+            "service_type": "medication",
+            "description": "Amlodipine 5mg x30",
+            "quantity": 30,
+            "unit_price": 2000,
+            "total_price": 60000
+          },
+          {
+            "service_type": "treatment",
+            "description": "Theo dõi huyết áp 1 tháng",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 1200000,
+          "tax_rate": 0.08,
+          "tax_amount": 96000,
+          "total_amount": 1296000,
+          "patient_payment": 1296000,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2025-09-15T13:00:00Z",
+        "created_at": "2025-09-15T12:00:00Z",
+        "updated_at": "2025-09-15T13:00:00Z"
+      }
+    },
+    {
+      "id": "invoice_revenue_2025_10",
+      "key": "invoice_revenue_2025_10",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "invoice_revenue_2025_10",
+        "type": "invoice",
+        "patient_id": "patient_2025_11_001",
+        "medical_record_id": "record_revenue_2025_10",
+        "invoice_info": {
+          "invoice_number": "INV-2025-REV-10",
+          "invoice_date": "2025-10-15T12:00:00Z",
+          "due_date": "2025-10-22T09:00:00Z"
+        },
+        "services": [
+          {
+            "service_type": "consultation",
+            "description": "Khám định kỳ",
+            "quantity": 1,
+            "unit_price": 400000,
+            "total_price": 400000
+          },
+          {
+            "service_type": "lab",
+            "description": "Sinh hóa máu định kỳ",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          },
+          {
+            "service_type": "medication",
+            "description": "Amlodipine 5mg x30",
+            "quantity": 30,
+            "unit_price": 2000,
+            "total_price": 60000
+          },
+          {
+            "service_type": "treatment",
+            "description": "Theo dõi huyết áp 1 tháng",
+            "quantity": 1,
+            "unit_price": 300000,
+            "total_price": 300000
+          }
+        ],
+        "payment_info": {
+          "subtotal": 1200000,
+          "tax_rate": 0.08,
+          "tax_amount": 96000,
+          "total_amount": 1296000,
+          "patient_payment": 1296000,
+          "insurance_coverage": 0.0,
+          "insurance_amount": 0
+        },
+        "payment_status": "paid",
+        "payment_method": "cash",
+        "paid_date": "2025-10-15T13:00:00Z",
+        "created_at": "2025-10-15T12:00:00Z",
+        "updated_at": "2025-10-15T13:00:00Z"
       }
     }
   ]

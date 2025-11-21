@@ -1,5 +1,5 @@
 {
-  "total_rows": 135,
+  "total_rows": 125,
   "offset": 0,
   "rows": [
     {
@@ -41,7 +41,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000001",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -65,7 +65,7 @@
         },
         "inventory": {
           "current_stock": 580,
-          "unit_cost": 22104,
+          "unit_cost": 2210,
           "expiry_date": "2027-09-25",
           "supplier": "Pharma Distributors"
         },
@@ -91,7 +91,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000002",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -115,7 +115,7 @@
         },
         "inventory": {
           "current_stock": 567,
-          "unit_cost": 9892,
+          "unit_cost": 989,
           "expiry_date": "2026-07-18",
           "supplier": "Global Med Inc."
         },
@@ -141,7 +141,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000003",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -165,7 +165,7 @@
         },
         "inventory": {
           "current_stock": 451,
-          "unit_cost": 9418,
+          "unit_cost": 942,
           "expiry_date": "2027-11-05",
           "supplier": "Pharma Distributors"
         },
@@ -191,7 +191,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000004",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -215,7 +215,7 @@
         },
         "inventory": {
           "current_stock": 478,
-          "unit_cost": 14635,
+          "unit_cost": 1464,
           "expiry_date": "2027-03-31",
           "supplier": "Global Med Inc."
         },
@@ -241,7 +241,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000005",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -265,7 +265,7 @@
         },
         "inventory": {
           "current_stock": 63,
-          "unit_cost": 40820,
+          "unit_cost": 4082,
           "expiry_date": "2027-04-06",
           "supplier": "Medical Supply Co."
         },
@@ -291,7 +291,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000006",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -315,7 +315,7 @@
         },
         "inventory": {
           "current_stock": 472,
-          "unit_cost": 30711,
+          "unit_cost": 3071,
           "expiry_date": "2026-12-09",
           "supplier": "Global Med Inc."
         },
@@ -341,7 +341,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000007",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -365,7 +365,7 @@
         },
         "inventory": {
           "current_stock": 660,
-          "unit_cost": 19577,
+          "unit_cost": 1958,
           "expiry_date": "2027-05-27",
           "supplier": "Pharma Distributors"
         },
@@ -391,7 +391,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000008",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -415,7 +415,7 @@
         },
         "inventory": {
           "current_stock": 282,
-          "unit_cost": 40506,
+          "unit_cost": 4051,
           "expiry_date": "2026-06-03",
           "supplier": "Global Med Inc."
         },
@@ -441,7 +441,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000009",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -465,7 +465,7 @@
         },
         "inventory": {
           "current_stock": 983,
-          "unit_cost": 2534,
+          "unit_cost": 253,
           "expiry_date": "2026-06-18",
           "supplier": "Medical Supply Co."
         },
@@ -491,7 +491,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000010",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -515,7 +515,7 @@
         },
         "inventory": {
           "current_stock": 52,
-          "unit_cost": 36841,
+          "unit_cost": 3684,
           "expiry_date": "2026-12-29",
           "supplier": "Global Med Inc."
         },
@@ -541,7 +541,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000011",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -565,7 +565,7 @@
         },
         "inventory": {
           "current_stock": 816,
-          "unit_cost": 14311,
+          "unit_cost": 1431,
           "expiry_date": "2027-05-13",
           "supplier": "Medical Supply Co."
         },
@@ -591,7 +591,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000012",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -615,7 +615,7 @@
         },
         "inventory": {
           "current_stock": 125,
-          "unit_cost": 13028,
+          "unit_cost": 1303,
           "expiry_date": "2026-11-08",
           "supplier": "Medical Supply Co."
         },
@@ -641,7 +641,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000013",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -665,7 +665,7 @@
         },
         "inventory": {
           "current_stock": 136,
-          "unit_cost": 14613,
+          "unit_cost": 1461,
           "expiry_date": "2027-11-05",
           "supplier": "Global Med Inc."
         },
@@ -691,7 +691,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000014",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -715,7 +715,7 @@
         },
         "inventory": {
           "current_stock": 347,
-          "unit_cost": 48692,
+          "unit_cost": 4869,
           "expiry_date": "2026-11-07",
           "supplier": "Global Med Inc."
         },
@@ -741,7 +741,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000015",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -765,7 +765,7 @@
         },
         "inventory": {
           "current_stock": 471,
-          "unit_cost": 15519,
+          "unit_cost": 1552,
           "expiry_date": "2026-06-08",
           "supplier": "Global Med Inc."
         },
@@ -791,7 +791,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000016",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -815,7 +815,7 @@
         },
         "inventory": {
           "current_stock": 133,
-          "unit_cost": 22809,
+          "unit_cost": 2281,
           "expiry_date": "2026-12-22",
           "supplier": "Global Med Inc."
         },
@@ -841,7 +841,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000017",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -865,7 +865,7 @@
         },
         "inventory": {
           "current_stock": 475,
-          "unit_cost": 16614,
+          "unit_cost": 1661,
           "expiry_date": "2027-07-13",
           "supplier": "Global Med Inc."
         },
@@ -891,7 +891,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000018",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -915,7 +915,7 @@
         },
         "inventory": {
           "current_stock": 96,
-          "unit_cost": 38684,
+          "unit_cost": 3868,
           "expiry_date": "2026-12-30",
           "supplier": "Pharma Distributors"
         },
@@ -941,7 +941,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000019",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -965,7 +965,7 @@
         },
         "inventory": {
           "current_stock": 644,
-          "unit_cost": 12118,
+          "unit_cost": 1212,
           "expiry_date": "2027-03-01",
           "supplier": "Medical Supply Co."
         },
@@ -991,7 +991,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000020",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1015,7 +1015,7 @@
         },
         "inventory": {
           "current_stock": 940,
-          "unit_cost": 48994,
+          "unit_cost": 4899,
           "expiry_date": "2027-07-05",
           "supplier": "Pharma Distributors"
         },
@@ -1041,7 +1041,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000021",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1065,7 +1065,7 @@
         },
         "inventory": {
           "current_stock": 293,
-          "unit_cost": 17189,
+          "unit_cost": 1719,
           "expiry_date": "2026-12-20",
           "supplier": "Pharma Distributors"
         },
@@ -1091,7 +1091,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000022",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1115,7 +1115,7 @@
         },
         "inventory": {
           "current_stock": 426,
-          "unit_cost": 23644,
+          "unit_cost": 2364,
           "expiry_date": "2026-12-13",
           "supplier": "Pharma Distributors"
         },
@@ -1141,7 +1141,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000023",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1165,7 +1165,7 @@
         },
         "inventory": {
           "current_stock": 830,
-          "unit_cost": 34789,
+          "unit_cost": 3479,
           "expiry_date": "2027-03-10",
           "supplier": "Medical Supply Co."
         },
@@ -1191,7 +1191,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000024",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1215,7 +1215,7 @@
         },
         "inventory": {
           "current_stock": 148,
-          "unit_cost": 27149,
+          "unit_cost": 2715,
           "expiry_date": "2027-08-06",
           "supplier": "Medical Supply Co."
         },
@@ -1241,7 +1241,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000025",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1265,7 +1265,7 @@
         },
         "inventory": {
           "current_stock": 367,
-          "unit_cost": 35368,
+          "unit_cost": 3537,
           "expiry_date": "2026-06-16",
           "supplier": "Pharma Distributors"
         },
@@ -1291,7 +1291,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000026",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1315,7 +1315,7 @@
         },
         "inventory": {
           "current_stock": 358,
-          "unit_cost": 19073,
+          "unit_cost": 1907,
           "expiry_date": "2026-12-14",
           "supplier": "Global Med Inc."
         },
@@ -1341,7 +1341,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000027",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1365,7 +1365,7 @@
         },
         "inventory": {
           "current_stock": 777,
-          "unit_cost": 17307,
+          "unit_cost": 1731,
           "expiry_date": "2027-06-05",
           "supplier": "Global Med Inc."
         },
@@ -1391,7 +1391,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000028",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1415,7 +1415,7 @@
         },
         "inventory": {
           "current_stock": 959,
-          "unit_cost": 38134,
+          "unit_cost": 3813,
           "expiry_date": "2026-07-01",
           "supplier": "Medical Supply Co."
         },
@@ -1441,7 +1441,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000029",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1465,7 +1465,7 @@
         },
         "inventory": {
           "current_stock": 463,
-          "unit_cost": 3464,
+          "unit_cost": 346,
           "expiry_date": "2027-09-11",
           "supplier": "Medical Supply Co."
         },
@@ -1491,7 +1491,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000030",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1515,7 +1515,7 @@
         },
         "inventory": {
           "current_stock": 587,
-          "unit_cost": 35106,
+          "unit_cost": 3511,
           "expiry_date": "2026-07-03",
           "supplier": "Global Med Inc."
         },
@@ -1541,7 +1541,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000031",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1565,7 +1565,7 @@
         },
         "inventory": {
           "current_stock": 150,
-          "unit_cost": 16271,
+          "unit_cost": 1627,
           "expiry_date": "2027-03-06",
           "supplier": "Medical Supply Co."
         },
@@ -1591,7 +1591,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000032",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1615,7 +1615,7 @@
         },
         "inventory": {
           "current_stock": 349,
-          "unit_cost": 34426,
+          "unit_cost": 3443,
           "expiry_date": "2026-11-20",
           "supplier": "Global Med Inc."
         },
@@ -1641,7 +1641,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000033",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1665,7 +1665,7 @@
         },
         "inventory": {
           "current_stock": 626,
-          "unit_cost": 6877,
+          "unit_cost": 688,
           "expiry_date": "2026-12-12",
           "supplier": "Medical Supply Co."
         },
@@ -1691,7 +1691,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000034",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1715,7 +1715,7 @@
         },
         "inventory": {
           "current_stock": 939,
-          "unit_cost": 31635,
+          "unit_cost": 3164,
           "expiry_date": "2027-03-25",
           "supplier": "Global Med Inc."
         },
@@ -1741,7 +1741,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000035",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1765,7 +1765,7 @@
         },
         "inventory": {
           "current_stock": 174,
-          "unit_cost": 6513,
+          "unit_cost": 651,
           "expiry_date": "2026-11-20",
           "supplier": "Pharma Distributors"
         },
@@ -1791,7 +1791,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000036",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1815,7 +1815,7 @@
         },
         "inventory": {
           "current_stock": 363,
-          "unit_cost": 22683,
+          "unit_cost": 2268,
           "expiry_date": "2026-10-06",
           "supplier": "Pharma Distributors"
         },
@@ -1841,7 +1841,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000037",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1865,7 +1865,7 @@
         },
         "inventory": {
           "current_stock": 313,
-          "unit_cost": 22868,
+          "unit_cost": 2287,
           "expiry_date": "2027-07-17",
           "supplier": "Global Med Inc."
         },
@@ -1891,7 +1891,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000038",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1915,7 +1915,7 @@
         },
         "inventory": {
           "current_stock": 856,
-          "unit_cost": 28163,
+          "unit_cost": 2816,
           "expiry_date": "2027-08-29",
           "supplier": "Global Med Inc."
         },
@@ -1941,7 +1941,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000039",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -1965,7 +1965,7 @@
         },
         "inventory": {
           "current_stock": 358,
-          "unit_cost": 28466,
+          "unit_cost": 2847,
           "expiry_date": "2027-03-31",
           "supplier": "Medical Supply Co."
         },
@@ -1991,7 +1991,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000040",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2015,7 +2015,7 @@
         },
         "inventory": {
           "current_stock": 912,
-          "unit_cost": 23801,
+          "unit_cost": 2380,
           "expiry_date": "2026-06-02",
           "supplier": "Medical Supply Co."
         },
@@ -2041,7 +2041,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000041",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2065,7 +2065,7 @@
         },
         "inventory": {
           "current_stock": 692,
-          "unit_cost": 13884,
+          "unit_cost": 1388,
           "expiry_date": "2026-10-12",
           "supplier": "Medical Supply Co."
         },
@@ -2091,7 +2091,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000042",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2115,7 +2115,7 @@
         },
         "inventory": {
           "current_stock": 992,
-          "unit_cost": 39352,
+          "unit_cost": 3935,
           "expiry_date": "2027-08-17",
           "supplier": "Global Med Inc."
         },
@@ -2141,7 +2141,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000043",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2165,7 +2165,7 @@
         },
         "inventory": {
           "current_stock": 141,
-          "unit_cost": 46751,
+          "unit_cost": 4675,
           "expiry_date": "2026-05-17",
           "supplier": "Global Med Inc."
         },
@@ -2191,7 +2191,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000044",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2215,7 +2215,7 @@
         },
         "inventory": {
           "current_stock": 412,
-          "unit_cost": 30528,
+          "unit_cost": 3053,
           "expiry_date": "2026-05-16",
           "supplier": "Pharma Distributors"
         },
@@ -2241,7 +2241,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000045",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2265,7 +2265,7 @@
         },
         "inventory": {
           "current_stock": 755,
-          "unit_cost": 45326,
+          "unit_cost": 4533,
           "expiry_date": "2027-08-11",
           "supplier": "Pharma Distributors"
         },
@@ -2291,7 +2291,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000046",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2315,7 +2315,7 @@
         },
         "inventory": {
           "current_stock": 474,
-          "unit_cost": 27183,
+          "unit_cost": 2718,
           "expiry_date": "2027-08-20",
           "supplier": "Global Med Inc."
         },
@@ -2341,7 +2341,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000047",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2365,7 +2365,7 @@
         },
         "inventory": {
           "current_stock": 530,
-          "unit_cost": 10467,
+          "unit_cost": 1047,
           "expiry_date": "2027-03-01",
           "supplier": "Global Med Inc."
         },
@@ -2391,7 +2391,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000048",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2415,7 +2415,7 @@
         },
         "inventory": {
           "current_stock": 948,
-          "unit_cost": 20520,
+          "unit_cost": 2052,
           "expiry_date": "2027-02-16",
           "supplier": "Global Med Inc."
         },
@@ -2441,7 +2441,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000049",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2465,7 +2465,7 @@
         },
         "inventory": {
           "current_stock": 587,
-          "unit_cost": 43203,
+          "unit_cost": 4320,
           "expiry_date": "2027-07-27",
           "supplier": "Pharma Distributors"
         },
@@ -2491,7 +2491,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000050",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2515,7 +2515,7 @@
         },
         "inventory": {
           "current_stock": 70,
-          "unit_cost": 24470,
+          "unit_cost": 2447,
           "expiry_date": "2027-03-28",
           "supplier": "Medical Supply Co."
         },
@@ -2541,7 +2541,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000051",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2565,7 +2565,7 @@
         },
         "inventory": {
           "current_stock": 489,
-          "unit_cost": 10662,
+          "unit_cost": 1066,
           "expiry_date": "2026-06-24",
           "supplier": "Global Med Inc."
         },
@@ -2591,7 +2591,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000052",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2615,7 +2615,7 @@
         },
         "inventory": {
           "current_stock": 518,
-          "unit_cost": 45326,
+          "unit_cost": 4533,
           "expiry_date": "2026-12-03",
           "supplier": "Medical Supply Co."
         },
@@ -2641,7 +2641,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000053",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2665,7 +2665,7 @@
         },
         "inventory": {
           "current_stock": 238,
-          "unit_cost": 2797,
+          "unit_cost": 280,
           "expiry_date": "2027-02-25",
           "supplier": "Medical Supply Co."
         },
@@ -2691,7 +2691,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000054",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2715,7 +2715,7 @@
         },
         "inventory": {
           "current_stock": 181,
-          "unit_cost": 31170,
+          "unit_cost": 3117,
           "expiry_date": "2026-09-17",
           "supplier": "Global Med Inc."
         },
@@ -2741,7 +2741,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000055",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2765,7 +2765,7 @@
         },
         "inventory": {
           "current_stock": 643,
-          "unit_cost": 22998,
+          "unit_cost": 2300,
           "expiry_date": "2027-07-28",
           "supplier": "Pharma Distributors"
         },
@@ -2791,7 +2791,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000056",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2815,7 +2815,7 @@
         },
         "inventory": {
           "current_stock": 117,
-          "unit_cost": 4219,
+          "unit_cost": 422,
           "expiry_date": "2026-12-15",
           "supplier": "Global Med Inc."
         },
@@ -2841,7 +2841,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000057",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2865,7 +2865,7 @@
         },
         "inventory": {
           "current_stock": 722,
-          "unit_cost": 3531,
+          "unit_cost": 353,
           "expiry_date": "2026-07-17",
           "supplier": "Global Med Inc."
         },
@@ -2891,7 +2891,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000058",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2915,7 +2915,7 @@
         },
         "inventory": {
           "current_stock": 159,
-          "unit_cost": 22204,
+          "unit_cost": 2220,
           "expiry_date": "2026-09-30",
           "supplier": "Global Med Inc."
         },
@@ -2941,7 +2941,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000059",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -2965,7 +2965,7 @@
         },
         "inventory": {
           "current_stock": 723,
-          "unit_cost": 16302,
+          "unit_cost": 1630,
           "expiry_date": "2026-06-23",
           "supplier": "Pharma Distributors"
         },
@@ -2991,7 +2991,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000060",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3015,7 +3015,7 @@
         },
         "inventory": {
           "current_stock": 767,
-          "unit_cost": 14999,
+          "unit_cost": 1500,
           "expiry_date": "2026-06-06",
           "supplier": "Medical Supply Co."
         },
@@ -3041,7 +3041,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000061",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3065,7 +3065,7 @@
         },
         "inventory": {
           "current_stock": 609,
-          "unit_cost": 16672,
+          "unit_cost": 1667,
           "expiry_date": "2027-07-18",
           "supplier": "Medical Supply Co."
         },
@@ -3091,7 +3091,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000062",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3115,7 +3115,7 @@
         },
         "inventory": {
           "current_stock": 638,
-          "unit_cost": 49598,
+          "unit_cost": 4960,
           "expiry_date": "2027-03-09",
           "supplier": "Pharma Distributors"
         },
@@ -3141,7 +3141,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000063",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3165,7 +3165,7 @@
         },
         "inventory": {
           "current_stock": 302,
-          "unit_cost": 32263,
+          "unit_cost": 3226,
           "expiry_date": "2027-01-18",
           "supplier": "Global Med Inc."
         },
@@ -3191,7 +3191,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000064",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3215,7 +3215,7 @@
         },
         "inventory": {
           "current_stock": 88,
-          "unit_cost": 24468,
+          "unit_cost": 2447,
           "expiry_date": "2027-04-10",
           "supplier": "Medical Supply Co."
         },
@@ -3241,7 +3241,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000065",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3265,7 +3265,7 @@
         },
         "inventory": {
           "current_stock": 322,
-          "unit_cost": 7019,
+          "unit_cost": 702,
           "expiry_date": "2027-04-01",
           "supplier": "Pharma Distributors"
         },
@@ -3291,7 +3291,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000066",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3315,7 +3315,7 @@
         },
         "inventory": {
           "current_stock": 571,
-          "unit_cost": 23620,
+          "unit_cost": 2362,
           "expiry_date": "2027-03-17",
           "supplier": "Global Med Inc."
         },
@@ -3341,7 +3341,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000067",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3365,7 +3365,7 @@
         },
         "inventory": {
           "current_stock": 687,
-          "unit_cost": 40830,
+          "unit_cost": 4083,
           "expiry_date": "2026-07-30",
           "supplier": "Global Med Inc."
         },
@@ -3391,7 +3391,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000068",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3415,7 +3415,7 @@
         },
         "inventory": {
           "current_stock": 919,
-          "unit_cost": 30869,
+          "unit_cost": 3087,
           "expiry_date": "2027-04-16",
           "supplier": "Pharma Distributors"
         },
@@ -3441,7 +3441,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000069",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3465,7 +3465,7 @@
         },
         "inventory": {
           "current_stock": 350,
-          "unit_cost": 29261,
+          "unit_cost": 2926,
           "expiry_date": "2026-10-23",
           "supplier": "Pharma Distributors"
         },
@@ -3491,7 +3491,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000070",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3515,7 +3515,7 @@
         },
         "inventory": {
           "current_stock": 655,
-          "unit_cost": 40795,
+          "unit_cost": 4080,
           "expiry_date": "2027-02-18",
           "supplier": "Medical Supply Co."
         },
@@ -3541,7 +3541,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000071",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3565,7 +3565,7 @@
         },
         "inventory": {
           "current_stock": 95,
-          "unit_cost": 32908,
+          "unit_cost": 3291,
           "expiry_date": "2027-07-22",
           "supplier": "Pharma Distributors"
         },
@@ -3591,7 +3591,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000072",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3615,7 +3615,7 @@
         },
         "inventory": {
           "current_stock": 775,
-          "unit_cost": 10192,
+          "unit_cost": 1019,
           "expiry_date": "2027-05-15",
           "supplier": "Pharma Distributors"
         },
@@ -3641,7 +3641,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000073",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3665,7 +3665,7 @@
         },
         "inventory": {
           "current_stock": 993,
-          "unit_cost": 17079,
+          "unit_cost": 1708,
           "expiry_date": "2026-07-15",
           "supplier": "Global Med Inc."
         },
@@ -3691,7 +3691,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000074",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3715,7 +3715,7 @@
         },
         "inventory": {
           "current_stock": 812,
-          "unit_cost": 39871,
+          "unit_cost": 3987,
           "expiry_date": "2027-11-08",
           "supplier": "Pharma Distributors"
         },
@@ -3741,7 +3741,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000075",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3765,7 +3765,7 @@
         },
         "inventory": {
           "current_stock": 255,
-          "unit_cost": 35108,
+          "unit_cost": 3511,
           "expiry_date": "2027-08-31",
           "supplier": "Global Med Inc."
         },
@@ -3791,7 +3791,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000076",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3815,7 +3815,7 @@
         },
         "inventory": {
           "current_stock": 791,
-          "unit_cost": 18129,
+          "unit_cost": 1813,
           "expiry_date": "2026-11-15",
           "supplier": "Pharma Distributors"
         },
@@ -3841,7 +3841,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000077",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3865,7 +3865,7 @@
         },
         "inventory": {
           "current_stock": 524,
-          "unit_cost": 15273,
+          "unit_cost": 1527,
           "expiry_date": "2026-05-28",
           "supplier": "Global Med Inc."
         },
@@ -3891,7 +3891,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000078",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3915,7 +3915,7 @@
         },
         "inventory": {
           "current_stock": 78,
-          "unit_cost": 8028,
+          "unit_cost": 803,
           "expiry_date": "2026-12-02",
           "supplier": "Global Med Inc."
         },
@@ -3941,7 +3941,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000079",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -3965,7 +3965,7 @@
         },
         "inventory": {
           "current_stock": 941,
-          "unit_cost": 49045,
+          "unit_cost": 4904,
           "expiry_date": "2027-07-27",
           "supplier": "Medical Supply Co."
         },
@@ -3991,7 +3991,7 @@
           "manufacturer": "Pharmaco",
           "barcode": "8936000000080",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4015,7 +4015,7 @@
         },
         "inventory": {
           "current_stock": 106,
-          "unit_cost": 36971,
+          "unit_cost": 3697,
           "expiry_date": "2027-01-08",
           "supplier": "Pharma Distributors"
         },
@@ -4041,7 +4041,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000081",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4065,7 +4065,7 @@
         },
         "inventory": {
           "current_stock": 760,
-          "unit_cost": 6210,
+          "unit_cost": 621,
           "expiry_date": "2026-11-23",
           "supplier": "Pharma Distributors"
         },
@@ -4091,7 +4091,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000082",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4115,7 +4115,7 @@
         },
         "inventory": {
           "current_stock": 687,
-          "unit_cost": 41573,
+          "unit_cost": 4157,
           "expiry_date": "2027-05-08",
           "supplier": "Global Med Inc."
         },
@@ -4141,7 +4141,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000083",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4165,7 +4165,7 @@
         },
         "inventory": {
           "current_stock": 239,
-          "unit_cost": 27895,
+          "unit_cost": 2790,
           "expiry_date": "2027-09-12",
           "supplier": "Global Med Inc."
         },
@@ -4191,7 +4191,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000084",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4215,7 +4215,7 @@
         },
         "inventory": {
           "current_stock": 810,
-          "unit_cost": 23759,
+          "unit_cost": 2376,
           "expiry_date": "2026-11-16",
           "supplier": "Medical Supply Co."
         },
@@ -4241,7 +4241,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000085",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4265,7 +4265,7 @@
         },
         "inventory": {
           "current_stock": 421,
-          "unit_cost": 4292,
+          "unit_cost": 429,
           "expiry_date": "2026-07-04",
           "supplier": "Global Med Inc."
         },
@@ -4291,7 +4291,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000086",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4315,7 +4315,7 @@
         },
         "inventory": {
           "current_stock": 289,
-          "unit_cost": 43291,
+          "unit_cost": 4329,
           "expiry_date": "2026-10-01",
           "supplier": "Medical Supply Co."
         },
@@ -4341,7 +4341,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000087",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4365,7 +4365,7 @@
         },
         "inventory": {
           "current_stock": 363,
-          "unit_cost": 8390,
+          "unit_cost": 839,
           "expiry_date": "2027-07-16",
           "supplier": "Medical Supply Co."
         },
@@ -4391,7 +4391,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000088",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4415,7 +4415,7 @@
         },
         "inventory": {
           "current_stock": 737,
-          "unit_cost": 34192,
+          "unit_cost": 3419,
           "expiry_date": "2027-06-04",
           "supplier": "Medical Supply Co."
         },
@@ -4441,7 +4441,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000089",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4465,7 +4465,7 @@
         },
         "inventory": {
           "current_stock": 355,
-          "unit_cost": 36707,
+          "unit_cost": 3671,
           "expiry_date": "2026-10-02",
           "supplier": "Medical Supply Co."
         },
@@ -4491,7 +4491,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000090",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4515,7 +4515,7 @@
         },
         "inventory": {
           "current_stock": 340,
-          "unit_cost": 26030,
+          "unit_cost": 2603,
           "expiry_date": "2027-04-06",
           "supplier": "Global Med Inc."
         },
@@ -4541,7 +4541,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000091",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4565,7 +4565,7 @@
         },
         "inventory": {
           "current_stock": 676,
-          "unit_cost": 33099,
+          "unit_cost": 3310,
           "expiry_date": "2026-11-29",
           "supplier": "Global Med Inc."
         },
@@ -4591,7 +4591,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000092",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4615,7 +4615,7 @@
         },
         "inventory": {
           "current_stock": 780,
-          "unit_cost": 35424,
+          "unit_cost": 3542,
           "expiry_date": "2027-08-19",
           "supplier": "Medical Supply Co."
         },
@@ -4641,7 +4641,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000093",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4665,7 +4665,7 @@
         },
         "inventory": {
           "current_stock": 186,
-          "unit_cost": 31200,
+          "unit_cost": 3120,
           "expiry_date": "2027-05-26",
           "supplier": "Global Med Inc."
         },
@@ -4691,7 +4691,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000094",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4715,7 +4715,7 @@
         },
         "inventory": {
           "current_stock": 297,
-          "unit_cost": 7305,
+          "unit_cost": 730,
           "expiry_date": "2026-11-02",
           "supplier": "Global Med Inc."
         },
@@ -4741,7 +4741,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000095",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4765,7 +4765,7 @@
         },
         "inventory": {
           "current_stock": 264,
-          "unit_cost": 9405,
+          "unit_cost": 940,
           "expiry_date": "2026-11-24",
           "supplier": "Medical Supply Co."
         },
@@ -4791,7 +4791,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000096",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4815,7 +4815,7 @@
         },
         "inventory": {
           "current_stock": 503,
-          "unit_cost": 9373,
+          "unit_cost": 937,
           "expiry_date": "2026-11-19",
           "supplier": "Medical Supply Co."
         },
@@ -4841,7 +4841,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000097",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4865,7 +4865,7 @@
         },
         "inventory": {
           "current_stock": 145,
-          "unit_cost": 12540,
+          "unit_cost": 1254,
           "expiry_date": "2027-01-09",
           "supplier": "Pharma Distributors"
         },
@@ -4891,7 +4891,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000098",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4915,7 +4915,7 @@
         },
         "inventory": {
           "current_stock": 244,
-          "unit_cost": 23307,
+          "unit_cost": 2331,
           "expiry_date": "2027-01-08",
           "supplier": "Pharma Distributors"
         },
@@ -4941,7 +4941,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000099",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -4965,7 +4965,7 @@
         },
         "inventory": {
           "current_stock": 675,
-          "unit_cost": 9860,
+          "unit_cost": 986,
           "expiry_date": "2026-10-25",
           "supplier": "Pharma Distributors"
         },
@@ -4991,7 +4991,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000100",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5015,7 +5015,7 @@
         },
         "inventory": {
           "current_stock": 470,
-          "unit_cost": 26433,
+          "unit_cost": 2643,
           "expiry_date": "2026-08-28",
           "supplier": "Global Med Inc."
         },
@@ -5041,7 +5041,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000101",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5065,7 +5065,7 @@
         },
         "inventory": {
           "current_stock": 984,
-          "unit_cost": 3683,
+          "unit_cost": 368,
           "expiry_date": "2027-07-25",
           "supplier": "Pharma Distributors"
         },
@@ -5091,7 +5091,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000102",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5115,7 +5115,7 @@
         },
         "inventory": {
           "current_stock": 575,
-          "unit_cost": 31273,
+          "unit_cost": 3127,
           "expiry_date": "2026-11-17",
           "supplier": "Medical Supply Co."
         },
@@ -5141,7 +5141,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000103",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5165,7 +5165,7 @@
         },
         "inventory": {
           "current_stock": 349,
-          "unit_cost": 14014,
+          "unit_cost": 1401,
           "expiry_date": "2026-09-27",
           "supplier": "Global Med Inc."
         },
@@ -5191,7 +5191,7 @@
           "manufacturer": "MediCare",
           "barcode": "8936000000104",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5215,7 +5215,7 @@
         },
         "inventory": {
           "current_stock": 886,
-          "unit_cost": 49171,
+          "unit_cost": 4917,
           "expiry_date": "2027-05-08",
           "supplier": "Pharma Distributors"
         },
@@ -5241,7 +5241,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000105",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5265,7 +5265,7 @@
         },
         "inventory": {
           "current_stock": 403,
-          "unit_cost": 8546,
+          "unit_cost": 855,
           "expiry_date": "2027-05-01",
           "supplier": "Pharma Distributors"
         },
@@ -5291,7 +5291,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000106",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5315,7 +5315,7 @@
         },
         "inventory": {
           "current_stock": 268,
-          "unit_cost": 29172,
+          "unit_cost": 2917,
           "expiry_date": "2027-02-23",
           "supplier": "Global Med Inc."
         },
@@ -5341,7 +5341,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000107",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5365,7 +5365,7 @@
         },
         "inventory": {
           "current_stock": 343,
-          "unit_cost": 3246,
+          "unit_cost": 325,
           "expiry_date": "2026-08-28",
           "supplier": "Pharma Distributors"
         },
@@ -5391,7 +5391,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000108",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5415,7 +5415,7 @@
         },
         "inventory": {
           "current_stock": 72,
-          "unit_cost": 7283,
+          "unit_cost": 728,
           "expiry_date": "2026-12-23",
           "supplier": "Medical Supply Co."
         },
@@ -5441,7 +5441,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000109",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5465,7 +5465,7 @@
         },
         "inventory": {
           "current_stock": 965,
-          "unit_cost": 24089,
+          "unit_cost": 2409,
           "expiry_date": "2026-11-21",
           "supplier": "Global Med Inc."
         },
@@ -5491,7 +5491,7 @@
           "manufacturer": "BioPharm",
           "barcode": "8936000000110",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5515,7 +5515,7 @@
         },
         "inventory": {
           "current_stock": 547,
-          "unit_cost": 2163,
+          "unit_cost": 216,
           "expiry_date": "2027-11-08",
           "supplier": "Medical Supply Co."
         },
@@ -5541,7 +5541,7 @@
           "manufacturer": "VitaMed",
           "barcode": "8936000000111",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5565,7 +5565,7 @@
         },
         "inventory": {
           "current_stock": 103,
-          "unit_cost": 34184,
+          "unit_cost": 3418,
           "expiry_date": "2027-04-04",
           "supplier": "Pharma Distributors"
         },
@@ -5591,7 +5591,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000112",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5615,7 +5615,7 @@
         },
         "inventory": {
           "current_stock": 562,
-          "unit_cost": 33190,
+          "unit_cost": 3319,
           "expiry_date": "2027-01-16",
           "supplier": "Pharma Distributors"
         },
@@ -5641,7 +5641,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000113",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5665,7 +5665,7 @@
         },
         "inventory": {
           "current_stock": 769,
-          "unit_cost": 45522,
+          "unit_cost": 4552,
           "expiry_date": "2027-08-20",
           "supplier": "Medical Supply Co."
         },
@@ -5691,7 +5691,7 @@
           "manufacturer": "HealthPlus",
           "barcode": "8936000000114",
           "inventory": {
-            "unit_cost": 50000
+            "unit_cost": 5000
           }
         },
         "clinical_info": {
@@ -5715,7 +5715,7 @@
         },
         "inventory": {
           "current_stock": 195,
-          "unit_cost": 42929,
+          "unit_cost": 4293,
           "expiry_date": "2026-06-21",
           "supplier": "Medical Supply Co."
         },
@@ -5741,7 +5741,7 @@
           "manufacturer": "Medicare Pharma",
           "barcode": "8936000101",
           "inventory": {
-            "unit_cost": 46500
+            "unit_cost": 4650
           }
         },
         "clinical_info": {
@@ -5762,7 +5762,7 @@
         },
         "inventory": {
           "current_stock": 192,
-          "unit_cost": 46500,
+          "unit_cost": 4650,
           "expiry_date": "2027-12-31",
           "supplier": "VietPharma Distribution"
         },
@@ -5788,7 +5788,7 @@
           "manufacturer": "Medicare Pharma",
           "barcode": "8936000102",
           "inventory": {
-            "unit_cost": 48000
+            "unit_cost": 4800
           }
         },
         "clinical_info": {
@@ -5809,7 +5809,7 @@
         },
         "inventory": {
           "current_stock": 204,
-          "unit_cost": 48000,
+          "unit_cost": 4800,
           "expiry_date": "2027-12-31",
           "supplier": "VietPharma Distribution"
         },
@@ -5835,7 +5835,7 @@
           "manufacturer": "Medicare Pharma",
           "barcode": "8936000103",
           "inventory": {
-            "unit_cost": 49500
+            "unit_cost": 4950
           }
         },
         "clinical_info": {
@@ -5856,7 +5856,7 @@
         },
         "inventory": {
           "current_stock": 216,
-          "unit_cost": 49500,
+          "unit_cost": 4950,
           "expiry_date": "2027-12-31",
           "supplier": "VietPharma Distribution"
         },
@@ -5882,7 +5882,7 @@
           "manufacturer": "Medicare Pharma",
           "barcode": "8936000104",
           "inventory": {
-            "unit_cost": 51000
+            "unit_cost": 5100
           }
         },
         "clinical_info": {
@@ -5903,7 +5903,7 @@
         },
         "inventory": {
           "current_stock": 228,
-          "unit_cost": 51000,
+          "unit_cost": 5100,
           "expiry_date": "2027-12-31",
           "supplier": "VietPharma Distribution"
         },
@@ -5929,7 +5929,7 @@
           "manufacturer": "Medicare Pharma",
           "barcode": "8936000105",
           "inventory": {
-            "unit_cost": 52500
+            "unit_cost": 5250
           }
         },
         "clinical_info": {
@@ -5950,7 +5950,7 @@
         },
         "inventory": {
           "current_stock": 240,
-          "unit_cost": 52500,
+          "unit_cost": 5250,
           "expiry_date": "2027-12-31",
           "supplier": "VietPharma Distribution"
         },
@@ -5976,7 +5976,7 @@
           "manufacturer": "Medicare Pharma",
           "barcode": "8936000106",
           "inventory": {
-            "unit_cost": 54000
+            "unit_cost": 5400
           }
         },
         "clinical_info": {
@@ -5997,7 +5997,7 @@
         },
         "inventory": {
           "current_stock": 252,
-          "unit_cost": 54000,
+          "unit_cost": 5400,
           "expiry_date": "2027-12-31",
           "supplier": "VietPharma Distribution"
         },
@@ -6023,7 +6023,7 @@
           "manufacturer": "Medicare Pharma",
           "barcode": "8936000107",
           "inventory": {
-            "unit_cost": 55500
+            "unit_cost": 5550
           }
         },
         "clinical_info": {
@@ -6044,7 +6044,7 @@
         },
         "inventory": {
           "current_stock": 264,
-          "unit_cost": 55500,
+          "unit_cost": 5550,
           "expiry_date": "2027-12-31",
           "supplier": "VietPharma Distribution"
         },
@@ -6070,7 +6070,7 @@
           "manufacturer": "Medicare Pharma",
           "barcode": "8936000108",
           "inventory": {
-            "unit_cost": 57000
+            "unit_cost": 5700
           }
         },
         "clinical_info": {
@@ -6091,7 +6091,7 @@
         },
         "inventory": {
           "current_stock": 276,
-          "unit_cost": 57000,
+          "unit_cost": 5700,
           "expiry_date": "2027-12-31",
           "supplier": "VietPharma Distribution"
         },
@@ -6117,7 +6117,7 @@
           "manufacturer": "Medicare Pharma",
           "barcode": "8936000109",
           "inventory": {
-            "unit_cost": 58500
+            "unit_cost": 5850
           }
         },
         "clinical_info": {
@@ -6138,7 +6138,7 @@
         },
         "inventory": {
           "current_stock": 288,
-          "unit_cost": 58500,
+          "unit_cost": 5850,
           "expiry_date": "2027-12-31",
           "supplier": "VietPharma Distribution"
         },
@@ -6164,7 +6164,7 @@
           "manufacturer": "Medicare Pharma",
           "barcode": "8936000110",
           "inventory": {
-            "unit_cost": 60000
+            "unit_cost": 6000
           }
         },
         "clinical_info": {
@@ -6185,483 +6185,13 @@
         },
         "inventory": {
           "current_stock": 300,
-          "unit_cost": 60000,
+          "unit_cost": 6000,
           "expiry_date": "2027-12-31",
           "supplier": "VietPharma Distribution"
         },
         "status": "active",
         "created_at": "2025-11-11T09:00:00Z",
         "updated_at": "2025-11-11T11:00:00Z"
-      }
-    },
-    {
-      "id": "med_2025_11_011",
-      "key": "med_2025_11_011",
-      "value": {
-        "rev": "1-new"
-      },
-      "doc": {
-        "_id": "med_2025_11_011",
-        "type": "medication",
-        "medication_info": {
-          "name": "CardioSafe",
-          "generic_name": "CardioSafe",
-          "strength": "10mg",
-          "dosage_form": "tablet",
-          "manufacturer": "Medicare Pharma",
-          "barcode": "8936000111",
-          "inventory": {
-            "unit_cost": 61500
-          }
-        },
-        "clinical_info": {
-          "therapeutic_class": "Beta blocker",
-          "indications": [
-            "Tăng huyết áp nguyên phát"
-          ],
-          "contraindications": [
-            "Hypersensitivity"
-          ],
-          "side_effects": [
-            "Chóng mặt nhẹ",
-            "Buồn nôn"
-          ],
-          "drug_interactions": [
-            "Alcohol"
-          ]
-        },
-        "inventory": {
-          "current_stock": 312,
-          "unit_cost": 61500,
-          "expiry_date": "2027-12-31",
-          "supplier": "VietPharma Distribution"
-        },
-        "status": "active",
-        "created_at": "2025-11-12T09:00:00Z",
-        "updated_at": "2025-11-12T11:00:00Z"
-      }
-    },
-    {
-      "id": "med_2025_11_012",
-      "key": "med_2025_11_012",
-      "value": {
-        "rev": "1-new"
-      },
-      "doc": {
-        "_id": "med_2025_11_012",
-        "type": "medication",
-        "medication_info": {
-          "name": "GlucoBalance",
-          "generic_name": "GlucoBalance",
-          "strength": "500mg",
-          "dosage_form": "tablet",
-          "manufacturer": "Medicare Pharma",
-          "barcode": "8936000112",
-          "inventory": {
-            "unit_cost": 63000
-          }
-        },
-        "clinical_info": {
-          "therapeutic_class": "Biguanide",
-          "indications": [
-            "Đái tháo đường type 2"
-          ],
-          "contraindications": [
-            "Hypersensitivity"
-          ],
-          "side_effects": [
-            "Chóng mặt nhẹ",
-            "Buồn nôn"
-          ],
-          "drug_interactions": [
-            "Alcohol"
-          ]
-        },
-        "inventory": {
-          "current_stock": 324,
-          "unit_cost": 63000,
-          "expiry_date": "2027-12-31",
-          "supplier": "VietPharma Distribution"
-        },
-        "status": "active",
-        "created_at": "2025-11-13T09:00:00Z",
-        "updated_at": "2025-11-13T11:00:00Z"
-      }
-    },
-    {
-      "id": "med_2025_11_013",
-      "key": "med_2025_11_013",
-      "value": {
-        "rev": "1-new"
-      },
-      "doc": {
-        "_id": "med_2025_11_013",
-        "type": "medication",
-        "medication_info": {
-          "name": "LipoGuard",
-          "generic_name": "LipoGuard",
-          "strength": "20mg",
-          "dosage_form": "tablet",
-          "manufacturer": "Medicare Pharma",
-          "barcode": "8936000113",
-          "inventory": {
-            "unit_cost": 64500
-          }
-        },
-        "clinical_info": {
-          "therapeutic_class": "Statin",
-          "indications": [
-            "Hen phế quản"
-          ],
-          "contraindications": [
-            "Hypersensitivity"
-          ],
-          "side_effects": [
-            "Chóng mặt nhẹ",
-            "Buồn nôn"
-          ],
-          "drug_interactions": [
-            "Alcohol"
-          ]
-        },
-        "inventory": {
-          "current_stock": 336,
-          "unit_cost": 64500,
-          "expiry_date": "2027-12-31",
-          "supplier": "VietPharma Distribution"
-        },
-        "status": "active",
-        "created_at": "2025-11-14T09:00:00Z",
-        "updated_at": "2025-11-14T11:00:00Z"
-      }
-    },
-    {
-      "id": "med_2025_11_014",
-      "key": "med_2025_11_014",
-      "value": {
-        "rev": "1-new"
-      },
-      "doc": {
-        "_id": "med_2025_11_014",
-        "type": "medication",
-        "medication_info": {
-          "name": "NeuroCalm",
-          "generic_name": "NeuroCalm",
-          "strength": "75mg",
-          "dosage_form": "capsule",
-          "manufacturer": "Medicare Pharma",
-          "barcode": "8936000114",
-          "inventory": {
-            "unit_cost": 66000
-          }
-        },
-        "clinical_info": {
-          "therapeutic_class": "Neuropathic agent",
-          "indications": [
-            "Trào ngược dạ dày thực quản"
-          ],
-          "contraindications": [
-            "Hypersensitivity"
-          ],
-          "side_effects": [
-            "Chóng mặt nhẹ",
-            "Buồn nôn"
-          ],
-          "drug_interactions": [
-            "Alcohol"
-          ]
-        },
-        "inventory": {
-          "current_stock": 348,
-          "unit_cost": 66000,
-          "expiry_date": "2027-12-31",
-          "supplier": "VietPharma Distribution"
-        },
-        "status": "active",
-        "created_at": "2025-11-15T09:00:00Z",
-        "updated_at": "2025-11-15T11:00:00Z"
-      }
-    },
-    {
-      "id": "med_2025_11_015",
-      "key": "med_2025_11_015",
-      "value": {
-        "rev": "1-new"
-      },
-      "doc": {
-        "_id": "med_2025_11_015",
-        "type": "medication",
-        "medication_info": {
-          "name": "GastroShield",
-          "generic_name": "GastroShield",
-          "strength": "40mg",
-          "dosage_form": "capsule",
-          "manufacturer": "Medicare Pharma",
-          "barcode": "8936000115",
-          "inventory": {
-            "unit_cost": 67500
-          }
-        },
-        "clinical_info": {
-          "therapeutic_class": "Proton pump inhibitor",
-          "indications": [
-            "Rối loạn mỡ máu"
-          ],
-          "contraindications": [
-            "Hypersensitivity"
-          ],
-          "side_effects": [
-            "Chóng mặt nhẹ",
-            "Buồn nôn"
-          ],
-          "drug_interactions": [
-            "Alcohol"
-          ]
-        },
-        "inventory": {
-          "current_stock": 360,
-          "unit_cost": 67500,
-          "expiry_date": "2027-12-31",
-          "supplier": "VietPharma Distribution"
-        },
-        "status": "active",
-        "created_at": "2025-11-16T09:00:00Z",
-        "updated_at": "2025-11-16T11:00:00Z"
-      }
-    },
-    {
-      "id": "med_2025_11_016",
-      "key": "med_2025_11_016",
-      "value": {
-        "rev": "1-new"
-      },
-      "doc": {
-        "_id": "med_2025_11_016",
-        "type": "medication",
-        "medication_info": {
-          "name": "PulmoEase",
-          "generic_name": "PulmoEase",
-          "strength": "5mg",
-          "dosage_form": "tablet",
-          "manufacturer": "Medicare Pharma",
-          "barcode": "8936000116",
-          "inventory": {
-            "unit_cost": 69000
-          }
-        },
-        "clinical_info": {
-          "therapeutic_class": "Leukotriene receptor antagonist",
-          "indications": [
-            "Đau thắt lưng mạn tính"
-          ],
-          "contraindications": [
-            "Hypersensitivity"
-          ],
-          "side_effects": [
-            "Chóng mặt nhẹ",
-            "Buồn nôn"
-          ],
-          "drug_interactions": [
-            "Alcohol"
-          ]
-        },
-        "inventory": {
-          "current_stock": 372,
-          "unit_cost": 69000,
-          "expiry_date": "2027-12-31",
-          "supplier": "VietPharma Distribution"
-        },
-        "status": "active",
-        "created_at": "2025-11-17T09:00:00Z",
-        "updated_at": "2025-11-17T11:00:00Z"
-      }
-    },
-    {
-      "id": "med_2025_11_017",
-      "key": "med_2025_11_017",
-      "value": {
-        "rev": "1-new"
-      },
-      "doc": {
-        "_id": "med_2025_11_017",
-        "type": "medication",
-        "medication_info": {
-          "name": "JointFlex",
-          "generic_name": "JointFlex",
-          "strength": "1500mg",
-          "dosage_form": "tablet",
-          "manufacturer": "Medicare Pharma",
-          "barcode": "8936000117",
-          "inventory": {
-            "unit_cost": 70500
-          }
-        },
-        "clinical_info": {
-          "therapeutic_class": "Chondroprotective",
-          "indications": [
-            "Đau nửa đầu"
-          ],
-          "contraindications": [
-            "Hypersensitivity"
-          ],
-          "side_effects": [
-            "Chóng mặt nhẹ",
-            "Buồn nôn"
-          ],
-          "drug_interactions": [
-            "Alcohol"
-          ]
-        },
-        "inventory": {
-          "current_stock": 384,
-          "unit_cost": 70500,
-          "expiry_date": "2027-12-31",
-          "supplier": "VietPharma Distribution"
-        },
-        "status": "active",
-        "created_at": "2025-11-18T09:00:00Z",
-        "updated_at": "2025-11-18T11:00:00Z"
-      }
-    },
-    {
-      "id": "med_2025_11_018",
-      "key": "med_2025_11_018",
-      "value": {
-        "rev": "1-new"
-      },
-      "doc": {
-        "_id": "med_2025_11_018",
-        "type": "medication",
-        "medication_info": {
-          "name": "RenalCare",
-          "generic_name": "RenalCare",
-          "strength": "25mg",
-          "dosage_form": "tablet",
-          "manufacturer": "Medicare Pharma",
-          "barcode": "8936000118",
-          "inventory": {
-            "unit_cost": 72000
-          }
-        },
-        "clinical_info": {
-          "therapeutic_class": "ACE inhibitor",
-          "indications": [
-            "Bệnh mạch vành"
-          ],
-          "contraindications": [
-            "Hypersensitivity"
-          ],
-          "side_effects": [
-            "Chóng mặt nhẹ",
-            "Buồn nôn"
-          ],
-          "drug_interactions": [
-            "Alcohol"
-          ]
-        },
-        "inventory": {
-          "current_stock": 396,
-          "unit_cost": 72000,
-          "expiry_date": "2027-12-31",
-          "supplier": "VietPharma Distribution"
-        },
-        "status": "active",
-        "created_at": "2025-11-19T09:00:00Z",
-        "updated_at": "2025-11-19T11:00:00Z"
-      }
-    },
-    {
-      "id": "med_2025_11_019",
-      "key": "med_2025_11_019",
-      "value": {
-        "rev": "1-new"
-      },
-      "doc": {
-        "_id": "med_2025_11_019",
-        "type": "medication",
-        "medication_info": {
-          "name": "ImmunoPlus",
-          "generic_name": "ImmunoPlus",
-          "strength": "1g",
-          "dosage_form": "vial",
-          "manufacturer": "Medicare Pharma",
-          "barcode": "8936000119",
-          "inventory": {
-            "unit_cost": 73500
-          }
-        },
-        "clinical_info": {
-          "therapeutic_class": "Immunoglobulin",
-          "indications": [
-            "Suy thận mạn"
-          ],
-          "contraindications": [
-            "Hypersensitivity"
-          ],
-          "side_effects": [
-            "Chóng mặt nhẹ",
-            "Buồn nôn"
-          ],
-          "drug_interactions": [
-            "Alcohol"
-          ]
-        },
-        "inventory": {
-          "current_stock": 408,
-          "unit_cost": 73500,
-          "expiry_date": "2027-12-31",
-          "supplier": "VietPharma Distribution"
-        },
-        "status": "active",
-        "created_at": "2025-11-20T09:00:00Z",
-        "updated_at": "2025-11-20T11:00:00Z"
-      }
-    },
-    {
-      "id": "med_2025_11_020",
-      "key": "med_2025_11_020",
-      "value": {
-        "rev": "1-new"
-      },
-      "doc": {
-        "_id": "med_2025_11_020",
-        "type": "medication",
-        "medication_info": {
-          "name": "Dermasoft",
-          "generic_name": "Dermasoft",
-          "strength": "1%",
-          "dosage_form": "ointment",
-          "manufacturer": "Medicare Pharma",
-          "barcode": "8936000120",
-          "inventory": {
-            "unit_cost": 75000
-          }
-        },
-        "clinical_info": {
-          "therapeutic_class": "Topical steroid",
-          "indications": [
-            "Thoái hóa khớp đa ổ"
-          ],
-          "contraindications": [
-            "Hypersensitivity"
-          ],
-          "side_effects": [
-            "Chóng mặt nhẹ",
-            "Buồn nôn"
-          ],
-          "drug_interactions": [
-            "Alcohol"
-          ]
-        },
-        "inventory": {
-          "current_stock": 420,
-          "unit_cost": 75000,
-          "expiry_date": "2027-12-31",
-          "supplier": "VietPharma Distribution"
-        },
-        "status": "active",
-        "created_at": "2025-11-21T09:00:00Z",
-        "updated_at": "2025-11-21T11:00:00Z"
       }
     }
   ]

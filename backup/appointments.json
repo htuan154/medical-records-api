@@ -739,6 +739,159 @@
       "created_at": "2025-11-19T12:00:00Z",
       "updated_at": "2025-11-21T11:00:00Z",
       "created_by": "staff_2025_11_020"
+    },
+    {
+      "_id": "appointment_2025_rev_02",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_001",
+      "doctor_id": "doctor_2025_11_001",
+      "appointment_info": {
+        "scheduled_date": "2025-02-15T09:00:00Z",
+        "duration": 45,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Khám quản lý bệnh mạn",
+      "status": "completed",
+      "notes": "Lịch bổ sung doanh thu",
+      "created_at": "2025-02-13T09:00:00Z",
+      "updated_at": "2025-02-15T09:00:00Z"
+    },
+    {
+      "_id": "appointment_2025_rev_03",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_001",
+      "doctor_id": "doctor_2025_11_001",
+      "appointment_info": {
+        "scheduled_date": "2025-03-15T09:00:00Z",
+        "duration": 45,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Khám quản lý bệnh mạn",
+      "status": "completed",
+      "notes": "Lịch bổ sung doanh thu",
+      "created_at": "2025-03-13T09:00:00Z",
+      "updated_at": "2025-03-15T09:00:00Z"
+    },
+    {
+      "_id": "appointment_2025_rev_04",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_001",
+      "doctor_id": "doctor_2025_11_001",
+      "appointment_info": {
+        "scheduled_date": "2025-04-15T09:00:00Z",
+        "duration": 45,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Khám quản lý bệnh mạn",
+      "status": "completed",
+      "notes": "Lịch bổ sung doanh thu",
+      "created_at": "2025-04-13T09:00:00Z",
+      "updated_at": "2025-04-15T09:00:00Z"
+    },
+    {
+      "_id": "appointment_2025_rev_05",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_001",
+      "doctor_id": "doctor_2025_11_001",
+      "appointment_info": {
+        "scheduled_date": "2025-05-15T09:00:00Z",
+        "duration": 45,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Khám quản lý bệnh mạn",
+      "status": "completed",
+      "notes": "Lịch bổ sung doanh thu",
+      "created_at": "2025-05-13T09:00:00Z",
+      "updated_at": "2025-05-15T09:00:00Z"
+    },
+    {
+      "_id": "appointment_2025_rev_06",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_001",
+      "doctor_id": "doctor_2025_11_001",
+      "appointment_info": {
+        "scheduled_date": "2025-06-15T09:00:00Z",
+        "duration": 45,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Khám quản lý bệnh mạn",
+      "status": "completed",
+      "notes": "Lịch bổ sung doanh thu",
+      "created_at": "2025-06-13T09:00:00Z",
+      "updated_at": "2025-06-15T09:00:00Z"
+    },
+    {
+      "_id": "appointment_2025_rev_07",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_001",
+      "doctor_id": "doctor_2025_11_001",
+      "appointment_info": {
+        "scheduled_date": "2025-07-15T09:00:00Z",
+        "duration": 45,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Khám quản lý bệnh mạn",
+      "status": "completed",
+      "notes": "Lịch bổ sung doanh thu",
+      "created_at": "2025-07-13T09:00:00Z",
+      "updated_at": "2025-07-15T09:00:00Z"
+    },
+    {
+      "_id": "appointment_2025_rev_08",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_001",
+      "doctor_id": "doctor_2025_11_001",
+      "appointment_info": {
+        "scheduled_date": "2025-08-15T09:00:00Z",
+        "duration": 45,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Khám quản lý bệnh mạn",
+      "status": "completed",
+      "notes": "Lịch bổ sung doanh thu",
+      "created_at": "2025-08-13T09:00:00Z",
+      "updated_at": "2025-08-15T09:00:00Z"
+    },
+    {
+      "_id": "appointment_2025_rev_09",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_001",
+      "doctor_id": "doctor_2025_11_001",
+      "appointment_info": {
+        "scheduled_date": "2025-09-15T09:00:00Z",
+        "duration": 45,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Khám quản lý bệnh mạn",
+      "status": "completed",
+      "notes": "Lịch bổ sung doanh thu",
+      "created_at": "2025-09-13T09:00:00Z",
+      "updated_at": "2025-09-15T09:00:00Z"
+    },
+    {
+      "_id": "appointment_2025_rev_10",
+      "type": "appointment",
+      "patient_id": "patient_2025_11_001",
+      "doctor_id": "doctor_2025_11_001",
+      "appointment_info": {
+        "scheduled_date": "2025-10-15T09:00:00Z",
+        "duration": 45,
+        "type": "consultation",
+        "priority": "normal"
+      },
+      "reason": "Khám quản lý bệnh mạn",
+      "status": "completed",
+      "notes": "Lịch bổ sung doanh thu",
+      "created_at": "2025-10-13T09:00:00Z",
+      "updated_at": "2025-10-15T09:00:00Z"
     }
   ]
 }

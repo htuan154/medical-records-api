@@ -1,5 +1,5 @@
 {
-  "total_rows": 22,
+  "total_rows": 35,
   "offset": 0,
   "rows": [
     {
@@ -900,6 +900,461 @@
         "lab_technician": "tech_020",
         "created_at": "2025-11-21T09:30:00Z",
         "updated_at": "2025-11-22T16:30:00Z"
+      }
+    },
+    {
+      "id": "test_under40_002",
+      "key": "test_under40_002",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_under40_002",
+        "type": "medical_test",
+        "patient_id": "patient_2025_002",
+        "doctor_id": "doctor_2025_002",
+        "medical_record_id": "record_under40_002",
+        "test_info": {
+          "test_type": "cardiology",
+          "test_name": "Điện tâm đồ 12 chuyển đạo",
+          "ordered_date": "2025-01-26T09:30:00Z",
+          "sample_collected_date": "2025-01-26T10:30:00Z",
+          "result_date": "2025-01-27T12:30:00Z",
+          "unit_price": 180000
+        },
+        "results": {
+          "primary": {
+            "value": 1.0,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_under40",
+        "created_at": "2025-01-26T10:15:00Z",
+        "updated_at": "2025-01-27T12:30:00Z"
+      }
+    },
+    {
+      "id": "test_under40_004",
+      "key": "test_under40_004",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_under40_004",
+        "type": "medical_test",
+        "patient_id": "patient_2025_004",
+        "doctor_id": "doctor_2025_003",
+        "medical_record_id": "record_under40_004",
+        "test_info": {
+          "test_type": "imaging",
+          "test_name": "Nội soi dạ dày",
+          "ordered_date": "2025-01-28T10:00:00Z",
+          "sample_collected_date": "2025-01-28T11:00:00Z",
+          "result_date": "2025-01-29T13:00:00Z",
+          "unit_price": 450000
+        },
+        "results": {
+          "primary": {
+            "value": 1.0,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_under40",
+        "created_at": "2025-01-28T10:45:00Z",
+        "updated_at": "2025-01-29T13:00:00Z"
+      }
+    },
+    {
+      "id": "test_under40_005",
+      "key": "test_under40_005",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_under40_005",
+        "type": "medical_test",
+        "patient_id": "patient_2025_005",
+        "doctor_id": "doctor_2025_001",
+        "medical_record_id": "record_under40_005",
+        "test_info": {
+          "test_type": "neurology",
+          "test_name": "Đo điện não đồ",
+          "ordered_date": "2025-02-01T08:30:00Z",
+          "sample_collected_date": "2025-02-01T09:30:00Z",
+          "result_date": "2025-02-02T11:30:00Z",
+          "unit_price": 220000
+        },
+        "results": {
+          "primary": {
+            "value": 1.0,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_under40",
+        "created_at": "2025-02-01T09:15:00Z",
+        "updated_at": "2025-02-02T11:30:00Z"
+      }
+    },
+    {
+      "id": "test_under40_006",
+      "key": "test_under40_006",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_under40_006",
+        "type": "medical_test",
+        "patient_id": "patient_2025_006",
+        "doctor_id": "doctor_2025_002",
+        "medical_record_id": "record_under40_006",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Đường huyết lúc đói",
+          "ordered_date": "2025-02-03T10:00:00Z",
+          "sample_collected_date": "2025-02-03T11:00:00Z",
+          "result_date": "2025-02-04T13:00:00Z",
+          "unit_price": 160000
+        },
+        "results": {
+          "primary": {
+            "value": 1.0,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Kết quả trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_under40",
+        "created_at": "2025-02-03T10:45:00Z",
+        "updated_at": "2025-02-04T13:00:00Z"
+      }
+    },
+    {
+      "id": "test_revenue_2025_02",
+      "key": "test_revenue_2025_02",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_revenue_2025_02",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "medical_record_id": "record_revenue_2025_02",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Sinh hóa máu định kỳ",
+          "ordered_date": "2025-02-15T09:00:00Z",
+          "sample_collected_date": "2025-02-15T10:00:00Z",
+          "result_date": "2025-02-16T09:00:00Z",
+          "unit_price": 300000
+        },
+        "results": {
+          "primary": {
+            "value": 1.1,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_revenue",
+        "created_at": "2025-02-15T09:00:00Z",
+        "updated_at": "2025-02-16T09:00:00Z"
+      }
+    },
+    {
+      "id": "test_revenue_2025_03",
+      "key": "test_revenue_2025_03",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_revenue_2025_03",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "medical_record_id": "record_revenue_2025_03",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Sinh hóa máu định kỳ",
+          "ordered_date": "2025-03-15T09:00:00Z",
+          "sample_collected_date": "2025-03-15T10:00:00Z",
+          "result_date": "2025-03-16T09:00:00Z",
+          "unit_price": 300000
+        },
+        "results": {
+          "primary": {
+            "value": 1.1,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_revenue",
+        "created_at": "2025-03-15T09:00:00Z",
+        "updated_at": "2025-03-16T09:00:00Z"
+      }
+    },
+    {
+      "id": "test_revenue_2025_04",
+      "key": "test_revenue_2025_04",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_revenue_2025_04",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "medical_record_id": "record_revenue_2025_04",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Sinh hóa máu định kỳ",
+          "ordered_date": "2025-04-15T09:00:00Z",
+          "sample_collected_date": "2025-04-15T10:00:00Z",
+          "result_date": "2025-04-16T09:00:00Z",
+          "unit_price": 300000
+        },
+        "results": {
+          "primary": {
+            "value": 1.1,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_revenue",
+        "created_at": "2025-04-15T09:00:00Z",
+        "updated_at": "2025-04-16T09:00:00Z"
+      }
+    },
+    {
+      "id": "test_revenue_2025_05",
+      "key": "test_revenue_2025_05",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_revenue_2025_05",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "medical_record_id": "record_revenue_2025_05",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Sinh hóa máu định kỳ",
+          "ordered_date": "2025-05-15T09:00:00Z",
+          "sample_collected_date": "2025-05-15T10:00:00Z",
+          "result_date": "2025-05-16T09:00:00Z",
+          "unit_price": 300000
+        },
+        "results": {
+          "primary": {
+            "value": 1.1,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_revenue",
+        "created_at": "2025-05-15T09:00:00Z",
+        "updated_at": "2025-05-16T09:00:00Z"
+      }
+    },
+    {
+      "id": "test_revenue_2025_06",
+      "key": "test_revenue_2025_06",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_revenue_2025_06",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "medical_record_id": "record_revenue_2025_06",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Sinh hóa máu định kỳ",
+          "ordered_date": "2025-06-15T09:00:00Z",
+          "sample_collected_date": "2025-06-15T10:00:00Z",
+          "result_date": "2025-06-16T09:00:00Z",
+          "unit_price": 300000
+        },
+        "results": {
+          "primary": {
+            "value": 1.1,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_revenue",
+        "created_at": "2025-06-15T09:00:00Z",
+        "updated_at": "2025-06-16T09:00:00Z"
+      }
+    },
+    {
+      "id": "test_revenue_2025_07",
+      "key": "test_revenue_2025_07",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_revenue_2025_07",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "medical_record_id": "record_revenue_2025_07",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Sinh hóa máu định kỳ",
+          "ordered_date": "2025-07-15T09:00:00Z",
+          "sample_collected_date": "2025-07-15T10:00:00Z",
+          "result_date": "2025-07-16T09:00:00Z",
+          "unit_price": 300000
+        },
+        "results": {
+          "primary": {
+            "value": 1.1,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_revenue",
+        "created_at": "2025-07-15T09:00:00Z",
+        "updated_at": "2025-07-16T09:00:00Z"
+      }
+    },
+    {
+      "id": "test_revenue_2025_08",
+      "key": "test_revenue_2025_08",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_revenue_2025_08",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "medical_record_id": "record_revenue_2025_08",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Sinh hóa máu định kỳ",
+          "ordered_date": "2025-08-15T09:00:00Z",
+          "sample_collected_date": "2025-08-15T10:00:00Z",
+          "result_date": "2025-08-16T09:00:00Z",
+          "unit_price": 300000
+        },
+        "results": {
+          "primary": {
+            "value": 1.1,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_revenue",
+        "created_at": "2025-08-15T09:00:00Z",
+        "updated_at": "2025-08-16T09:00:00Z"
+      }
+    },
+    {
+      "id": "test_revenue_2025_09",
+      "key": "test_revenue_2025_09",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_revenue_2025_09",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "medical_record_id": "record_revenue_2025_09",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Sinh hóa máu định kỳ",
+          "ordered_date": "2025-09-15T09:00:00Z",
+          "sample_collected_date": "2025-09-15T10:00:00Z",
+          "result_date": "2025-09-16T09:00:00Z",
+          "unit_price": 300000
+        },
+        "results": {
+          "primary": {
+            "value": 1.1,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_revenue",
+        "created_at": "2025-09-15T09:00:00Z",
+        "updated_at": "2025-09-16T09:00:00Z"
+      }
+    },
+    {
+      "id": "test_revenue_2025_10",
+      "key": "test_revenue_2025_10",
+      "value": {
+        "rev": "1-new"
+      },
+      "doc": {
+        "_id": "test_revenue_2025_10",
+        "type": "medical_test",
+        "patient_id": "patient_2025_11_001",
+        "doctor_id": "doctor_2025_11_001",
+        "medical_record_id": "record_revenue_2025_10",
+        "test_info": {
+          "test_type": "chemistry",
+          "test_name": "Sinh hóa máu định kỳ",
+          "ordered_date": "2025-10-15T09:00:00Z",
+          "sample_collected_date": "2025-10-15T10:00:00Z",
+          "result_date": "2025-10-16T09:00:00Z",
+          "unit_price": 300000
+        },
+        "results": {
+          "primary": {
+            "value": 1.1,
+            "unit": "index",
+            "reference_range": "0.5-1.5",
+            "status": "normal"
+          }
+        },
+        "interpretation": "Trong giới hạn cho phép",
+        "status": "completed",
+        "lab_technician": "tech_revenue",
+        "created_at": "2025-10-15T09:00:00Z",
+        "updated_at": "2025-10-16T09:00:00Z"
       }
     }
   ]
