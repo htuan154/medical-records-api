@@ -136,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'updated_at': DateTime.now().toIso8601String(),
       };
 
-      // Tạo patient data
+      // Tạo patient data (luôn gửi emergency_contact, kể cả khi rỗng)
       final patientData = {
         '_id': patientId,
         'type': 'patient',
@@ -148,15 +148,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
           'phone': _phoneController.text,
           'email': _emailController.text,
           'emergency_contact': {
-            'name': _emergencyNameController.text,
-            'relationship': _emergencyRelationshipController.text,
-            'phone': _emergencyPhoneController.text,
+            'name': _emergencyNameController.text.isNotEmpty ? _emergencyNameController.text : '',
+            'relationship': _emergencyRelationshipController.text.isNotEmpty ? _emergencyRelationshipController.text : '',
+            'phone': _emergencyPhoneController.text.isNotEmpty ? _emergencyPhoneController.text : '',
           },
         },
       };
 
+      print('=== DEBUG: DỮ LIỆU GỬI LÊN SERVER ===');
       print('[REGISTER] User JSON: ${jsonEncode(userData)}');
       print('[REGISTER] Patient JSON: ${jsonEncode(patientData)}');
+      debugPrint('[REGISTER] User JSON: ${jsonEncode(userData)}');
+      debugPrint('[REGISTER] Patient JSON: ${jsonEncode(patientData)}');
 
       // Gọi API tạo user trước
       final userResult = await _createUser(userData);

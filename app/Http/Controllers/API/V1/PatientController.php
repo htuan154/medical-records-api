@@ -113,6 +113,7 @@ class PatientController extends Controller
                 'personal_info.birth_date'  => 'nullable|date',
                 'personal_info.id_number'   => 'nullable|string',
                 'personal_info.email'       => 'nullable|email',
+                'personal_info.emergency_contact' => 'nullable|array',
                 'medical_info'              => 'nullable|array',
                 'address'                   => 'nullable|array',
                 'status'                    => 'nullable|in:active,inactive',

@@ -140,9 +140,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     final info = patient?["personal_info"];
-    final address = patient?["address"];
+    final address = patient?["address"] ?? {};
     final medical = patient?["medical_info"];
-    final emergency = info?["emergency_contact"];
+    final emergency = info?["emergency_contact"] ?? {};
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thông tin bệnh nhân'),
@@ -224,16 +224,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
-                  children: [
-                    _infoRow('Họ tên', emergency["name"]),
-                    _infoRow(
-                      'Mối quan hệ',
-                      emergency["relationship"] == "spouse"
-                          ? "Vợ/Chồng"
-                          : emergency["relationship"],
-                    ),
-                    _infoRow('Số điện thoại', emergency["phone"]),
-                  ],
+                    children: emergency.isNotEmpty
+                        ? [
+                            _infoRow('Họ tên', emergency["name"] ?? 'Chưa cập nhật'),
+                            _infoRow(
+                              'Mối quan hệ',
+                              (emergency["relationship"] == "spouse"
+                                      ? "Vợ/Chồng"
+                                      : emergency["relationship"]) ?? 'Chưa cập nhật',
+                            ),
+                            _infoRow('Số điện thoại', emergency["phone"] ?? 'Chưa cập nhật'),
+                          ]
+                        : [
+                            Center(
+                              child: Text(
+                                'Chưa cập nhật liên hệ khẩn cấp',
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
+                            ),
+                          ],
                 ),
               ),
             ),
@@ -301,15 +310,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _infoRow('Địa chỉ', address["street"]),
-                    _infoRow('Phường/Xã', address["ward"]),
-                    _infoRow('Quận/Huyện', address["district"]),
-                    _infoRow('Thành phố', address["city"]),
-                    _infoRow('Mã bưu điện', address["postal_code"]),
-                  ],
-                ),
+                child: address.isNotEmpty
+                    ? Column(
+                        children: [
+                          _infoRow('Địa chỉ', address["street"] ?? 'Chưa cập nhật'),
+                          _infoRow('Phường/Xã', address["ward"] ?? 'Chưa cập nhật'),
+                          _infoRow('Quận/Huyện', address["district"] ?? 'Chưa cập nhật'),
+                          _infoRow('Thành phố', address["city"] ?? 'Chưa cập nhật'),
+                          _infoRow('Mã bưu điện', address["postal_code"] ?? 'Chưa cập nhật'),
+                        ],
+                      )
+                    : Center(
+                        child: Text(
+                          'Chưa cập nhật địa chỉ',
+                          style: TextStyle(color: Colors.grey.shade600),
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 32),
